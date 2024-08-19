@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <section class="login-page">
+      
+        <div class="wrapper">
+            <h2>login</h2>
+         
+            <form class="login-form" action="/login" method="POST">
+
+                <label for="">ID</label>
+                <input name="username" placeholder="아이디를 입력하세요">
+                <label for="">PASSWORD</label>
+                <input name="password" type="password" placeholder="비밀번호를 입력하세요">
+                <button class="submit " type="submit">Sign In</button>           
+            </form>
+            <button class="join" onclick="location.href='/register'">Join us ✨</button>
+        </div>
+
+    </section>
+
+
+    <script>
+        const inputs = document.querySelectorAll('input[type="text"], input[type="password"]')
+        const submitBtn = document.querySelector('.submit')
+        // 입력 값이 변경될 때마다 실행되는 함수
+        function checkInputValues() {
+                let allFilled = true;
+                inputs.forEach(input => {
+                    if (input.value.trim() === '') {
+                        allFilled = false;
+                    }
+                });
+
+                if (allFilled) {
+                    submitBtn.classList.add('active');
+                } else {
+                    submitBtn.classList.remove('active');
+                }
+            }
+
+            // 입력 필드에 이벤트 리스너 추가
+            inputs.forEach(input => {
+                input.addEventListener('input', checkInputValues);
+            });
+
+            // 페이지 로드 시 초기 상태 체크
+            checkInputValues();
+
+    </script>
+
+</body>
+</html>

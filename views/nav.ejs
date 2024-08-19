@@ -1,0 +1,39 @@
+<nav class="nav">
+    <ul>       
+        <li><a href="/">ARCHIVE</a></li>
+    </ul>
+
+    <ul class="list-btn">
+        <li><button id="artworkBtn" onclick="location.href='/admin/list/artwork'"  >Artwork</button></li>
+        <li><button id="artistBtn" onclick="location.href='/admin/list/artist'">Artist</button></li>
+        <li><button id="userBtn" onclick="location.href='/admin/list/user'">User</button></li>
+    </ul>
+    
+    <ul>
+        <li class="admin">
+            <p>Admin <strong><%= result.realname %></strong> </p>
+            <img src="/img/user.svg" alt="">
+        </li>
+        <li>
+            <a href="/logout">LOGOUT</a>
+        </li>
+    </ul>       
+</nav>
+
+<script>
+    // 현재 URL에 따라 active 클래스를 추가하는 함수
+    window.onload = function() {
+        
+        const currentPath = window.location.pathname;
+
+        if (currentPath.includes('/admin/list/artwork') || currentPath.includes('/login')) {
+            document.getElementById('artworkBtn').classList.add('active');
+        } else if (currentPath.includes('/admin/list/artist')) {
+            document.getElementById('artistBtn').classList.add('active');
+        } else if (currentPath.includes('/admin/list/user')) {
+            document.getElementById('userBtn').classList.add('active');
+            document.getElementById('artworkBtn').classList.remove('active');
+        }
+      
+    };
+</script>

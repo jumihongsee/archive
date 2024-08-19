@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archive</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <main>
+        <section class="main">
+            <% if(result !== null) { %>
+                <button class="login-btn" onclick="location.href='/logout'">Logout</button>
+                <p class="welcome">환영합니다. <%= result.realname %> 님-!</p>
+            <% } else { %>
+                <button class="login-btn" onclick="location.href='/login'">Login</button>
+            <% } %>
+
+            <h1 class="title">archive</h1>
+            <div class="btn-wrapper">
+                <button onclick="location.href='/viewer'">viewer</button>
+                <div class="line">
+                    <div class="circle"></div>
+                </div>
+                <button onclick="location.href='/login'">admin</button>
+            </div>
+            <button onclick="location.href='/Register'" class="Register">Sign Up</button>
+            <p class="copyright">ⓒ ST ART Limited. All rights reserved.</p>
+        </section>
+    </main>
+</body>
+</html>

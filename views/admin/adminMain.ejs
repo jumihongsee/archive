@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archive Admin</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <%- include('../nav.ejs') %>
+    <%- include('../sidenav.ejs') %>
+    <section class="admin-main admin">
+
+        <div class="main-section-wrapper">
+
+                <table>
+                    <thead class="fixed-title">
+                        <% if(listType === 'artwork'){ %>
+                            <tr class="artwork">
+                                <th>NO.</th>
+                                <th>Title</th>
+                                <th>Artist</th>
+                                <th>Date</th>
+                                <th>size</th>
+                                <th>Medium</th>
+                                <th>Price</th>
+                                <th>sale</th>
+                                <th>Location</th>
+                                <th>Certification</th>
+                             
+                            </tr>
+                    <% }else if(listType === 'artist'){ %>
+                            <tr class="artist">
+                                <th>NO.</th>
+                                <th>IMG</th>
+                                <th>Name</th>
+                                <th>tel</th>
+                                <th>email</th>
+                                <th>homepage</th>
+                                <th>등록시간</th>               
+                            </tr>
+                    <% }else if(listType === 'user') {%>
+                        <tr class="user">
+                            <th>NO.</th>
+                            <th>Id</th>
+                            <th>Name</th>
+                            <th>Class</th>
+                            <th>Register Date</th>          
+                             
+                        </tr>
+                    <%}%>
+
+                    </thead>
+                    <tbody>
+                        <% if(listType === 'artwork'){ %>
+                            <% data.map((a, i) => { %>
+                                <tr class="">
+                                    <td><%= i + 1 %></td>
+                                    <td><%= a.name %></td>
+                                    <td class="artistPage" onclick="location.href='/admin/detail/artist/<%= a.artist %>'"><%= a.artistData[0].name.kor %> ( <%= a.artistData[0].name.eng %> ) </td>
+                                    <td>데이터5</td>
+                                    <td>데이터6</td>
+                                    <td>데이터7</td>
+                                    <td><%= a.price %>원</td>
+                                    <td>데이터8</td>
+                                    <td><%= a.location[0].area %></td>
+                                    <td>데이터9</td>
+                                
+                                </tr>
+                            <% }) %>
+                       <%}else if(listType === 'artist') {%>
+                            <% data.map((a, i) => { %>
+                                <tr>
+                                    <td><%= i + 1 %></td>
+                                    <td>데이터3</td>
+                                    <td>데이터3</td>
+                                    <td>데이터3</td>
+                                    <td>데이터3</td>
+                                    <td>데이터3</td>
+                                    <td>데이터3</td>
+                             
+                                </tr>
+                            <% }) %>
+                       <%}else if(listType === 'user') {%>
+
+                            <% data.map((a, i) => { %>
+                                <tr>
+                                    <td><%= i + 1 %></td>
+                                    <td><%= a.username %></td>
+                                    <td><%= a.realname %></td>
+                                    <td><%= a.class %></td>
+                                    <td>데이터3</td>
+                                    
+                                </tr>
+                            <% }) %>
+                       <%}%>
+
+                        
+
+
+
+
+                    </tbody>
+                </table>
+           
+        </div>
+
+    </section>
+   
+</body>
+</html>

@@ -1,0 +1,423 @@
+@charset "utf-8";
+
+/////////////////////////////* default */////////////////////////////
+
+body { -webkit-font-smoothing: antialiased; }
+body,html{overflow-x: hidden;}
+html, body, div, span, applet, object, iframe,h1, h2, h3, h4, h5, h6, p, blockquote, pre,a, abbr, acronym, address, big, cite, code,del, dfn, em, img, ins, kbd, q, s, samp,small, strike, strong, sub, sup, tt, var,b, u, i, center,dl, dt, dd, ol, ul, li,fieldset, form, label, legend,table, caption, tbody, tfoot, thead, tr, th, td,article, aside, canvas, details, embed,figure, figcaption, footer, header, hgroup,menu, nav, output, ruby, section, summary,time, mark, audio, video {	margin: 0;	padding: 0;	border: 0;	text-decoration: none;}
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {	display: block;}
+div, span, article, section, header, footer, aside, p, ul, li, fieldset, legend, label, a, nav, form {	box-sizing: border-box;}
+ol, ul, li {list-style: none;text-decoration: none;}
+table {	border-collapse: collapse; border-spacing: 0;}
+img { max-width: 100%;	height: auto; 	border: 0; }
+button {border: 0; background: transparent; cursor: pointer;}
+input{ -webkit-appearance: none;-webkit-border-radius: 0;}
+
+::-webkit-scrollbar {
+    width: 5px; /* 세로 스크롤바의 너비 */
+    height: 5px; /* 가로 스크롤바의 높이 */
+}
+
+
+::-webkit-scrollbar-track {
+    background: #3b3b3b;
+ 
+}
+
+
+::-webkit-scrollbar-thumb {
+    background: #bdbdbd;
+    border-radius: 5px;
+
+}
+
+/* Chrome, Firefox, Opera, Safari 10.1+ */
+input:focus::placeholder{
+    color:transparent;
+}
+
+/* Edge */
+input:focus::-ms-input-placeholder{
+    color:transparent;
+}
+
+/////////////////////////////* default */////////////////////////////
+
+$main-color : #E9501A;
+
+
+
+.nav{
+    width: 100%; 
+    padding: 0 20px;
+    height: 120px; align-items: center;
+    display: flex; justify-content: space-between;
+  
+    > ul{
+        display: flex; align-items: center;
+        width: calc(100% / 3 ); height: 100%; 
+        &.list-btn{
+            display: flex;
+             button{
+                 padding: 5px;
+                  width: 100px;
+                 border: 1px solid #000;
+                 margin: 10px 10px 10px 0;
+                 &.active{
+                     background: $main-color;
+                 }
+             }
+         }
+        &:nth-child(1){ 
+            justify-content: flex-start;
+            li.hambuger{
+                margin-left: 5px;
+            }
+        }
+
+        &:last-child{ 
+            justify-content: flex-end; 
+            img{
+                width: 20px;
+                margin: 0 10px;
+            }
+      
+        }
+        &:nth-child(1),  &:last-child{
+            > li{
+                background: #000; height: 30px;
+                padding: 5px 15px; display: flex; align-items: center; justify-content: center;
+                a{
+                    color: #fff;
+            }}
+            > li.admin{
+                background: transparent; 
+                p{
+                    font-size: 12px; 
+                    strong{
+                        border-bottom: 1px solid #000;
+                    }
+                }
+            }
+        }
+
+        li{
+           
+            a{
+                font-size: 13px; color: #000;
+            }
+        }
+    
+
+    }
+    
+    
+
+}
+.side-nav{
+    width: 15vw;  height: 100%; 
+    position: fixed;
+    ul{
+        width: 80%;
+        li{
+
+            background:#121213;
+            margin: 0 10px 10px 10px; border-radius: 30px; 
+            padding: 10px;
+            a{
+                display: flex; align-items: center; color: #fff;
+                font-size: 12px; 
+            }
+            img{
+                width: 30px;
+            }
+
+            &.search{
+                display: flex; background: #eee;
+                img{
+                    width: 25px; cursor: pointer;
+                }
+                input{
+                    width: calc(100% - 20px);
+                    border: none;  background: transparent; color: #000;
+                    padding-left: 5px;
+                    &:focus{
+                        outline: none;
+                    }
+                }
+            }
+        }
+    }
+}
+section{
+
+ 
+    &.main{ 
+        display: flex; align-items: center; justify-content: center; flex-direction: column;
+        position: relative; width: 100vw; height: 100vh; background: $main-color;
+        .login-btn{
+            background: #000; color: #fff; padding: 5px 20px;
+            border-radius: 5px;
+        }
+        .welcome{
+            font-size: 13px;
+            margin: 30px 0 20px; border-bottom: 1px solid #000;
+        }
+        .Register{
+            font-size: 12px; border-bottom: 1px solid #000;
+        }
+        h1.title{
+            font-size: 9vw; text-transform: uppercase;  
+        }
+        .btn-wrapper{
+        display: flex; align-items: center; justify-content: center;
+        button{
+            cursor: pointer;  padding: 5px 10px;
+            
+        }
+        .line{
+            width: 22vw; height: 1px; background: #000;
+         position: relative;
+            .circle{
+                width: 5px; height: 5px; background: #000;
+                position: absolute; border-radius: 50%; top: 50%; left: 50%; 
+                transform: translate(-50%,-50%);
+                transition: all ease-in-out 0.8s;
+                &.left{
+                    left: 100%;
+                }
+                &.right{
+                    left: 0;
+                }
+            }
+        }
+        }
+        .copyright{
+        position: absolute; font-size: 13px; font-weight: bold;
+        bottom: 20px; left: 20px;
+    }
+    }
+    &.login-page{
+        width: 100%; height: 100vh; display: flex; position: relative;
+        align-items: center; justify-content: center; background: $main-color;
+        h2{
+            font-size: 50px; font-weight: 100; text-transform: uppercase;
+            margin-bottom: 20px; background: #000; color: #fff; font-weight: bold; text-align: center;
+        }
+        p{margin-bottom: 50px;}
+        .wrapper{
+             background: #fff;
+             border-radius: 20px; width: 30vw; height: auto;
+             padding: 30px;  min-width: 480px; min-height: 500px;
+             border: 3px solid #000;  display: flex;
+             flex-direction: column; justify-content: space-around;
+            form{
+                display: flex; flex-direction: column;
+             
+                input{
+                    width: calc(100% - 14px); height: 40px; 
+                    margin: 10px 0; border: 1px solid #000;
+                    padding-left: 10px; font-size: 12px;
+                    &:focus{
+                        outline : 1px solid $main-color;
+                        border: 1px solid #fff;
+                    }
+                    &.id-input{
+                        margin-bottom: 0;
+                      }
+                }
+                label{
+                    font-size: 12px; margin-top: 12px; 
+                    padding: 5px ;
+                    .alert{
+                        color: #f00; display: none;
+                        &.positive{
+                            color: blue;
+                        }
+                    }
+
+          
+                }
+                button.submit{
+                    background: #6d6d6d; color: #fff;
+                    &.active{
+                        background: $main-color; color: #fff;
+                        transition: background 0.2s ease-in-out;
+                    }
+                     margin-top: 10px;
+                    width: 100%;height: 44px;  font-size: 15px; margin-top: 20px;
+                    bottom: 50%; right: 10vw; border: 2px solid #000;
+                }
+                button.check-id{
+                    margin-top: none; background: #000; color: #fff; padding: 5px 0;
+                }
+            
+            } 
+            button.join{
+                width: 25%; border-bottom: 2px solid $main-color;
+               margin: 0 auto;
+            }
+        }
+    }
+    &.admin{
+        width: 80vw; margin-left: 15vw;  margin-right: 3vw; 
+    }
+    &.admin-main{
+        height: calc(100vh - 200px);
+        display: flex; width: 100%;
+
+        .main-section-wrapper{
+
+     
+            overflow-y: scroll; 
+            overflow-x: scroll; 
+            position: fixed; 
+            width: 80vw; height: 80vh;
+            table{
+                width: 100%; height: 100%;
+                border: 3px solid #000;
+                border-top: none;
+                
+                thead, tbody{
+                    tr{
+                        display: flex; width: 100%; justify-content: space-between;
+                     flex-wrap: nowrap;
+                        padding: 5px 0;
+                        th,td{
+                            font-size: 12px; padding: 2px;
+                            width: 100px; text-align: center;
+                           
+                            &:first-child{
+                                width: 20px;
+                            }
+ 
+                        }
+
+                    }
+                }
+                thead{
+                    // position: fixed; width: calc(80vw - 5px);
+                     height: 20px; 
+                    tr{background: #000;color: #fff;}
+                    
+                }
+                tbody{
+                    border: 1px solid #000;
+                    tr{
+                        &:nth-child(1){
+                           // margin-top: 29px;
+                        }
+                        cursor: pointer;    border-bottom: 1px solid #dbdada; 
+                        &:hover{
+                            background: #b9e0fa;
+                          
+                        }
+                        td.artistPage{
+                            &:hover{
+                               background: #55a5d3;
+                           
+                            }
+                        }
+                    }
+
+                }
+            }
+        
+
+        }
+
+    }
+    &.write{
+         min-height: 80vh;
+         margin-bottom: 50px;
+         form{
+            display: flex; flex-direction: column;
+         }
+        .img{
+            width: 100px; height: 100px; 
+            margin: 0 auto; position: relative; 
+            label{
+                background: #000; width: 100%; height: 100%; position: relative;
+                position: absolute;border-radius: 50%; cursor: pointer;
+                border: 3px solid #000;  display: flex; align-items: center; justify-content: center;
+                input{display: none;}
+                img{
+                    &:first-child{ height: 90%;}
+                    &:last-child{ 
+                        position: absolute; bottom: -10%; right: -10%; 
+                        width: 40px; height: 40px; background: #000;
+                        border-radius: 50%; border: 2px solid #fff;
+                    }
+                
+                }
+            }
+        }
+        .info-form{
+            width: 50%; margin: 0 auto;  max-width: 500px;
+            h2{
+                margin: 20px 0; background: #000; color: $main-color;
+                padding: 5px; font-size: 18px;
+            }
+            label{
+                display: flex; flex-direction: column;
+                font-size: 12px; margin-top: 5px;
+                input{
+                    height: 30px; margin: 5px 0;
+                    border: 1px solid #c0bdbd; padding: 0 7px;
+                    height: 40px;
+                    &:focus{
+                        outline: 1px solid $main-color;
+                 
+                    }
+                }
+                textarea{
+                    width: 100%; min-height: 70px;  resize: none;  overflow: hidden;
+                    margin: 10px 0;
+                }
+            }
+            > .wrapper{
+            
+                margin: 20px 0; 
+                
+                .addInput{
+                    display: flex; align-items: center;
+                    justify-content: center; padding: 10px 0;
+                    background: #e4edf3; border-radius: 20px;
+                    margin-top: 10px;
+                    img{
+                        width: 20px; filter: invert(1);
+                    }
+                    width: 100%; text-align: center;
+                    cursor: pointer;
+                }
+                > div{
+                   
+                    padding: 20px; margin-bottom: 10px;
+                    border-radius: 5px; background: #cee7f7;
+                    border-bottom: 1px solid #000;
+                    button{
+                        width: 30px; height: 30px;
+                        background: #fff; border-radius: 50%;
+                        margin-top: 20px; 
+                        
+                        img{
+                            width: 50%; 
+                        }
+                    }
+                }
+            }
+        }
+        .submit-btn{
+            text-align: center;
+            background: #bbbbbb;
+            width: 200px; margin: 0 auto; margin-top: 10px;
+            padding: 10px 0;  border-radius: 10px;
+            &.active{
+                background: $main-color;
+           
+            }
+        }
+
+    }
+    
+}
