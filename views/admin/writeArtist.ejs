@@ -13,35 +13,38 @@
         <form action="/write/artist" method="POST" enctype="multipart/form-data">
             <div class="img">       
                 <label for="file">
-                    <img src="/img/user.svg" name="" alt="">              
-                    <input name="artistimg" class="file" id="file" type="file" accept="image/*">
+                    <div class="preview-img-wrapper">
+                        <img src="/img/user.svg"  id="previewImg" name="" alt="">    
+                    </div>
+          
+                    <input name="artistimg" class="file" id="file" type="file" accept="image/*" onchange="previewImage(event)">
                     <img src="/img/plus.png" class="plus"  alt="">
                 </label>              
             </div>
             <div class="info-form info">
                 <h2>Artist Info</h2>
                 <label for="artistnameKr">
-                    이름 (Kor)
+                    <p>이름 (Kor) <span>* 필수 입력값</span></p>
                     <input type="text" name="artistnameKr" id="artistnameKr">
                 </label>
                 <label for="artistnameEng">
-                    이름 (Eng)
+                    <p>이름 (Eng) <span>* 필수 입력값</span></p> 
                     <input type="text" name="artistnameEng" id="artistnameEng">
                 </label>
                 <label for="artistBirth">
-                    생년월일
+                    <p>생년월일</p> 
                     <input type="date" name="artistBirth" id="artistBirth">
                 </label>
                 <label for="artistEmail">
-                    연락처 (email)
+                    <p>연락처 (email)</p> 
                     <input type="email" name="artistEmail" id="artistEmail">
                 </label>
                 <label for="artistTel">
-                    연락처 (tel)
-                    <input type="tel" name="artistTel" id="artistTel">               
+                    <p>연락처 (tel)</p> 
+                    <input type="number" name="artistTel" id="artistTel">               
                 </label>
                 <label for="artistHome">
-                    홈페이지 (homepage)
+                    <p>홈페이지 (homepage)</p> 
                     <input type="text" name="artistHome" id="artistHome">               
                 </label>
             </div>
@@ -96,6 +99,7 @@
 
         const addBtn = document.querySelectorAll('.addInput');
         
+        // 인풋 추가 버튼
         addBtn.forEach(item =>{
            
             item.addEventListener('click', function(e){
@@ -105,6 +109,8 @@
                 const inputWrapper = item.parentNode;
                 const inputWrapperClass = inputWrapper.className;
                 let newInputGroup = document.createElement('div');
+                newInputGroup.classList.add('createWrapper')
+
 
                 if(inputWrapperClass === "solo-ex wrapper"){
                     newInputGroup.innerHTML = 
@@ -118,7 +124,7 @@
                                 전시 타이틀
                                 <input type="text" name="soloExTitle" id="soloExTitle">
                             </label>
-                            <button><img src="/img/x.png" alt=""></button>
+                            <button type="button" class="input-delete"><img src="/img/x.png" alt=""></button>
                         </div>
                     `
                 }
@@ -134,7 +140,7 @@
                                 전시 타이틀
                                 <input type="text" name="groupExTitle" id="groupExTitle">
                             </label>
-                             <button><img src="/img/x.png" alt=""></button>
+                             <button type="button" class="input-delete"><img src="/img/x.png" alt=""></button>
                         </div>
                     `
                 }
@@ -150,7 +156,7 @@
                                 수상 타이틀
                                 <input type="text" name="awardTitle" id="awardTitle">
                             </label>
-                             <button><img src="/img/x.png" alt=""></button>
+                             <button type="button" class="input-delete"><img src="/img/x.png" alt=""></button>
                         </div>
                     `
                 }
@@ -160,6 +166,17 @@
             })
         })
 
+        //이벤트 델리게이션을 사용하여 삭제 버튼 클릭 
+        const deleteBtnWrapper = document.querySelector('.write'); // 전체 form을 감싸는 상위 요소 선택
+        deleteBtnWrapper.addEventListener('click', function(e){
+            if(e.target && e.target.closest('.input-delete')){
+                const deleteInputBtn = e.target.closest('.input-delete');
+                const inputGroup = deleteInputBtn.closest('.createWrapper');
+                if(inputGroup){
+                    inputGroup.remove(); // .wrapper가 아닌 삭제할 개별 입력 그룹만 제거
+                }
+            }
+        });
 
         //텍스트 길이 만큼 height 조정
         const textarea = document.querySelectorAll('textarea');
@@ -169,6 +186,21 @@
                 item.style.height = this.scrollHeight+'px'
             })
         })
+
+        //이미지 미리보기 
+        function previewImage(event){
+            const file = event.target.files[0];
+            const reader = new FileReader(); // FileReader 객체 생성
+            reader.onload = function(){
+                const previewImg= document.getElementById('previewImg')
+                previewImg.src = reader.result;
+      
+            }
+            if (file) {
+                reader.readAsDataURL(file); // 파일을 Data URL로 읽어옵니다.
+            }
+            console.log(reader.result)
+        }
 
 
 

@@ -10,7 +10,8 @@ const bcrypt = require('bcrypt')
 const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-const artworkData = require('./middleware/artworkData.js')
+const artworkData = require('./middleware/artworkDataLookup.js')
+const { formatDate, formatPhoneNumber, formatPrice } = require('./module/Formatting.js');
 
 const { S3Client } = require('@aws-sdk/client-s3')
 const multer = require('multer')
@@ -27,8 +28,8 @@ const s3 = new S3Client({
 const upload = multer({
   storage: multerS3({
     s3: s3,
-    bucket: "jumihongsee",
-    key: function (요청, file, cb) {
+    bucket: process.env.BUCKET_NAME,
+    key: function (req, file, cb) {
       cb(null, Date.now().toString() + path.extname(file.originalname)); 
     }
   })
@@ -225,6 +226,7 @@ app.post('/checkid', async(req,res)=>{
 
 let checkLogin = require('./middleware/checkLogin.js');
 const { title } = require('process');
+const { register } = require('module');
 
 app.use(checkLogin)
 
@@ -272,92 +274,96 @@ app.get('/admin/write/artist', async(req,res)=>{
 
 })
 
-app.post('/write/artist', upload.single('artistimg') ,async(req,res)=>{
-  // 객제 구조 분해 할당 문법으로 req.body 객체에 포함된 속성을 개별 변수로 추출
-  console.log(req.file)
-  res.json({ imageUrl: req.file.location });
-  const {
-    artistnameKr,
-    artistnameEng,
-    artistBirth,
-    artistEmail,
-    artistTel,
-    artistHome,
-    soloExDate,
-    soloExTitle,
-    groupExDate,
-    groupExTitle,
-    awardDate,
-    awardTitle,
-    artistNote,
-    artistDescription
-  } = req.body;
+app.post('/write/artist', upload.single('artistimg') , async(req,res)=>{
 
-   // input값중에서 ''공란인것은 데이터를 null 값으로 변환 삼항연산자
-
-   const inputDataNull = (value)=>{
-      return value === '' ? null : value
-   }
-
-   // artist name : 작가 이름도 배열로 저장해줘야함 한국어/영어 순으로
-   const artistName = [inputDataNull(artistnameKr), inputDataNull(artistnameEng)];
-
-   let soloEx = [];
-   let groupEx = [];
-   let award = [];
-
-
-  // 개인전 , 그룹전 , 수상 배열로 저장 해줘야함 map으로 돌려
-  if(soloExDate || soloExTitle){
-    const soloEx = soloExDate.map((date, i)=>{
-      return {
-        date : inputDataNull(date),
-        exTitle : inputDataNull(soloExTitle[i])
-      }
-   })
-  }
-
-  if(groupExDate || groupExDate){
-    const groupEx = groupExDate.map((date, i)=>{
-      return {
-        date : inputDataNull(date),
-        exTitle : inputDataNull(groupExTitle[i])
-      }
-   })
-  }
-
-  if(awardDate || awardTitle){
-    const award = awardDate.map((date, i)=>{
-      return {
-        date : inputDataNull(date),
-        exTitle : inputDataNull(awardTitle[i])
-      }
-   })
-  }
-
-
-
-   let result = {
-      artistName : artistName , //필수값 유효성 검사
-      soloEx : soloEx,
-      goupEx : groupEx, 
-      award : award, 
-      artistBirth :inputDataNull(artistBirth) ,
-      artistEmail :inputDataNull(artistEmail) , 
-      artistTel :inputDataNull(artistTel) , 
-      artistHome : inputDataNull(artistHome),
-      artistNote : inputDataNull(artistNote ),
-      artistDescription : inputDataNull(artistDescription)
-   }
   
-  // 몽고디비에 인설트 하기 
-   await db.collection('artist').insertOne(result)
+  try{
+      let imgUrl = null;
+      if (req.file) {
+        imgUrl = req.file.location;
+      }
+    
+      const {
+        artistnameKr,
+        artistnameEng,
+        artistBirth,
+        artistEmail,
+        artistTel,
+        artistHome,
+        artistNote,
+        artistDescription,
+        soloExDate,
+        soloExTitle,
+        groupExDate,
+        groupExTitle,
+        awardExDate,
+        awardTitle
+      } = req.body;
+    
+      // 값이 있는지 검사하는 변수
+      const inputDataNull = (value) => value === '' ? null : value;
+    
+      // 작가 이름 배열 정리 
+      const artistName = [inputDataNull(artistnameKr), inputDataNull(artistnameEng)];
+    
+      let soloEx = [];
+      let groupEx = [];
+      let award = [];
+    
+      // 연락처는 오로지 숫자만 
+    
+      // 개인전 배열 처리
+      if (Array.isArray(soloExDate) && Array.isArray(soloExTitle)) {
+        soloEx = soloExDate.map((date, i) => ({
+          date: inputDataNull(date),
+          exTitle: inputDataNull(soloExTitle[i])
+        }));
+      } 
+    
+      // 그룹전 배열 처리
+      if (Array.isArray(groupExDate) && Array.isArray(groupExTitle)) {
+        groupEx = groupExDate.map((date, i) => ({
+          date: inputDataNull(date),
+          exTitle: inputDataNull(groupExTitle[i])
+        }));
+      } 
+      
+    
+      // 수상 배열 처리
+      if (Array.isArray(awardExDate) && Array.isArray(awardTitle)) {
+        award = awardExDate.map((date, i) => ({
+          date: inputDataNull(date),
+          exTitle: inputDataNull(awardTitle[i])
+        }));
+      }
+    
+    
+      let result = {
+        imgUrl: inputDataNull(imgUrl),
+        artistName: artistName,
+        soloEx: soloEx,
+        groupEx: groupEx,
+        award: award,
+        artistBirth: inputDataNull(artistBirth),
+        artistEmail: inputDataNull(artistEmail),
+        artistTel: inputDataNull(formatPhoneNumber(artistTel)),
+        artistHome: inputDataNull(artistHome),
+        artistNote: inputDataNull(artistNote),
+        artistDescription: inputDataNull(artistDescription),
+        registerDate : formatDate(new Date())
+     
+      };
+    
+      // MongoDB에 데이터 삽입
+      await db.collection('artist').insertOne(result);
+    
+      
+      // 페이지 리다이렉트
+      res.redirect('/admin/list/artist');
+  }catch(error){
+    console.error('에러발생', error);
+    res.status(500).send('server error')
+  }
 
-  // 멀터 미들웨어로 이미지파일 등록
-
-  // 데이터 등록시 날짜 등록
-
-
-
-
+ 
 })

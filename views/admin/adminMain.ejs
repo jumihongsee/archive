@@ -34,10 +34,11 @@
                                 <th>NO.</th>
                                 <th>IMG</th>
                                 <th>Name</th>
+                                <th>Birth</th>
                                 <th>tel</th>
                                 <th>email</th>
                                 <th>homepage</th>
-                                <th>등록시간</th>               
+                                <th>등록날짜</th>               
                             </tr>
                     <% }else if(listType === 'user') {%>
                         <tr class="user">
@@ -57,7 +58,7 @@
                                 <tr class="">
                                     <td><%= i + 1 %></td>
                                     <td><%= a.name %></td>
-                                    <td class="artistPage" onclick="location.href='/admin/detail/artist/<%= a.artist %>'"><%= a.artistData[0].name.kor %> ( <%= a.artistData[0].name.eng %> ) </td>
+                                    <td class="artistPage" onclick="location.href='/admin/detail/artist/<%= a.artist %>'"><%= a.artistData[0].artistName[0] %> ( <%= a.artistData[0].artistName[1] %> ) </td>
                                     <td>데이터5</td>
                                     <td>데이터6</td>
                                     <td>데이터7</td>
@@ -70,14 +71,15 @@
                             <% }) %>
                        <%}else if(listType === 'artist') {%>
                             <% data.map((a, i) => { %>
-                                <tr>
+                                <tr onclick="location.href='/admin/detail/artist/<%= a._id %>'">
                                     <td><%= i + 1 %></td>
+                                    <td><img class="artist-img" src="<%= a.imgUrl %>" alt=""></td>
+                                    <td><%= a.artistName[0] %> <span>(<%= a.artistName[1] %>)</span> </td>
+                                    <td><%= a.artistBirth %></td>
+                                    <td><%= a.artistTel %></td>
+                                    <td><%= a.artistEmail %></td>
                                     <td>데이터3</td>
-                                    <td>데이터3</td>
-                                    <td>데이터3</td>
-                                    <td>데이터3</td>
-                                    <td>데이터3</td>
-                                    <td>데이터3</td>
+                                    <td><%= a.registerDate %></td>
                              
                                 </tr>
                             <% }) %>

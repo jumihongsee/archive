@@ -50,7 +50,7 @@ $main-color : #E9501A;
 .nav{
     width: 100%; 
     padding: 0 20px;
-    height: 120px; align-items: center;
+    height: 85px; align-items: center;
     display: flex; justify-content: space-between;
   
     > ul{
@@ -118,7 +118,7 @@ $main-color : #E9501A;
     width: 15vw;  height: 100%; 
     position: fixed;
     ul{
-        width: 80%;
+        width: 90%;
         li{
 
             background:#121213;
@@ -150,7 +150,6 @@ $main-color : #E9501A;
     }
 }
 section{
-
  
     &.main{ 
         display: flex; align-items: center; justify-content: center; flex-direction: column;
@@ -281,12 +280,17 @@ section{
                 thead, tbody{
                     tr{
                         display: flex; width: 100%; justify-content: space-between;
-                     flex-wrap: nowrap;
+                        flex-wrap: nowrap; align-items: center;
                         padding: 5px 0;
                         th,td{
                             font-size: 12px; padding: 2px;
                             width: 100px; text-align: center;
-                           
+                           img{
+                            &.artist-img{
+                                width: 40px; height: 40px;
+                                border-radius: 50%; background-size: cover;
+                            }
+                           }
                             &:first-child{
                                 width: 20px;
                             }
@@ -298,14 +302,19 @@ section{
                 thead{
                     // position: fixed; width: calc(80vw - 5px);
                      height: 20px; 
-                    tr{background: #000;color: #fff;}
+                    tr{
+                        background: #000;
+                        position: fixed;
+                        color: #fff;
+                        width: calc(80vw - 3px);
+                    }
                     
                 }
                 tbody{
                     border: 1px solid #000;
                     tr{
                         &:nth-child(1){
-                           // margin-top: 29px;
+                           margin-top: 10px;
                         }
                         cursor: pointer;    border-bottom: 1px solid #dbdada; 
                         &:hover{
@@ -334,19 +343,26 @@ section{
             display: flex; flex-direction: column;
          }
         .img{
-            width: 100px; height: 100px; 
+            width: 200px; height: 200px; 
             margin: 0 auto; position: relative; 
             label{
                 background: #000; width: 100%; height: 100%; position: relative;
                 position: absolute;border-radius: 50%; cursor: pointer;
                 border: 3px solid #000;  display: flex; align-items: center; justify-content: center;
                 input{display: none;}
+                .preview-img-wrapper{
+                       width: 100%; height: 100%; position: relative; 
+                       overflow: hidden; border-radius: 50%; 
+                }
                 img{
-                    &:first-child{ height: 90%;}
-                    &:last-child{ 
-                        position: absolute; bottom: -10%; right: -10%; 
-                        width: 40px; height: 40px; background: #000;
-                        border-radius: 50%; border: 2px solid #fff;
+                    &#previewImg{
+                        position: absolute; width: 100%;
+                       top: 50%; left: 50%; transform: translate(-50%,-50%);
+                    }
+                    &.plus{ 
+                        position: absolute; bottom: 0%; right: 0%; 
+                        width: 50px; height: 50px; background: #000;
+                        border-radius: 50%;
                     }
                 
                 }
@@ -368,6 +384,11 @@ section{
                     &:focus{
                         outline: 1px solid $main-color;
                  
+                    }
+                }
+                p{
+                    span{
+                        color: #f00;
                     }
                 }
                 textarea{
