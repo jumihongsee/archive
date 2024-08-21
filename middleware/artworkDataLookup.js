@@ -8,10 +8,10 @@ async function artworkData(req, res, next) {
         const data = await db.collection('artwork').aggregate([
             {
                 $lookup: {
-                    from: 'artist',
-                    localField: 'artist',
-                    foreignField: '_id',
-                    as: 'artistData'
+                    from: 'artist', // 비교할 다른 컬렉션 이름 
+                    localField: 'artist',// 현재 컬렉션에서 조인에 사용할 필드 
+                    foreignField: '_id',  // 'artwork' 컬렉션에서 비교할 필드
+                    as: 'artistData' // 조인된 결과를 저장할 필드 이름
                 },
             },
             {

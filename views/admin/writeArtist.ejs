@@ -50,6 +50,9 @@
             </div>
             <div class="info-form career">
                 <h2>Artist Career</h2>   
+                <div class="education wrapper">
+                    <button class="addInput"><img src="/img/plus.png" alt=""> 학력 추가</button>
+                </div>
                 <div class="solo-ex wrapper">
                     <button class="addInput"><img src="/img/plus.png" alt=""> 개인전 경력추가</button>
                 </div>
@@ -102,6 +105,8 @@
         // 인풋 추가 버튼
         addBtn.forEach(item =>{
            
+
+
             item.addEventListener('click', function(e){
 
                 e.preventDefault();
@@ -109,10 +114,29 @@
                 const inputWrapper = item.parentNode;
                 const inputWrapperClass = inputWrapper.className;
                 let newInputGroup = document.createElement('div');
+                
+                
+
+                
                 newInputGroup.classList.add('createWrapper')
 
-
-                if(inputWrapperClass === "solo-ex wrapper"){
+                if(inputWrapperClass === "education wrapper"){
+                    newInputGroup.innerHTML =
+                    `
+                        <div class="solo-ex-input">
+                            <label for="soloExDate">
+                                학력
+                                <input type="date" name="EducationDate" id="soloExDate">
+                            </label>
+                            <label for="soloExTitle">
+                                학교이름
+                                <input type="text" name="EducationTitle" id="soloExTitle">
+                            </label>
+                            <button type="button" class="input-delete"><img src="/img/x.png" alt=""></button>
+                        </div>
+                    `
+                }
+                else if(inputWrapperClass === "solo-ex wrapper"){
                     newInputGroup.innerHTML = 
                     `
                         <div class="solo-ex-input">
@@ -127,6 +151,8 @@
                             <button type="button" class="input-delete"><img src="/img/x.png" alt=""></button>
                         </div>
                     `
+
+           
                 }
                 else if(inputWrapperClass === "group-ex wrapper"){
                     newInputGroup.innerHTML = 
@@ -160,8 +186,12 @@
                         </div>
                     `
                 }
+
+
              
                 inputWrapper.insertBefore(newInputGroup, item);
+              
+          
 
             })
         })

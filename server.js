@@ -62,13 +62,10 @@ app.use(session({
 
 // SCSS를 CSS로 자동 컴파일하기 위한 미들웨어 설정
 app.use(sassMiddleware({
-    /* 입력 경로: SCSS 파일이 있는 폴더 */
-    src: path.join(__dirname, 'scss'),
-    /* 출력 경로: 컴파일된 CSS 파일이 저장될 폴더 */
+
+    src: path.join(__dirname, 'public/scss'),
     dest: path.join(__dirname, 'public/css'),
-    /* 브라우저에서 접근할 때 사용할 경로 */
     prefix: '/css',
-    /* SCSS 파일이 변경될 때마다 CSS 파일을 자동으로 업데이트 */
     debug: true,
     outputStyle: 'compressed',
 }));
@@ -297,7 +294,10 @@ app.post('/write/artist', upload.single('artistimg') , async(req,res)=>{
         groupExDate,
         groupExTitle,
         awardExDate,
-        awardTitle
+        awardTitle,
+        EducationDate,
+        EducationTitle
+
       } = req.body;
     
       // 값이 있는지 검사하는 변수
@@ -306,12 +306,15 @@ app.post('/write/artist', upload.single('artistimg') , async(req,res)=>{
       // 작가 이름 배열 정리 
       const artistName = [inputDataNull(artistnameKr), inputDataNull(artistnameEng)];
     
+      let education = [];
       let soloEx = [];
       let groupEx = [];
       let award = [];
     
-      // 연락처는 오로지 숫자만 
-    
+      // 연락처 포맷 
+      const formatArtistTel = formatPhoneNumber(artistTel);
+      
+
       // 개인전 배열 처리
       if (Array.isArray(soloExDate) && Array.isArray(soloExTitle)) {
         soloEx = soloExDate.map((date, i) => ({
@@ -336,6 +339,13 @@ app.post('/write/artist', upload.single('artistimg') , async(req,res)=>{
           exTitle: inputDataNull(awardTitle[i])
         }));
       }
+
+      if(Array.isArray(EducationDate) && Array.isArray(EducationTitle)){
+        education = EducationDate.map((date, i)=>({
+          date : inputDataNull(date),
+          school : inputDataNull(EducationTitle[i])
+        }))
+      }
     
     
       let result = {
@@ -344,9 +354,10 @@ app.post('/write/artist', upload.single('artistimg') , async(req,res)=>{
         soloEx: soloEx,
         groupEx: groupEx,
         award: award,
+        education : education,
         artistBirth: inputDataNull(artistBirth),
         artistEmail: inputDataNull(artistEmail),
-        artistTel: inputDataNull(formatPhoneNumber(artistTel)),
+        artistTel: inputDataNull(formatArtistTel),
         artistHome: inputDataNull(artistHome),
         artistNote: inputDataNull(artistNote),
         artistDescription: inputDataNull(artistDescription),
@@ -366,4 +377,55 @@ app.post('/write/artist', upload.single('artistimg') , async(req,res)=>{
   }
 
  
+})
+
+app.get('/admin/detail/artist/:Id', async (req,res)=>{
+  const result = req.user || null;
+  const artistId = req.params.Id;
+
+
+
+
+
+
+  let artistData = await db.collection('artist').aggregate([
+    {
+      $match : {_id : new ObjectId(artistId)}
+    },
+    {
+      $lookup : {
+        from : 'artwork', 
+        localField : '_id', 
+        foreignField : 'artist', 
+        as : 'artworkData'
+      }
+    },{
+      $project: {
+        _id: 1,
+        imgUrl: 1,
+        artistName: 1,
+        soloEx: 1,
+        groupEx: 1,
+        award: 1,
+        education : 1,
+        artistBirth: 1,
+        artistEmail: 1,
+        artistTel: 1,
+        artistHome: 1,
+        artistNote: 1,
+        artistDescription: 1,
+        'artworkData._id': 1,
+        'artworkData.name': 1,
+        'artworkData.price': 1
+      }
+    }
+  ]).toArray();
+
+
+  res.render('artistDetail.ejs', {result : result, artistData : artistData})
+  console.log(artistData)
+  // artwork에 아이디값있는 작품 가져와서 넣어줘야함
+
+
+
 })

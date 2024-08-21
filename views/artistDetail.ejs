@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <%- include('./nav.ejs') %>
+    <%- include('./sidenav.ejs') %>
+
+    <section class="artistDetail admin">
+        <% artistData.forEach((item)=>{ %>
+         
+            <div class="artist-wrapper">
+                <div class="artist-info">
+                    <div class="artist-pic">
+                        <img src="<%= item.imgUrl %>" alt="">
+                    </div>
+                    <div class="text-wrapper">
+                        <div class="name">
+                            <div class="name-wp">
+                                <h2><%= item.artistName[0] %></h2>
+                                <p><%= item.artistName[1] %></p>
+                            </div>
+    
+                            <button>수정</button>
+                        </div>
+    
+                        <div class="wp">
+                            <p class="tag">Birth</p>
+                            <% if(item.artistBirth && item.artistBirth.length > 0){ %>
+                                <p><%= item.artistBirth %></p>
+                            <% }else{ %>
+                                <p>Data none</p>
+                            <% } %>
+                           
+                        </div>
+                 
+                        <div class="wp">
+                            <p class="tag">Tel</p>
+                            <% if(item.artistTel && item.artistTel.length > 0){ %>
+                                <a href=""><%= item.artistTel %></a>
+                            <% }else{ %>
+                                <p>Data none</p>
+                            <% } %>
+                         
+                        </div>
+                        <div class="wp">
+                            <p class="tag">Email</p>
+                            <% if(item.artistEmail && item.artistEmail.length > 0){ %>
+                                <a href=""><%= item.artistEmail %></a>
+                            <% }else{ %>
+                                <p>Data none</p>
+                            <% } %>
+                  
+                        </div>
+                        <div class="wp">
+                            <p class="tag">Home page</p>
+                            <% if(item.artistHome && item.artistHome.length > 0){ %>
+                                <a href=""><%= item.artistHome %></a>
+                            <% }else{ %>
+                                <p>Data none</p>
+                            <% } %>
+                           
+                        </div>
+    
+                    </div>
+                </div>
+                <div class="artist-work">
+                    <h2>Work</h2>
+                    <div class="wp">
+                        <% item.artworkData.forEach((artwork)=>{ %>
+                            <div class="img-description" onclick="location.href ='/admin/detail/artwork/<%= artwork._id %>'">
+                                <img src="" alt="">
+                                <p><%= artwork.name %></p>
+                                <p><%= artwork.price %></p>
+                            </div>   
+                        <% }) %>
+                 
+                     
+                    </div>
+                   
+                </div>
+                <div class="artist-cv">
+                    <ul class="education">
+                        <h2>Education</h2>
+                        <% if(item.education && item.education.length > 0){ %>
+                            <% item.education.map((edu, i)=>{ %>
+                                <li>
+                                    <p><%= edu.date %></p>
+                                    <span><%= edu.school %></span> 
+                                </li>
+                            <% }) %>
+                        <% }else{ %>
+                            <li><p>Data none</p></li>
+                        <%}%>
+            
+                    </ul>
+                    <ul class="soloex">
+                        <h2>Solo Exhibition</h2>
+                        <% if(item.soloEx && item.soloEx.length > 0){ %>
+                            <% item.soloEx.map((exhibition, i)=>{ %>
+                                <li>
+                                    <p><%= exhibition.date  %></p>
+                                    <span><%= exhibition.exTitle  %></span> 
+                                </li>
+                            <% }) %>
+                        <% }else{ %>
+                            <li><p>Data none</p></li>
+                        <%}%>
+
+
+                    </ul>
+                    <ul class="groupex">
+                        <h2>Group Exhibition</h2>
+                        <% if(item.groupEx && item.groupEx.length > 0){ %>
+                            <% item.groupEx.map((exhibition,i)=>{ %>
+                                <li>
+                                    <p><%= exhibition.date %></p>
+                                    <span><%= exhibition.exTitle %></span>                             
+                                </li>
+                            <% }) %>          
+                        <% }else{ %>
+                            <li>
+                                <p>Data none</p>                           
+                            </li>
+                        <% } %>
+                    </ul>
+                    <ul class="award">
+                        <h2>Award</h2>
+                        <% if(item.award && item.award.length > 0){ %>
+                            <% item.award.map((awardItem, i)=>{ %>
+                                <li>
+                                    <p><%= awardItem.date %></p>
+                                    <span><%= awardItem.exTitle %></span>   
+                                </li>
+                            <% }) %>
+                        <% }else{ %>
+                            <li><p>Data none</p></li>
+                        <%}%>
+                    </ul>
+                </div>
+                <div class="artist-note">
+                    <h2>ARTIST STATEMENT</h2>
+                    <p><%= item.artistNote %></p>
+                </div>
+                <div class="artist-note">
+                    <h2>기타 사항</h2>
+                    <p><%= item.artistDescription %></p>
+                </div>
+            </div>
+        <% }) %>
+
+
+    </section>
+
+</body>
+</html>

@@ -1,8 +1,6 @@
 // 전화번호 포맷팅 함수
 function formatPhoneNumber(num) {
-    if (!num || num.length !== 11) {
-        throw new Error('올바른 폰번호가아닌디');
-    }
+
     const firstPart = num.slice(0, 3);  // 처음 3자리 (010)
     const middlePart = num.slice(3, 7); // 그다음 4자리 (0000)
     const lastPart = num.slice(7);      // 마지막 4자리 (0000)
