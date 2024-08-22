@@ -18,13 +18,14 @@
                     <div class="preview-img-wrapper">
                         <% if(data){ %>
                             <% data.forEach((item)=>{ %>
+                                 
                                 <img src="<%= item.imgUrl %>"  id="previewImg" name="" alt="">    
-                                <input type="hidden" name="oldImg" id="previewImg" value="<%= item.imgUrl %>">
+                                <input type="hidden" name="oldImg"  value="<%= item.imgUrl %>">
+
                             <% }) %>
                         <% }else{ %>
                             <img src="/img/user.svg"  id="previewImg" name="" alt="">    
                         <% } %>
-                    
                     </div>
           
                     <input name="artistimg" class="file" id="file" type="file" accept="image/*" onchange="previewImage(event)">

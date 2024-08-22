@@ -1,4 +1,4 @@
-const { deleteS3Image } = require('../server');
+const { deleteS3Image } = require('../module/s3')
 const { formatPhoneNumber, formatDate } = require('../module/Formatting')
 
 async function artistData (req, res, next){
@@ -6,18 +6,6 @@ async function artistData (req, res, next){
     try{
 
 
-        let imgUrl = null;
-        if(req.file){
-            imgUrl = req.file.location;
-
-            // 기존 이미지 url 가져오기
-            const oldImgUrl = req.body.oldImg || null;
-
-            if (oldImgUrl) {
-                // 기존 이미지 삭제
-                await deleteS3Image(oldImgUrl);
-            }
-        }
 
         const {
             artistnameKr,
@@ -35,9 +23,30 @@ async function artistData (req, res, next){
             awardExDate,
             awardTitle,
             EducationDate,
-            EducationTitle
+            EducationTitle,
     
           } = req.body;
+
+          // IMG
+          // 기존 이미지 URL
+          const oldImg = req.body.oldImg;
+
+          // 새이미지
+          // 등록 파일이 있다? 그럼 새 파일 저장소를 가져와
+          // 등록 파일이 없다?  : 아니면 이전 이미지 값 다시 넣어줘
+          const insertImg = req.file ? req.file.location : oldImg;
+
+          if(req.file){ // 새 파일이 등록됐쎔
+            // 그럼 기존 이미지 없애
+            if(oldImg){
+                try{
+                  await deleteS3Image(oldImg);
+                  console.log('기존에 남아있던 드러운 이미지 삭제함')
+                }catch(error){
+                  console.error('삭제 못했음 ㅈㅅ;' + error)
+                }
+            }
+          }
         
           // 값이 있는지 검사하는 변수
           const inputDataNull = (value) => value === '' ? null : value;
@@ -89,7 +98,7 @@ async function artistData (req, res, next){
       
         
           let result = {
-            imgUrl: inputDataNull(imgUrl),
+            imgUrl: inputDataNull(insertImg),
             artistName: artistName,
             soloEx: soloEx,
             groupEx: groupEx,

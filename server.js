@@ -11,20 +11,13 @@ const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const artworkData = require('./middleware/artworkDataLookup.js')
+//const { S3Client } = require('@aws-sdk/client-s3')
+const { s3 } = require('./module/s3.js')
 const artistData = require('./middleware/artistData.js')
-// const { formatDate, formatPhoneNumber, formatPrice } = require('./module/Formatting.js');
 
-const { S3Client } = require('@aws-sdk/client-s3')
 const multer = require('multer')
 const multerS3 = require('multer-s3')
 
-const s3 = new S3Client({
-  region : 'ap-northeast-2',
-  credentials : {
-      accessKeyId : process.env.IAM_ACCESS,
-      secretAccessKey : process.env.IAM_SECRET_KEY 
-  }
-})
 
 const upload = multer({
   storage: multerS3({
@@ -36,17 +29,7 @@ const upload = multer({
   })
 })
 
-function deleteS3Image(imgUrl){
-  const bucketName = process.env.BUCKET_NAME;
-  const key = imgUrl.split(`${bucketName}/`)[1];
 
-  return s3.deleteObject({
-      Bucket: bucketName,
-      Key: key
-  }).promise();
-
-}
-module.exports = { deleteS3Image };
 
 let connectDB = require('./database.js')
 let db;
@@ -299,13 +282,16 @@ app.post('/edit/artist', upload.single('artistimg'), artistData , async (req, re
 
   
   const artistId = req.body.artistId;
-  const result = req.artistData;
-  console.log(artistId)
+  const result = req.user || null;
+  const resultJson = JSON.stringify(result)
+  const editData = req.artistData;
+
   try{
-    await db.collection('artist').updateOne({_id : new ObjectId(artistId)},{$set : result });
-    res.redirect(`/admin/detail/artist/${artistId}`)
-  }catch{
-    console.log('데이터 에러', error);
+    await db.collection('artist').updateOne({_id : new ObjectId(artistId)},{$set : editData });
+    res.redirect(`/admin/detail/artist/${artistId}`);
+
+  }catch(error){
+    
     res.status(500).send('서버 에러')
   }
 
@@ -351,9 +337,6 @@ app.get('/admin/detail/artist/:Id', async (req,res)=>{
 
 
   res.render('artistDetail.ejs', {result : result, artistData : artistData})
-  console.log(artistData)
-  // artwork에 아이디값있는 작품 가져와서 넣어줘야함
-
 
 
 })
