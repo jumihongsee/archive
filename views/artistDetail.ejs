@@ -25,7 +25,7 @@
                                 <p><%= item.artistName[1] %></p>
                             </div>
     
-                            <button>수정</button>
+                            <button onclick="location.href='/admin/write/artist/<%= item._id  %>'">수정</button>
                         </div>
     
                         <div class="wp">
@@ -33,7 +33,7 @@
                             <% if(item.artistBirth && item.artistBirth.length > 0){ %>
                                 <p><%= item.artistBirth %></p>
                             <% }else{ %>
-                                <p>Data none</p>
+                                <p class="no-data-label">Data none</p>
                             <% } %>
                            
                         </div>
@@ -43,7 +43,7 @@
                             <% if(item.artistTel && item.artistTel.length > 0){ %>
                                 <a href=""><%= item.artistTel %></a>
                             <% }else{ %>
-                                <p>Data none</p>
+                                <p class="no-data-label">Data none</p>
                             <% } %>
                          
                         </div>
@@ -52,7 +52,7 @@
                             <% if(item.artistEmail && item.artistEmail.length > 0){ %>
                                 <a href=""><%= item.artistEmail %></a>
                             <% }else{ %>
-                                <p>Data none</p>
+                                <p class="no-data-label">Data none</p>
                             <% } %>
                   
                         </div>
@@ -61,7 +61,7 @@
                             <% if(item.artistHome && item.artistHome.length > 0){ %>
                                 <a href=""><%= item.artistHome %></a>
                             <% }else{ %>
-                                <p>Data none</p>
+                                <p class="no-data-label">Data none</p>
                             <% } %>
                            
                         </div>
@@ -94,7 +94,7 @@
                                 </li>
                             <% }) %>
                         <% }else{ %>
-                            <li><p>Data none</p></li>
+                            <li><p class="no-data-label">Data none</p></li>
                         <%}%>
             
                     </ul>
@@ -108,7 +108,7 @@
                                 </li>
                             <% }) %>
                         <% }else{ %>
-                            <li><p>Data none</p></li>
+                            <li><p class="no-data-label">Data none</p></li>
                         <%}%>
 
 
@@ -124,7 +124,7 @@
                             <% }) %>          
                         <% }else{ %>
                             <li>
-                                <p>Data none</p>                           
+                                <p class="no-data-label">Data none</p>                           
                             </li>
                         <% } %>
                     </ul>
@@ -138,17 +138,27 @@
                                 </li>
                             <% }) %>
                         <% }else{ %>
-                            <li><p>Data none</p></li>
+                            <li><p class="no-data-label">Data none</p></li>
                         <%}%>
                     </ul>
                 </div>
                 <div class="artist-note">
                     <h2>ARTIST STATEMENT</h2>
-                    <p><%= item.artistNote %></p>
+                    <% if(item.artistNote && item.artistNote.length > 0){ %>
+                        <p><%= item.artistNote %></p>
+                    <% }else{ %>
+                        <li><p class="no-data-label">Data none</p></li>
+                    <% } %>
+               
                 </div>
                 <div class="artist-note">
                     <h2>기타 사항</h2>
-                    <p><%= item.artistDescription %></p>
+                    <% if(item.artistDescription && item.artistDescription > 0){ %>
+                        <p><%= item.artistDescription %></p>
+                    <% }else{ %>
+                        <li><p class="no-data-label">Data none</p></li>
+                    <% } %>
+
                 </div>
             </div>
         <% }) %>

@@ -14,8 +14,8 @@ button {border: 0; background: transparent; cursor: pointer;}
 input{ -webkit-appearance: none;-webkit-border-radius: 0;}
 
 ::-webkit-scrollbar {
-    width: 5px; /* 세로 스크롤바의 너비 */
-    height: 5px; /* 가로 스크롤바의 높이 */
+    width: 8px; /* 세로 스크롤바의 너비 */
+    height: 8px; /* 가로 스크롤바의 높이 */
 }
 
 
@@ -27,7 +27,7 @@ input{ -webkit-appearance: none;-webkit-border-radius: 0;}
 
 ::-webkit-scrollbar-thumb {
     background: #bdbdbd;
-    border-radius: 5px;
+
 
 }
 
@@ -47,10 +47,10 @@ $main-color : #E9501A;
 
 
 
+
 .nav{
-    width: 100%;
-   
-    padding: 0 20px;
+    width: 100%; position: fixed; background: #fff;
+    padding: 0 20px; z-index: 100;
     height: 85px; align-items: center;
     display: flex; justify-content: space-between;
   
@@ -116,8 +116,8 @@ $main-color : #E9501A;
 
 }
 .side-nav{
-    width: 15vw;  height: 100%; 
-    position: fixed;
+    width: 15vw; height: 100%; 
+    position: fixed; padding-top: 100px;
     ul{
         width: 90%;
         li{
@@ -260,7 +260,9 @@ section{
         }
     }
     &.admin{
-        width: 80vw; margin-left: 15vw;  margin-right: 3vw; 
+        width: 80vw;
+        margin: 100px 3vw 100px 15vw;
+       
     }
     &.admin-main{
         height: calc(100vh - 200px);
@@ -442,6 +444,12 @@ section{
         position: relative;
         padding: 0 25px;
         background: #fcfafa;
+
+        .no-data-label{
+            font-size: 12px; 
+            font-style: italic;
+        }
+
         .artist-work{
 
         }

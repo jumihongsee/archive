@@ -11,7 +11,8 @@ const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const artworkData = require('./middleware/artworkDataLookup.js')
-const { formatDate, formatPhoneNumber, formatPrice } = require('./module/Formatting.js');
+const artistData = require('./middleware/artistData.js')
+// const { formatDate, formatPhoneNumber, formatPrice } = require('./module/Formatting.js');
 
 const { S3Client } = require('@aws-sdk/client-s3')
 const multer = require('multer')
@@ -34,6 +35,18 @@ const upload = multer({
     }
   })
 })
+
+function deleteS3Image(imgUrl){
+  const bucketName = process.env.BUCKET_NAME;
+  const key = imgUrl.split(`${bucketName}/`)[1];
+
+  return s3.deleteObject({
+      Bucket: bucketName,
+      Key: key
+  }).promise();
+
+}
+module.exports = { deleteS3Image };
 
 let connectDB = require('./database.js')
 let db;
@@ -266,126 +279,41 @@ app.get('/admin/list/user', async(req,res)=>{
   res.render('admin/adminMain.ejs',{data:data, result : result , listType : "user"})
 })
 
-app.get('/admin/write/artist', async(req,res)=>{
-  res.render('admin/writeArtist.ejs',{result : req.user})
 
+
+app.post('/write/artist', upload.single('artistimg'), artistData , async(req,res)=>{
+  const result = req.artistData;
+    
+    try{     
+      await db.collection('artist').insertOne(result);
+       
+      res.redirect('/admin/list/artist');
+    }catch(error){
+      console.log('데이터 에러', error);
+      res.status(500).send('서버 에러')
+    }
+ 
 })
 
-app.post('/write/artist', upload.single('artistimg') , async(req,res)=>{
+app.post('/edit/artist', upload.single('artistimg'), artistData , async (req, res)=>{
 
   
+  const artistId = req.body.artistId;
+  const result = req.artistData;
+  console.log(artistId)
   try{
-      let imgUrl = null;
-      if (req.file) {
-        imgUrl = req.file.location;
-      }
-    
-      const {
-        artistnameKr,
-        artistnameEng,
-        artistBirth,
-        artistEmail,
-        artistTel,
-        artistHome,
-        artistNote,
-        artistDescription,
-        soloExDate,
-        soloExTitle,
-        groupExDate,
-        groupExTitle,
-        awardExDate,
-        awardTitle,
-        EducationDate,
-        EducationTitle
-
-      } = req.body;
-    
-      // 값이 있는지 검사하는 변수
-      const inputDataNull = (value) => value === '' ? null : value;
-    
-      // 작가 이름 배열 정리 
-      const artistName = [inputDataNull(artistnameKr), inputDataNull(artistnameEng)];
-    
-      let education = [];
-      let soloEx = [];
-      let groupEx = [];
-      let award = [];
-    
-      // 연락처 포맷 
-      const formatArtistTel = formatPhoneNumber(artistTel);
-      
-
-      // 개인전 배열 처리
-      if (Array.isArray(soloExDate) && Array.isArray(soloExTitle)) {
-        soloEx = soloExDate.map((date, i) => ({
-          date: inputDataNull(date),
-          exTitle: inputDataNull(soloExTitle[i])
-        }));
-      } 
-    
-      // 그룹전 배열 처리
-      if (Array.isArray(groupExDate) && Array.isArray(groupExTitle)) {
-        groupEx = groupExDate.map((date, i) => ({
-          date: inputDataNull(date),
-          exTitle: inputDataNull(groupExTitle[i])
-        }));
-      } 
-      
-    
-      // 수상 배열 처리
-      if (Array.isArray(awardExDate) && Array.isArray(awardTitle)) {
-        award = awardExDate.map((date, i) => ({
-          date: inputDataNull(date),
-          exTitle: inputDataNull(awardTitle[i])
-        }));
-      }
-
-      if(Array.isArray(EducationDate) && Array.isArray(EducationTitle)){
-        education = EducationDate.map((date, i)=>({
-          date : inputDataNull(date),
-          school : inputDataNull(EducationTitle[i])
-        }))
-      }
-    
-    
-      let result = {
-        imgUrl: inputDataNull(imgUrl),
-        artistName: artistName,
-        soloEx: soloEx,
-        groupEx: groupEx,
-        award: award,
-        education : education,
-        artistBirth: inputDataNull(artistBirth),
-        artistEmail: inputDataNull(artistEmail),
-        artistTel: inputDataNull(formatArtistTel),
-        artistHome: inputDataNull(artistHome),
-        artistNote: inputDataNull(artistNote),
-        artistDescription: inputDataNull(artistDescription),
-        registerDate : formatDate(new Date())
-     
-      };
-    
-      // MongoDB에 데이터 삽입
-      await db.collection('artist').insertOne(result);
-    
-      
-      // 페이지 리다이렉트
-      res.redirect('/admin/list/artist');
-  }catch(error){
-    console.error('에러발생', error);
-    res.status(500).send('server error')
+    await db.collection('artist').updateOne({_id : new ObjectId(artistId)},{$set : result });
+    res.redirect(`/admin/detail/artist/${artistId}`)
+  }catch{
+    console.log('데이터 에러', error);
+    res.status(500).send('서버 에러')
   }
 
- 
 })
 
 app.get('/admin/detail/artist/:Id', async (req,res)=>{
   const result = req.user || null;
   const artistId = req.params.Id;
-
-
-
-
 
 
   let artistData = await db.collection('artist').aggregate([
@@ -429,3 +357,28 @@ app.get('/admin/detail/artist/:Id', async (req,res)=>{
 
 
 })
+
+app.get('/admin/write/artist', async(req,res)=>{
+  try{
+    res.render('admin/writeArtist.ejs',{result : req.user || null, data : null})
+  }catch(error){
+    console.error('Rendering error:', error);
+    res.status(500).send('Server Error');
+  }
+ 
+
+})
+
+app.get('/admin/write/artist/:Id', async (req, res)=>{
+
+  const result = req.user || null;
+  const artistId = req.params.Id;
+
+  let data = await db.collection('artist').find({_id : new ObjectId(artistId)}).toArray()
+  console.log(data)
+
+  res.render('admin/writeArtist.ejs', {result : result, data : data})
+
+
+})
+
