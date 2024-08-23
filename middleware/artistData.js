@@ -4,9 +4,6 @@ const { formatPhoneNumber, formatDate } = require('../module/Formatting')
 async function artistData (req, res, next){
 
     try{
-
-
-
         const {
             artistnameKr,
             artistnameEng,
@@ -41,7 +38,7 @@ async function artistData (req, res, next){
             if(oldImg){
                 try{
                   await deleteS3Image(oldImg);
-                  console.log('기존에 남아있던 드러운 이미지 삭제함')
+                  console.log('기존에 남아있던 이미지 삭제함')
                 }catch(error){
                   console.error('삭제 못했음 ㅈㅅ;' + error)
                 }

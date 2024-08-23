@@ -34,6 +34,7 @@
                                 <th>NO.</th>
                                 <th>IMG</th>
                                 <th>Name</th>
+                                <th>작품등록</th>
                                 <th>Birth</th>
                                 <th>tel</th>
                                 <th>email</th>
@@ -71,10 +72,15 @@
                             <% }) %>
                        <%}else if(listType === 'artist') {%>
                             <% data.map((a, i) => { %>
-                                <tr onclick="location.href='/admin/detail/artist/<%= a._id %>'">
+                                <tr>
                                     <td><%= i + 1 %></td>
-                                    <td><img class="artist-img" src="<%= a.imgUrl %>" alt=""></td>
+                                    <td onclick="location.href='/admin/detail/artist/<%= a._id %>'">
+                                        <div class="img-wrapper">
+                                            <img class="artist-img" src="<%= a.imgUrl %>" alt="">
+                                        </div>
+                                    </td>
                                     <td><%= a.artistName[0] %> <span>(<%= a.artistName[1] %>)</span> </td>
+                                    <td><button class="addArtwork" onclick="location.href='/admin/write/artwork/<%=a._id %>'">작품등록</button></td>
                                     <td><%= a.artistBirth %></td>
                                     <td><%= a.artistTel %></td>
                                     <td><%= a.artistEmail %></td>

@@ -365,3 +365,83 @@ app.get('/admin/write/artist/:Id', async (req, res)=>{
 
 })
 
+app.get('/admin/write/artwork/:Id' , async(req, res)=>{
+  const result = req.user || null;
+
+  res.render('admin/writeArtwork.ejs', {result : result})
+  console.log(result)
+
+})
+
+app.post('/admin/write/artwork',
+// upload.fields([
+//   {name : 'file1', maxCount : 1},
+//   {name : 'file2', maxCount : 1},
+//   {name : 'file3', maxCount : 1},
+//   {name : 'file4', maxCount : 1},
+//   {name : 'file5', maxCount : 1},
+
+// ]), 
+async(req,res)=>{
+  
+  // 파일이 존재할 경우에만 전송 처리
+  // const files = req.files;
+  // 이미지 저장 주소 files['file1'][0]
+  // 파일이 존재할 경우에만 전송 처리
+ 
+  try{
+    console.log(req.body)
+    res.redirect('/admin/list/artist')
+
+    const {
+      artworkNameKr,
+      artworkNameEng,
+      artworkMedium,
+      artworkMadeDate,
+      artworkSizeHeight,
+      artworkSizeWidth,
+      artworkSizeDepth,
+      postCode,
+      roadAdress,
+      jibunAdress,
+      extraAddress,
+      detailAddress,
+      saleStatus,
+      certificationStatus,
+      artworkSaleStart,
+      artworkSaleEnd,
+      
+
+    } = req.body;
+
+    const inputDataNull =(value)=> value === '' ? null : value;
+    // 작품 이름 배열 처리
+    const artworkName = [inputDataNull(artworkNameKr),inputDataNull(artworkNameEng)]
+  
+    // 작품 사이즈 배열 처리
+    const artworkSize = [inputDataNull(artworkSizeHeight), inputDataNull(artworkSizeWidth), inputDataNull(artworkSizeDepth)]
+
+    // 작품 위치 등록 배열 처리
+    const artworkAdress = [
+      inputDataNull(postCode), inputDataNull(roadAdress), inputDataNull(jibunAdress), 
+      inputDataNull(extraAddress), inputDataNull(detailAddress)
+    ]
+    
+    // 저작기간 배열 정리
+    const artworkCopyRight = [inputDataNull(artworkSaleStart), inputDataNull(artworkSaleEnd)]
+
+    
+
+    // 위치 배열 처리
+
+
+  }catch(error){
+    console.log('서버에러', error)
+  }
+
+
+
+
+
+
+})

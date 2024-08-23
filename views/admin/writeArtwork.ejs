@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    
+    <%- include('../nav.ejs') %>
+    <%- include('../sidenav.ejs') %>
+    <section class="artwork-write admin">
+        <!-- <form action="/admin/write/artwork" method="POST" enctype="multipart/form-data"> -->
+        <form action="/admin/write/artwork" method="POST">
+            <!-- 작가 정보 (간략히) / 더보기는 artist detail 에 -->
+             <div class="artwork-artist-info">
+                <h2 class="title">김작가 <span> 작품 등록</span></h2>
+                <img
+                    onclick="loaction.herf=''"
+                    src="https://jumihongsee.s3.ap-northeast-2.amazonaws.com/1724317138558.png"
+                 alt="">
+             </div>
+            <!-- 작품 이미지 등록 -->
+             <div class="input-image">
+                <h2 class="">작품 이미지 등록 <span>( * 최대 5장까지 가능합니다. )</span></h2>
+                <div class="img-box">
+                    <div class="img-section">
+                        <!-- <label for="file1">
+                            <div class="img-wrapper">
+                                <img src="/img/plus.png" alt="">
+                            </div>
+                        </label>
+                        <label for="file2">
+                            <div class="img-wrapper">
+                                <img src="/img/plus.png" alt="">
+                            </div>
+                        </label>
+                        <label for="file3">
+                            <div class="img-wrapper">
+                                <img src="/img/plus.png" alt="">
+                            </div>
+                        </label>
+                        <label for="file4">
+                            <div class="img-wrapper">
+                                <img src="/img/plus.png" alt="">
+                            </div>
+                        </label>
+                        <label for="file5">
+                            <div class="img-wrapper">
+                                <img src="/img/plus.png" alt="">
+                            </div>
+                        </label> -->
+             
+                    </div>
+
+                </div>
+                <!-- <input type="file" class="file1" name="file1" id="file1" accept="image/*">
+                <input type="file" class="file2" name="file2" id="file2" accept="image/*">
+                <input type="file" class="file3" name="file3" id="file3" accept="image/*">
+                <input type="file" class="file4" name="file4" id="file4" accept="image/*">
+                <input type="file" class="file5" name="file5" id="file5" accept="image/*"> -->
+             </div>
+            
+            <!-- 작품 정보 / 이름 / 미디엄 / 제작 날짜 / 작품 사이즈 -->
+             <div class="artwork-info">
+                <h2 class="">작품 정보 <span>( * 필수 항목 )</span></h2>
+                <div class="wrapper">
+                    <div class="input-wrapper">
+                        <input type="text" name="artworkNameKr" placeholder="작품제목(kor)">
+                        <input type="text" name="artworkNameEng" placeholder="작품제목(Eng)">
+                    </div>
+                    <div class="input-wrapper">
+                        <input type="text" name="artworkMedium" placeholder="재료(Medium)">
+                        <input type="number" name="artworkMadeDate" min="1200" max="2100" placeholder="제작년도 (YYYY)">
+                    </div>
+                    <div class="wrapper size">
+                        
+                        <div class="input-wrapper size">
+                            <input type="number" name="artworkSizeHeight" placeholder="Height">                       
+                            <input type="number" name="artworkSizeWidth" placeholder="Width">                 
+                            <input type="number" name="artworkSizeDepth" placeholder="Depth">
+                        </div>
+
+                    </div>
+
+                </div>
+             </div>
+
+            <!-- 위치 등록하기 -->
+            <div class="artwork-location">
+                <h2 class="">작품 위치</h2>
+
+                <div class="adress-input-wrapper">
+                    <div class="addAdress">
+                        <div class="input-wrapper">
+                            <input type="text" id="postcode" name="postCode" placeholder="우편번호">
+                            <input id="searchAdress" type="button" onclick="execDaumPostcode()" value="우편번호 찾기">
+                        </div>
+                        <div class="input-wrapper">
+                            <input type="text" id="roadAddress" name="roadAdress" placeholder="도로명주소">
+                            <input type="text" id="jibunAddress" name="jibunAdress" placeholder="지번주소">
+                            <!-- <span id="guide" style="color:#999;display:none"></span> -->
+                        </div>
+                        <div class="input-wrapper">
+                            <input type="text" id="detailAddress" placeholder="상세주소">
+                            <input type="text" id="extraAddress" placeholder="참고항목">
+                        </div>
+
+                        <div class="input-wrapper date">
+                            <label for="">위치한 날짜 </label>
+                            <input type="date">
+                        </div>
+                        <div class="input-wrapper inner-storage">
+                            <button type="button">수장고에 위치시 클릭</button>
+                        </div>
+                    </div>
+    
+                </div>
+
+                <button class="addLocation" type="button"><img src="/img/plus.png" alt="">주소 추가하기</button>
+            </div>
+
+            <!-- 판매 가능 시작 기간 -->
+            <div class="artwork-sale">
+                <h2>판매/저작</h2>
+                <div class="option-wrapper">
+                    <label for="saleStatus">판매여부 : </label>
+                    <select name="saleStatus" id="saleStatus">
+                        <option value="N">No</option>
+                        <option value="Y">Yes</option>
+                    </select>
+                    <label for="certificationStatus">보증서여부 : </label>
+                    <select name="certificationStatus" id="saleStatus">
+                        <option value="N">No</option>
+                        <option value="Y">Yes</option>
+                    
+                    </select>
+                </div>
+                <div class="input-wrapper">
+               
+                    <div class="wp">
+                        <div class="wp">
+                            <label for="">저작시작 : </label>
+                            <input type="date" name="artworkSaleStart" id="artworkSaleStart" >
+                        </div>
+                        <div class="wp">
+                            <label for="">저작만료 : </label>
+                            <input type="date" name="artworkSaleEnd" id="artworkSaleEnd" >
+                        </div>
+       
+                    </div>
+
+                </div>
+
+            </div>
+          <button class="addArtwork" type="submit"> 작품등록 마치기 </button>
+        </form>
+    </section>
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script>
+        
+        // 다음 주소 API
+        function execDaumPostcode() {
+
+        new daum.Postcode({
+            oncomplete: function(data) {
+
+       
+                // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+
+                // 도로명 주소의 노출 규칙에 따라 주소를 표시한다.
+                // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+                var roadAddr = data.roadAddress; // 도로명 주소 변수
+                var extraRoadAddr = ''; // 참고 항목 변수
+
+                // 법정동명이 있을 경우 추가한다. (법정리는 제외)
+                // 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
+                if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
+                    extraRoadAddr += data.bname;
+                }
+                // 건물명이 있고, 공동주택일 경우 추가한다.
+                if(data.buildingName !== '' && data.apartment === 'Y'){
+                   extraRoadAddr += (extraRoadAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+                }
+                // 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
+                if(extraRoadAddr !== ''){
+                    extraRoadAddr = ' (' + extraRoadAddr + ')';
+                }
+
+                // 우편번호와 주소 정보를 해당 필드에 넣는다.
+                document.getElementById('postcode').value = data.zonecode;
+                document.getElementById("roadAddress").value = roadAddr;
+                document.getElementById("jibunAddress").value = data.jibunAddress;
+                
+                // 참고항목 문자열이 있을 경우 해당 필드에 넣는다.
+                if(roadAddr !== ''){
+                    document.getElementById("extraAddress").value = extraRoadAddr;
+                } else {
+                    document.getElementById("extraAddress").value = '';
+                }
+
+                // var guideTextBox = document.getElementById("guide");
+                // // 사용자가 '선택 안함'을 클릭한 경우, 예상 주소라는 표시를 해준다.
+                // if(data.autoRoadAddress) {
+                //     var expRoadAddr = data.autoRoadAddress + extraRoadAddr;
+                //     guideTextBox.innerHTML = '(예상 도로명 주소 : ' + expRoadAddr + ')';
+                //     guideTextBox.style.display = 'block';
+
+                // } else if(data.autoJibunAddress) {
+                //     var expJibunAddr = data.autoJibunAddress;
+                //     guideTextBox.innerHTML = '(예상 지번 주소 : ' + expJibunAddr + ')';
+                //     guideTextBox.style.display = 'block';
+                // } else {
+                //     guideTextBox.innerHTML = '';
+                //     guideTextBox.style.display = 'none';
+                // }
+            }
+        }).open();
+       
+        }
+
+  
+        document.querySelectorAll('input[type="file"]').forEach(item => {
+                item.addEventListener('change', function (e) {
+                    const file = e.target.files[0]; // 첫 번째 파일을 가져옴
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            const imgLabel = document.querySelector(`label[for="${item.id}"] img`);
+                            console.log(item.id)
+                            imgLabel.src = e.target.result; // 이미지 태그의 src 속성을 파일의 base64 데이터로 변경
+                        };
+                        reader.readAsDataURL(file); // 파일을 Data URL로 읽어옵니다.
+                    }
+                });
+        });
+    </script>
+</body>
+</html>
