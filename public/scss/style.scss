@@ -53,19 +53,20 @@ $main-color : #E9501A;
     padding: 0 20px; z-index: 100;
     height: 85px; align-items: center;
     display: flex; justify-content: space-between;
-  
+    background: $main-color;
     > ul{
         display: flex; align-items: center;
         width: calc(100% / 3 ); height: 100%; 
         &.list-btn{
-            display: flex;
+            display: flex; 
              button{
                  padding: 5px;
-                  width: 100px;
+                  width: 100px;background: #fff;
                  border: 1px solid #000;
                  margin: 10px 10px 10px 0;
                  &.active{
-                     background: $main-color;
+                     background: #000;
+                     color: $main-color;
                  }
              }
          }
@@ -117,7 +118,7 @@ $main-color : #E9501A;
 }
 .side-nav{
     width: 15vw; height: 100%; 
-    position: fixed; padding-top: 100px;
+    position: fixed; padding-top: 140px;
     ul{
         width: 90%;
         li{
@@ -261,7 +262,7 @@ section{
     }
     &.admin{
         width: 80vw;
-        margin: 100px 3vw 100px 15vw;
+        margin: 140px 3vw 100px 15vw;
        
     }
     &.admin-main{
@@ -648,7 +649,9 @@ section{
                 }
                 &.artwork-location{
                     .addAdress{
-                        background: #eee; padding: 20px;border-radius: 10px;
+                        background: #eee; padding: 20px;border-radius: 10px; margin-bottom: 20px;position: relative;
+                        border: 2px solid #c0bdbd;
+
                         .input-wrapper{
                             input{
                                 &#searchAdress{
@@ -660,11 +663,13 @@ section{
                                         border: 2px solid #0570b8;
                                     }
                                 }
+
                             }
                             &.date{
                                 flex-direction: column;
                                 margin-top: 20px;
                             }
+
                         }
                         .inner-storage{
                             button{
@@ -675,6 +680,17 @@ section{
                                 margin-top: 20px; border-radius: 5px;
                                 &:hover{
                                     border: 2px solid rgb(187, 187, 3);
+                                }
+                            }
+                        }
+                        button{
+                            background: #a0a0a0; border-radius: 5px;
+                            &.close-btn{
+                                width: 30px; height: 30px;
+                                position: absolute; right: 20px; bottom: 20px;
+                                display: flex; align-items: center; justify-content: center;
+                                img{
+                                    width: 80%; 
                                 }
                             }
                         }

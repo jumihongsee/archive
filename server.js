@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const sassMiddleware = require('node-sass-middleware');
+const { check, validationResult } = require('express-validator');
 const app = express();
 const { ObjectId } = require('mongodb')
 const MongoStore = require('connect-mongo')
@@ -358,7 +359,7 @@ app.get('/admin/write/artist/:Id', async (req, res)=>{
   const artistId = req.params.Id;
 
   let data = await db.collection('artist').find({_id : new ObjectId(artistId)}).toArray()
-  console.log(data)
+
 
   res.render('admin/writeArtist.ejs', {result : result, data : data})
 
@@ -374,24 +375,51 @@ app.get('/admin/write/artwork/:Id' , async(req, res)=>{
 })
 
 app.post('/admin/write/artwork',
-// upload.fields([
-//   {name : 'file1', maxCount : 1},
-//   {name : 'file2', maxCount : 1},
-//   {name : 'file3', maxCount : 1},
-//   {name : 'file4', maxCount : 1},
-//   {name : 'file5', maxCount : 1},
+  [
+    // 유효성검사
+    // 이미지 1장이상 업로드(클라이언트 측에서)
+    check('artworkNameKr').trim().notEmpty().withMessage('작품의 국문을 입력하세요'),
+    check('artworkNameEng').trim().notEmpty().withMessage('작품의 영문을 입력하세요'),
+    check('artworkMedium').trim().notEmpty().withMessage('작품의 재료를 입력하세요'),
+    check('artworkMadeDate').trim().isNumeric().withMessage('작품의 제작년도를 입력하세요'),
+    check('artworkSizeHeight').trim().isNumeric().withMessage('작품의 높이를 입력하세요'),
+    check('artworkSizeWidth').trim().isNumeric().withMessage('작품의 넓이를 입력하세요'),
+    check('postCode').trim().notEmpty().withMessage('우편번호를 입력하세요'),
+    check('roadAdress').trim().notEmpty().withMessage('도로명을 입력하세요'),
+    check('jibunAdress').trim().notEmpty().withMessage('지번주소를 입력하세요'),
+    check('locationDate').trim().notEmpty().withMessage('작품 위치 날짜를 입력하세요'),
+    check('saleStatus').trim().notEmpty().withMessage('판매 여부를 선택하세요'),
+    check('certificationStatus').trim().notEmpty().withMessage('보증서 여부를 선택하세요'),
+    check('artworkSaleStart').trim().notEmpty().withMessage('저작 시작 날짜를 입력하세요'),
+    check('artworkSaleEnd').trim().notEmpty().withMessage('저작 만료 날짜를 입력하세요'),
+  ],
 
-// ]), 
+upload.fields([
+  {name : 'file1', maxCount : 1},
+  {name : 'file2', maxCount : 1},
+  {name : 'file3', maxCount : 1},
+  {name : 'file4', maxCount : 1},
+  {name : 'file5', maxCount : 1},
+
+]), 
 async(req,res)=>{
   
   // 파일이 존재할 경우에만 전송 처리
   // const files = req.files;
   // 이미지 저장 주소 files['file1'][0]
   // 파일이 존재할 경우에만 전송 처리
+  console.log('Received body:', req.body);  
+  const errors = validationResult(req);
+  if(!errors.isEmpty()){
+    return res.status(400).json({ errors: errors.array() });
+  }
  
   try{
-    console.log(req.body)
+
+    console.log(req.files.location);
     res.redirect('/admin/list/artist')
+
+
 
     const {
       artworkNameKr,
@@ -406,13 +434,17 @@ async(req,res)=>{
       jibunAdress,
       extraAddress,
       detailAddress,
+      locationDate,
       saleStatus,
       certificationStatus,
       artworkSaleStart,
       artworkSaleEnd,
+ 
       
 
     } = req.body;
+
+
 
     const inputDataNull =(value)=> value === '' ? null : value;
     // 작품 이름 배열 처리
@@ -431,13 +463,50 @@ async(req,res)=>{
     const artworkCopyRight = [inputDataNull(artworkSaleStart), inputDataNull(artworkSaleEnd)]
 
     
+    console.log(req.body)
 
     // 위치 배열 처리
+    if( Array.isArray(postCode) && Array.isArray(roadAdress) &&
+        Array.isArray(extraAddress) && Array.isArray(detailAddress) &&
+        Array.isArray(locationDate) && Array.isArray(jibunAdress)
+      ){
+        location = locationDate.map((date, i)=>{
+
+          return{
+            date : inputDataNull(date),
+            road : roadAdress[i] +  extraAddress[i] + detailAddress[i],
+            location_Jibun : jibunAdress[i],
+          }
+
+        })
+    }
+
+    // 이미지 url 배열처리
+    const imgUrl = [];
+
+    for(let i = 1; i <= 5; i++){
+      const fileNum = `file${i}`;
+      if(req.files[fileNum] && req.files[fileNum][0]){
+        const fileLocation = req.files[fileNum][0].location;
+        imgUrl.push(fileLocation);
+      }
+    }
+    console.log(imgUrl)
+
+
+
+    // 유효성 검사
+    
+    
+    // 데이터 등록 
+
 
 
   }catch(error){
     console.log('서버에러', error)
   }
+
+  
 
 
 
