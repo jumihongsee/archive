@@ -51,9 +51,10 @@ $main-color : #E9501A;
 .nav{
     width: 100%; position: fixed; background: #fff;
     padding: 0 20px; z-index: 100;
-    height: 85px; align-items: center;
+    height: 100px; align-items: center; 
     display: flex; justify-content: space-between;
-    background: $main-color;
+    background: #f8f8f8;
+ 
     > ul{
         display: flex; align-items: center;
         width: calc(100% / 3 ); height: 100%; 
@@ -281,22 +282,34 @@ section{
                 border-bottom: 3px solid #000;
                 thead, tbody{
                     tr{
-                        display: flex; width: 100%; justify-content: space-between;
-                        flex-wrap: nowrap; align-items: center;
-                        padding: 5px 0;
+                        display: flex; width: 100%; 
+                        &.artist{ td{height: 100px;}}
+                        td{ height: 50px; border: 0.5px solid #eee; border-top: none; border-left: none;}
                         th,td{
                             font-size: 12px; padding: 2px;
-                            width: 200px; text-align: center;
+                            width: 200px; text-align: center; 
+                            display: flex; align-items: center; justify-content: center;
+                      
                             .img-wrapper{
-                                width: 70px; height: 70px;  border: 3px solid #000;
-                                border-radius: 50%; overflow: hidden;
+                                height: 100%;
+                                 overflow: hidden;   display: flex; align-items: center; justify-content: center;
+                                &.artist{
+                                    width: 80px; height: 80px; 
+                                    border-radius: 50% ; 
+                                }
+                                &.artwork{
+                                   
+                                    img{
+                                       height: 100%;
+                                    }
+                                }
                                 &:hover{
                                     border: 3px solid $main-color;
                                 }
                                 img{
                                     &.artist-img{
                                        cursor: pointer; width: 100%; height: 100%;
-                                         background-size: cover;
+                                         background-size: cover; 
                                        
                                 }
 
@@ -324,8 +337,7 @@ section{
                 tbody{
                     border: 1px solid #000;
                     tr{
-                          border-bottom: 1px solid #dbdada; 
-                        padding: 10px 0;
+                          border-bottom: 1px solid #ececec; 
                         &:hover{
                             background: #b9e0fa;
                           
@@ -346,6 +358,10 @@ section{
                                     background: #0099ff;
                                     border: 2px solid $main-color;
                                 }
+
+                            }
+                            &.fail{
+                                animation: failSubmit 1s forwards ease-in-out;
                             }
                             
                         }
@@ -612,6 +628,15 @@ section{
                     }
                 }
                 &.input-image{
+                    .error-message{
+                        background: #f31616d8; color: #fff;
+                        padding: 5px 10px; border-radius: 5px;
+                        opacity: 0;
+                        &.active{
+                            opacity: 1;
+                            transition: opacity 0.5s ease-in;
+                        }
+                    }
                     .img-box{
                         width: 100%;
                         .img-section{
@@ -726,7 +751,7 @@ section{
             .addArtwork{
                 margin-top: 20px;
                 border-radius: 5px;
-                background: #bdbdbd;
+                background: #bdbdbd; position: relative;
                 color: #fff;  border: 2px solid #3c3d3d; 
                 padding: 10px; min-width: 300px;
                 transition: background 0.1s ease-in;
@@ -734,7 +759,35 @@ section{
                     background: #0f98f3;
                     border: 2px solid #0570b8; 
                 }
+                &.fail{
+                    animation: failSubmit 0.3s forwards ease-in-out;
+                    span{
+                        animation: failAlert 3s 0.35s forwards ease-in-out;
+                    }
+                }
+                span{
+                    position: absolute; background: #fc0707d8; color: #fff; right: 0%; top: -20px;
+                    padding: 5px; width: 100%; border-radius: 10px;
+                    opacity: 0;
+
+                }
             }
         }
     }
+}
+
+@keyframes failSubmit {
+    0%{transform: translateX(0);}
+    20%{transform: translateX(3px);}
+    40%{transform: translateX(-3px);}
+    60%{transform: translateX(3px);}
+    80%{transform: translateX(-3px);}
+    100%{transform: translateX(0);}
+    
+}
+
+@keyframes failAlert {
+    0%{opacity: 0;}
+    50%{opacity: 1;}
+    100%{opacity: 0;}   
 }

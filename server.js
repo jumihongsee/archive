@@ -11,7 +11,7 @@ const bcrypt = require('bcrypt')
 const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-const artworkData = require('./middleware/artworkDataLookup.js')
+const ArtworkJoinArtist = require('./middleware/ArtistJoinArtwork.js')
 //const { S3Client } = require('@aws-sdk/client-s3')
 const { s3 } = require('./module/s3.js')
 const artistData = require('./middleware/artistData.js')
@@ -131,10 +131,10 @@ app.get('/', (req, res) => {
 
 
 
-app.get('/login', artworkData, async (req, res) => {
+app.get('/login', ArtworkJoinArtist, async (req, res) => {
 
   const result = req.user || null;
-  const data = req.artworkData;
+  const data = req.ArtworkJoinArtist;
 
   if (!req.user) {
     return res.render('login.ejs');
@@ -233,11 +233,11 @@ app.get('/viewer', (req, res) => {
 
 });
 
-app.get('/admin/list/artwork', artworkData, async(req,res)=>{
+app.get('/admin/list/artwork', ArtworkJoinArtist, async(req,res)=>{
 
   const result = req.user || null;
 
-  const data = req.artworkData; // 미들웨어에서 추가된 데이터 사용
+  const data = req.ArtworkJoinArtist; // 미들웨어에서 추가된 데이터 사용
 
   return res.render('admin/adminMain.ejs', { result: result, data: data, listType: "artwork" });
 
@@ -367,33 +367,16 @@ app.get('/admin/write/artist/:Id', async (req, res)=>{
 })
 
 app.get('/admin/write/artwork/:Id' , async(req, res)=>{
-  const result = req.user || null;
 
-  res.render('admin/writeArtwork.ejs', {result : result})
-  console.log(result)
+  const result = req.user || null;
+  const artistId =  req.params.Id;
+  const artistData = await db.collection('artist').find({_id : new ObjectId(artistId)}).toArray();
+
+  res.render('admin/writeArtwork.ejs', {result : result, artistData : artistData })
 
 })
 
 app.post('/admin/write/artwork',
-  [
-    // 유효성검사
-    // 이미지 1장이상 업로드(클라이언트 측에서)
-    check('artworkNameKr').trim().notEmpty().withMessage('작품의 국문을 입력하세요'),
-    check('artworkNameEng').trim().notEmpty().withMessage('작품의 영문을 입력하세요'),
-    check('artworkMedium').trim().notEmpty().withMessage('작품의 재료를 입력하세요'),
-    check('artworkMadeDate').trim().isNumeric().withMessage('작품의 제작년도를 입력하세요'),
-    check('artworkSizeHeight').trim().isNumeric().withMessage('작품의 높이를 입력하세요'),
-    check('artworkSizeWidth').trim().isNumeric().withMessage('작품의 넓이를 입력하세요'),
-    check('postCode').trim().notEmpty().withMessage('우편번호를 입력하세요'),
-    check('roadAdress').trim().notEmpty().withMessage('도로명을 입력하세요'),
-    check('jibunAdress').trim().notEmpty().withMessage('지번주소를 입력하세요'),
-    check('locationDate').trim().notEmpty().withMessage('작품 위치 날짜를 입력하세요'),
-    check('saleStatus').trim().notEmpty().withMessage('판매 여부를 선택하세요'),
-    check('certificationStatus').trim().notEmpty().withMessage('보증서 여부를 선택하세요'),
-    check('artworkSaleStart').trim().notEmpty().withMessage('저작 시작 날짜를 입력하세요'),
-    check('artworkSaleEnd').trim().notEmpty().withMessage('저작 만료 날짜를 입력하세요'),
-  ],
-
 upload.fields([
   {name : 'file1', maxCount : 1},
   {name : 'file2', maxCount : 1},
@@ -402,23 +385,53 @@ upload.fields([
   {name : 'file5', maxCount : 1},
 
 ]), 
+[
+  // 유효성검사
+
+  check('artworkNameKr').trim().notEmpty().withMessage('작품의 국문을 입력하세요'),
+  check('artworkNameEng').trim().notEmpty().withMessage('작품의 영문을 입력하세요'),
+  check('artworkMedium').trim().notEmpty().withMessage('작품의 재료를 입력하세요'),
+  check('artworkMadeDate').trim().isNumeric().withMessage('작품의 제작년도를 입력하세요'),
+  check('artworkSizeHeight').trim().isNumeric().withMessage('작품의 높이를 입력하세요'),
+  check('artworkSizeWidth').trim().isNumeric().withMessage('작품의 넓이를 입력하세요'),
+  check('saleStatus').trim().notEmpty().withMessage('판매 여부를 선택하세요'),
+  check('certificationStatus').trim().notEmpty().withMessage('보증서 여부를 선택하세요'),
+  check('artworkSaleStart').trim().notEmpty().withMessage('저작 시작 날짜를 입력하세요'),
+  check('artworkSaleEnd').trim().notEmpty().withMessage('저작 만료 날짜를 입력하세요'),
+  check('artworkPrice').trim().notEmpty().withMessage('가격을 기입하세요'),
+  // 동적으로 생성되는 필드들에 대한 유효성 검사
+  check('postCode').optional().trim().notEmpty().withMessage('우편번호를 입력하세요'),
+  check('roadAdress').optional().trim().notEmpty().withMessage('도로명을 입력하세요'),
+  check('jibunAdress').optional().trim().notEmpty().withMessage('지번주소를 입력하세요'),
+  check('locationDate').optional().trim().notEmpty().withMessage('작품 위치 날짜를 입력하세요'),
+  
+  check('files')
+  .custom((value, { req }) => {
+    const files = req.files;
+    // 파일이 하나라도 있는지 검사
+    if (files['file1'] || files['file2'] || files['file3'] || files['file4'] || files['file5']) {
+      return true;
+    }
+    throw new Error('최소한 하나의 파일을 업로드해야 합니다.');
+  }),
+
+],
+ArtworkJoinArtist,
 async(req,res)=>{
   
   // 파일이 존재할 경우에만 전송 처리
   // const files = req.files;
-  // 이미지 저장 주소 files['file1'][0]
+  // 이미지 저장 주소 files['file1'][0]F
   // 파일이 존재할 경우에만 전송 처리
-  console.log('Received body:', req.body);  
+
   const errors = validationResult(req);
   if(!errors.isEmpty()){
+    console.log(errors)
     return res.status(400).json({ errors: errors.array() });
+    
   }
  
   try{
-
-    console.log(req.files.location);
-    res.redirect('/admin/list/artist')
-
 
 
     const {
@@ -439,12 +452,13 @@ async(req,res)=>{
       certificationStatus,
       artworkSaleStart,
       artworkSaleEnd,
- 
+      artistId ,
+      artworkPrice
       
 
     } = req.body;
 
-
+    
 
     const inputDataNull =(value)=> value === '' ? null : value;
     // 작품 이름 배열 처리
@@ -453,17 +467,12 @@ async(req,res)=>{
     // 작품 사이즈 배열 처리
     const artworkSize = [inputDataNull(artworkSizeHeight), inputDataNull(artworkSizeWidth), inputDataNull(artworkSizeDepth)]
 
-    // 작품 위치 등록 배열 처리
-    const artworkAdress = [
-      inputDataNull(postCode), inputDataNull(roadAdress), inputDataNull(jibunAdress), 
-      inputDataNull(extraAddress), inputDataNull(detailAddress)
-    ]
-    
     // 저작기간 배열 정리
     const artworkCopyRight = [inputDataNull(artworkSaleStart), inputDataNull(artworkSaleEnd)]
 
     
-    console.log(req.body)
+
+ 
 
     // 위치 배열 처리
     if( Array.isArray(postCode) && Array.isArray(roadAdress) &&
@@ -473,13 +482,31 @@ async(req,res)=>{
         location = locationDate.map((date, i)=>{
 
           return{
-            date : inputDataNull(date),
+      
+            date : new Date(inputDataNull(date)) ,
             road : roadAdress[i] +  extraAddress[i] + detailAddress[i],
             location_Jibun : jibunAdress[i],
           }
 
         })
+    }else{
+      location = [{
+          date: new Date(inputDataNull(locationDate)) ,
+          road: roadAdress + extraAddress + detailAddress,
+          location_Jibun: jibunAdress
+      }];
     }
+    
+    location.sort((a,b)=> a.date - b.date )
+    console.log('솔트된 배열 ' + location)
+    console.log('현재위치' + location[0])
+    
+    //현재 배송지 (추후)
+
+
+    // 분류 > 특징적인 단어 나열 후 추후 검색시에 찾을 수 있게 함. (추후)
+
+
 
     // 이미지 url 배열처리
     const imgUrl = [];
@@ -491,16 +518,36 @@ async(req,res)=>{
         imgUrl.push(fileLocation);
       }
     }
-    console.log(imgUrl)
+ 
 
-
-
-    // 유효성 검사
     
     
     // 데이터 등록 
 
 
+    const data = {
+      artist : new ObjectId(artistId) , 
+      imgUrl : imgUrl,
+      location : location,
+      name : artworkName,
+      size : artworkSize,
+      price : artworkPrice,
+      copyRight : artworkCopyRight,
+      registerDate : new Date(),
+      medium: artworkMedium,
+      madeDate: artworkMadeDate,
+      sale : saleStatus,
+      certification : certificationStatus,
+    }
+
+    
+
+    await db.collection('artwork').insertOne(data);
+    
+      
+
+
+    res.redirect('/admin/list/artwork')
 
   }catch(error){
     console.log('서버에러', error)

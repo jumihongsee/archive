@@ -12,154 +12,163 @@
     <%- include('../sidenav.ejs') %>
 
     <section class="artwork-write admin">
-        <form action="/admin/write/artwork" method="POST" enctype="multipart/form-data">
-        <!-- <form action="/admin/write/artwork" method="POST"> -->
-            <!-- 작가 정보 (간략히) / 더보기는 artist detail 에 -->
-             <div class="artwork-artist-info">
-                <h2 class="title">김작가 <span> 작품 등록</span></h2>
-                <img
-                    onclick="loaction.herf=''"
-                    src="https://jumihongsee.s3.ap-northeast-2.amazonaws.com/1724317138558.png"
-                 alt="">
-             </div>
-            <!-- 작품 이미지 등록 -->
-             <div class="input-image">
-                <h2 class="">작품 이미지 등록 <span>( * 최대 5장까지 가능합니다. )</span></h2>
-                <div class="img-box">
-                    <div class="img-section">
-                        <label for="file1">
-                            <div class="img-wrapper">
-                                <img src="/img/plus.png" alt="">
-                            </div>
-                        </label>
-                        <label for="file2">
-                            <div class="img-wrapper">
-                                <img src="/img/plus.png" alt="">
-                            </div>
-                        </label>
-                        <label for="file3">
-                            <div class="img-wrapper">
-                                <img src="/img/plus.png" alt="">
-                            </div>
-                        </label>
-                        <label for="file4">
-                            <div class="img-wrapper">
-                                <img src="/img/plus.png" alt="">
-                            </div>
-                        </label>
-                        <label for="file5">
-                            <div class="img-wrapper">
-                                <img src="/img/plus.png" alt="">
-                            </div>
-                        </label>
-             
-                    </div>
-
+        <% artistData.forEach(artist => { %>
+            <form id="artworkForm" action="/admin/write/artwork" method="POST" enctype="multipart/form-data">
+                <div class="artwork-artist-info">
+                    <h2 class="title"><%= artist.artistName[0]%><span> 작품 등록</span></h2>
+                    <img onclick="location.href='/admin/detail/artist/<%= artist._id%>'" src="<%= artist.imgUrl%>" alt="">
+                    <input type="hidden" name="artistId" value="<%= artist._id%>">
                 </div>
-                <input type="file" class="file1" name="file1" id="file1" accept="image/*">
-                <input type="file" class="file2" name="file2" id="file2" accept="image/*">
-                <input type="file" class="file3" name="file3" id="file3" accept="image/*">
-                <input type="file" class="file4" name="file4" id="file4" accept="image/*">
-                <input type="file" class="file5" name="file5" id="file5" accept="image/*">
-             </div>
-            
-            <!-- 작품 정보 / 이름 / 미디엄 / 제작 날짜 / 작품 사이즈 -->
-             <div class="artwork-info">
-                <h2 class="">작품 정보 <span>( * 필수 항목 )</span></h2>
-                <div class="wrapper">
-                    <div class="input-wrapper">
-                        <input type="text" name="artworkNameKr" placeholder="작품제목(kor)">
-                        <input type="text" name="artworkNameEng" placeholder="작품제목(Eng)">
-                    </div>
-                    <div class="input-wrapper">
-                        <input type="text" name="artworkMedium" placeholder="재료(Medium)">
-                        <input type="number" name="artworkMadeDate" min="1200" max="2100" placeholder="제작년도 (YYYY)">
-                    </div>
-                    <div class="wrapper size">
-                        
-                        <div class="input-wrapper size">
-                            <input type="number" name="artworkSizeHeight" placeholder="Height">                       
-                            <input type="number" name="artworkSizeWidth" placeholder="Width">                 
-                            <input type="number" name="artworkSizeDepth" placeholder="Depth (*값이 없을경우 공란)">
-                        </div>
-
-                    </div>
-
-                </div>
-             </div>
-
-            <!-- 위치 등록하기 -->
-            <div class="artwork-location">
-                <h2 class="">작품 위치</h2>
- 
-                    <div class="adress-input-wrapper">
-                        <div class="addAdress">
-                            <div class="input-wrapper">
-                                <input type="text" id="postcode" name="postCode" placeholder="우편번호">
-                                <input id="searchAdress" name="searchAdress" type="button" onclick="execDaumPostcode()" value="우편번호 찾기">
-                            </div>
-                            <div class="input-wrapper">
-                                <input type="text" id="roadAddress" name="roadAdress" placeholder="도로명주소">
-                                <input type="text" id="jibunAddress" name="jibunAdress" placeholder="지번주소">
-                            
-                            </div>
-                            <div class="input-wrapper">
-                                <input type="text" name="extraAddress" id="extraAddress" placeholder="참고항목">
-                                <input type="text" name="detailAddress" id="detailAddress" placeholder="상세주소">
-                            </div>
-    
-                            <div class="input-wrapper date">
-                                <label for="">위치한 날짜 </label>
-                                <input type="date" name="locationDate">
-                            </div>
-                            <div class="input-wrapper inner-storage">
-                                <button type="button">수장고에 위치시 클릭</button>
-                            </div>
-                            <button class="close-btn" type="button"><img src="/img/x.png" alt=""></button>
-                        </div>
+                <!-- 작품 이미지 등록 -->
+                <div class="input-image">
+                    <h2 class="">작품 이미지 등록 
+                        <span>( * 최소 1장, 최대 5장까지 가능합니다. )</span>
+                        <span class="error-message">최소 1개의 이미지필요</span>
+                    </h2>
         
+                    <div class="img-box">
+                        <div class="img-section">
+                            <label for="file1">
+                                <div class="img-wrapper">
+                                    <img src="/img/plus.png" alt="">
+                                </div>
+                            </label>
+                            <label for="file2">
+                                <div class="img-wrapper">
+                                    <img src="/img/plus.png" alt="">
+                                </div>
+                            </label>
+                            <label for="file3">
+                                <div class="img-wrapper">
+                                    <img src="/img/plus.png" alt="">
+                                </div>
+                            </label>
+                            <label for="file4">
+                                <div class="img-wrapper">
+                                    <img src="/img/plus.png" alt="">
+                                </div>
+                            </label>
+                            <label for="file5">
+                                <div class="img-wrapper">
+                                    <img src="/img/plus.png" alt="">
+                                </div>
+                            </label>
+                
+                        </div>
+
+                    </div>
+                    <input type="file" class="file1" name="file1" id="file1" accept="image/*">
+                    <input type="file" class="file2" name="file2" id="file2" accept="image/*">
+                    <input type="file" class="file3" name="file3" id="file3" accept="image/*">
+                    <input type="file" class="file4" name="file4" id="file4" accept="image/*">
+                    <input type="file" class="file5" name="file5" id="file5" accept="image/*">
+
+                 
+
+                </div>
+                
+                <!-- 작품 정보 / 이름 / 미디엄 / 제작 날짜 / 작품 사이즈 -->
+                <div class="artwork-info">
+                    <h2 class="">작품 정보 <span>( * 필수 항목 )</span></h2>
+                    <div class="wrapper">
+                        <div class="input-wrapper">
+                            <input type="text" name="artworkNameKr" placeholder="작품제목(kor)">
+                            <input type="text" name="artworkNameEng" placeholder="작품제목(Eng)">
+                        </div>
+                        <div class="input-wrapper">
+                            <input type="text" name="artworkMedium" placeholder="재료(Medium)">
+                            <input type="number" name="artworkMadeDate" min="1200" max="2100" placeholder="제작년도 (YYYY)">
+                            <input type="number" name="artworkPrice" placeholder="가격">
+                        </div>
+                        <div class="wrapper size">
+                            
+                            <div class="input-wrapper size">
+                                <input type="number" name="artworkSizeHeight" placeholder="Height">                       
+                                <input type="number" name="artworkSizeWidth" placeholder="Width">                 
+                                <input type="number" name="artworkSizeDepth" placeholder="Depth (*값이 없을경우 공란)">
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- 위치 등록하기 -->
+                <div class="artwork-location">
+                    <h2 class="">작품 위치</h2>
+    
+                        <div class="adress-input-wrapper">
+                            <!-- <div class="addAdress">
+                                <div class="input-wrapper">
+                                    <input type="text" id="postcode" name="postCode" placeholder="우편번호">
+                                    <input id="searchAdress" name="searchAdress" type="button" onclick="execDaumPostcode()" value="우편번호 찾기">
+                                </div>
+                                <div class="input-wrapper">
+                                    <input type="text" id="roadAddress" name="roadAdress" placeholder="도로명주소">
+                                    <input type="text" id="jibunAddress" name="jibunAdress" placeholder="지번주소">
+                                
+                                </div>
+                                <div class="input-wrapper">
+                                    <input type="text" name="extraAddress" id="extraAddress" placeholder="참고항목">
+                                    <input type="text" name="detailAddress" id="detailAddress" placeholder="상세주소">
+                                </div>
+        
+                                <div class="input-wrapper date">
+                                    <label for="">위치한 날짜 </label>
+                                    <input type="date" name="locationDate">
+                                </div>
+                                <div class="input-wrapper inner-storage">
+                                    <button type="button">수장고에 위치시 클릭</button>
+                                </div>
+                                <button class="close-btn" type="button"><img src="/img/x.png" alt=""></button>
+                            </div> -->
+            
+                        </div>
+
+                        <button class="addLocation" type="button"><img src="/img/plus.png" alt="">주소 추가하기</button>
+        
+
+                </div>
+
+                <!-- 판매 가능 시작 기간 -->
+                <div class="artwork-sale">
+                    <h2>판매/저작</h2>
+                    <div class="option-wrapper">
+                        <label for="saleStatus">판매여부 : </label>
+                        <select name="saleStatus" id="saleStatus">
+                            <option value="N">No</option>
+                            <option value="Y">Yes</option>
+                        </select>
+                        <label for="certificationStatus">보증서여부 : </label>
+                        <select name="certificationStatus" id="saleStatus">
+                            <option value="N">No</option>
+                            <option value="Y">Yes</option>
+                        
+                        </select>
+                    </div>
+                    <div class="input-wrapper">
+                
+                        <div class="wp">
+                            <div class="wp">
+                                <label for="">저작시작 : </label>
+                                <input type="date" name="artworkSaleStart" id="artworkSaleStart" >
+                            </div>
+                            <div class="wp">
+                                <label for="">저작만료 : </label>
+                                <input type="date" name="artworkSaleEnd" id="artworkSaleEnd" >
+                            </div>
+        
+                        </div>
+
                     </div>
 
-                    <button class="addLocation" type="button"><img src="/img/plus.png" alt="">주소 추가하기</button>
-       
-
-            </div>
-
-            <!-- 판매 가능 시작 기간 -->
-            <div class="artwork-sale">
-                <h2>판매/저작</h2>
-                <div class="option-wrapper">
-                    <label for="saleStatus">판매여부 : </label>
-                    <select name="saleStatus" id="saleStatus">
-                        <option value="N">No</option>
-                        <option value="Y">Yes</option>
-                    </select>
-                    <label for="certificationStatus">보증서여부 : </label>
-                    <select name="certificationStatus" id="saleStatus">
-                        <option value="N">No</option>
-                        <option value="Y">Yes</option>
-                    
-                    </select>
                 </div>
-                <div class="input-wrapper">
-               
-                    <div class="wp">
-                        <div class="wp">
-                            <label for="">저작시작 : </label>
-                            <input type="date" name="artworkSaleStart" id="artworkSaleStart" >
-                        </div>
-                        <div class="wp">
-                            <label for="">저작만료 : </label>
-                            <input type="date" name="artworkSaleEnd" id="artworkSaleEnd" >
-                        </div>
-       
-                    </div>
-
-                </div>
-
-            </div>
-          <button class="addArtwork" type="submit"> 작품등록 마치기 </button>
-        </form>
+            <button class="addArtwork" type="submit"> 
+                작품등록 마치기 
+                <span> ! 입력값을 제대로 입력해 주세요.</span>
+            </button>
+            </form>
+        <% }) %>
     </section>
     <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
     <script>
@@ -280,6 +289,67 @@
                 }
             }
         });
+
+
+        // 제출한 오류 메세지 가져오기 
+        document.getElementById('artworkForm').addEventListener('submit', async function(e) {
+        e.preventDefault(); // 기본 폼 제출 막기
+
+        const formData = new FormData(this); // 폼 데이터 가져오기
+
+        try {
+            const response = await fetch('/admin/write/artwork', {
+            method: 'POST',
+            body: formData
+            });
+
+            if (!response.ok) {
+            const responseData = await response.json();
+            displayErrors(responseData.errors); // 에러 메시지 처리 함수 호출
+            } else {
+            // 성공 시, 원하는 동작 수행 (예: 페이지 리다이렉트)
+            window.location.href = '/admin/list/artist';
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+        });
+
+        function displayErrors(errors) {
+        // 먼저 모든 입력 필드에서 기존의 오류 스타일을 제거합니다.
+        const inputFields = document.querySelectorAll('input');
+        inputFields.forEach(input => {
+            input.style.borderColor = ''; // 테두리 색 초기화
+            input.style.backgroundColor = ''; // 배경색 초기화
+        });
+
+        // 각 오류에 대해 해당하는 입력 필드에 스타일을 추가합니다.
+        errors.forEach(error => {
+            const inputElement = document.querySelector(`[name="${error.path}"]`);
+            document.querySelector('.addArtwork').classList.add('fail');
+            if (inputElement) {
+                inputElement.style.borderColor = 'red'; // 테두리 색을 빨간색으로 설정
+                inputElement.style.backgroundColor = '#ffe6e6'; // 배경색을 연한 빨간색으로 설정
+                inputElement.setAttribute('placeholder', error.msg); // 오류 메시지를 placeholder로 설정 (선택 사항)
+
+                inputElement.addEventListener('input', function() {
+                    inputElement.style.borderColor = ' #c0bdbd'; // 테두리 색을 원래대로 되돌림
+                    inputElement.style.backgroundColor = '#fff'; // 배경색을 원래대로 되돌림
+                });
+            }
+            if(error.path === 'files'){
+                console.log('파일이읍다앙')
+                document.querySelector('.error-message').classList.add('active');
+            }else{
+                document.querySelector('.error-message').classList.remove('active');
+            }
+        });
+    }
+
+
+
+
+
 
 
     </script>

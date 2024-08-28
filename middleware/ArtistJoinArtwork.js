@@ -1,7 +1,7 @@
 const { ObjectId } = require('mongodb');
 const connectDB = require('../database');
 
-async function artworkData(req, res, next) {
+async function ArtworkJoinArtist(req, res, next) { 
     try {
         const client = await connectDB();
         const db = client.db('artworklist'); 
@@ -16,11 +16,17 @@ async function artworkData(req, res, next) {
             },
             {
                 $project: {
-                    _id: 1,
-                    name: 1,
-                    location: 1,
-                    price: 1,
-                    artist: 1,
+                    imgUrl : 1,
+                    location : 1,
+                    name : 1,
+                    size : 1,
+                    price : 1,
+                    copyRight : 1,
+                    registerDate :1,
+                    medium: 1,
+                    madeDate: 1,
+                    sale : 1,
+                    certification : 1,
                     'artistData.artistName': 1
                 }
             }
@@ -47,7 +53,7 @@ async function artworkData(req, res, next) {
             }
         });
 
-        req.artworkData = data;
+        req.ArtworkJoinArtist = data;
         next();
     } catch (error) {
         next(error);
@@ -55,4 +61,4 @@ async function artworkData(req, res, next) {
 }
 
 
-module.exports = artworkData;
+module.exports =  ArtworkJoinArtist;
