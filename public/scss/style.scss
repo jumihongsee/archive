@@ -280,91 +280,106 @@ section{
                 width: 100%; height: 100%;
                 border-top: none;
                 border-bottom: 3px solid #000;
+                // 공용
+
                 thead, tbody{
                     tr{
                         display: flex; width: 100%; 
-                        &.artist{ td{height: 100px;}}
                         td{ height: 50px; border: 0.5px solid #eee; border-top: none; border-left: none;}
                         th,td{
                             font-size: 12px; padding: 2px;
                             width: 200px; text-align: center; 
                             display: flex; align-items: center; justify-content: center;
-                      
-                            .img-wrapper{
-                                height: 100%;
-                                 overflow: hidden;   display: flex; align-items: center; justify-content: center;
-                                &.artist{
-                                    width: 80px; height: 80px; 
-                                    border-radius: 50% ; 
-                                }
-                                &.artwork{
-                                   
-                                    img{
-                                       height: 100%;
-                                    }
-                                }
-                                &:hover{
-                                    border: 3px solid $main-color;
-                                }
-                                img{
-                                    &.artist-img{
-                                       cursor: pointer; width: 100%; height: 100%;
-                                         background-size: cover; 
-                                       
-                                }
-
-                            }
-                           
-                           }
-                            &:first-child{
-                                width: 20px;
-                            }
- 
+                            &:first-child{width: 20px;} 
+                            &:nth-child(2){width: 100px;}
+           
                         }
 
                     }
                 }
+
+                // 타이틀
                 thead{
-                    // position: fixed; width: calc(80vw - 5px);
                      height: 20px; 
                     tr{
                         background: #000;
                         color: #fff;
-                     
                     }
-                    
                 }
+
+                // 컨텐츠
                 tbody{
                     border: 1px solid #000;
                     tr{
                           border-bottom: 1px solid #ececec; 
                         &:hover{
                             background: #b9e0fa;
-                          
                         }
-                        td.artistPage{
-                            &:hover{
-                               background: #55a5d3;
-                           
+                        td{
+                            &.manageBtn{
+                                button{
+                                    padding: 6px 10px; color: #fff;
+                                    margin: 0 3px; font-size: 12px;
+                                    &:first-child{background: #0f98f3;}
+                                    &:last-child{background: hsl(0, 82%, 57%);}
+                                }
                             }
-                        }
-                        button{
-                            &.addArtwork{
-                                font-size: 12px;
-                                color: #fff; background: #0f98f3;
-                                padding: 10px; border-radius: 10px;
-                                transition: background 0.2s ease-in-out;
-                                &:hover{
-                                    background: #0099ff;
-                                    border: 2px solid $main-color;
+                            .img-wrapper{
+                                 height: 100%; 
+                                    img{
+                                        height: 100%;
+                                    }
+                                }
+                            }
+
+                        &.artist{       
+                            td{
+                                height: 100px;
+                                &.artistPage{
+                                    cursor: pointer;
+                                    &:hover{
+                                        .img-wrapper{img{border: 3px solid #1b2eff;}}
+                                    }
+                                }
+                                &.addArtwork{
+                                    button{
+                                            font-size: 12px;
+                                            color: #fff; background: #30acff;
+                                            padding: 10px; border-radius: 10px;
+                                            transition: background 0.2s ease-in-out;
+                                            &:hover{
+                                                background: #0099ff;
+                                                border: 2px solid $main-color;
+                                            }
+                                    
+                                        &.fail{
+                                            animation: failSubmit 1s forwards ease-in-out;
+                                        }
+                                    }
                                 }
 
+                                .img-wrapper{
+                                    width: 100px; height: 100px;
+                                    display: flex; align-items: center; justify-content: center;
+                                    img{
+                                        border-radius: 10px; border: 3px solid #000;
+                                        height: 80%;
+                                    }
+                                }
+           
+                    
                             }
-                            &.fail{
-                                animation: failSubmit 1s forwards ease-in-out;
-                            }
-                            
                         }
+                        &.artwork{
+                            td.artistPage{
+                                cursor: pointer; z-index: 100;
+                                &:hover{
+                                   background: #55a5d3;
+                               
+                                }
+                            }
+                        }
+                       
                     }
 
                 }
@@ -652,14 +667,26 @@ section{
                                  margin: 10px 0;
                                  background: #000;
                                  border-radius: 10px; 
-                                 overflow: hidden;
-                          
+                                 overflow: hidden; position: relative;
                                  display: flex; align-items: center; justify-content: center;
                                  img{
                                      height:110%; width: auto;
                                      background-size: cover;
                                      transform: scale(1.2);
                                  }
+                                 .delete-img{
+                                    position: absolute; background: #000; cursor: pointer; 
+                                    width: 25px; height: 25px; top: 10px; right: 10px;display: flex; align-items: center; justify-content: center;
+                                    border-radius: 50%; display: none; z-index: 1000;
+                                    p{color: #fff;}
+
+                                }
+                                &:hover{
+                                    .delete-img{
+                                        display: block;
+                                    }
+                                    
+                                }
                              }
                         }
     

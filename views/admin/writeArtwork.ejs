@@ -12,47 +12,71 @@
     <%- include('../sidenav.ejs') %>
 
     <section class="artwork-write admin">
+   
+
         <% artistData.forEach(artist => { %>
-            <form id="artworkForm" action="/admin/write/artwork" method="POST" enctype="multipart/form-data">
+            <form id="artworkForm" action="<%= artworkData ? '/admin/edit/artwork/' + artworkData[0]._id : '/admin/write/artwork/' + artistData[0]._id %>" method="POST" enctype="multipart/form-data">
+             
+               
                 <div class="artwork-artist-info">
-                    <h2 class="title"><%= artist.artistName[0]%><span> 작품 등록</span></h2>
+                    <h2 class="title">
+                        <%= artist.artistName[0]%>
+                            <span> <%= artworkData ? '작품 수정' : '작품 등록' %></span>
+                    </h2>
                     <img onclick="location.href='/admin/detail/artist/<%= artist._id%>'" src="<%= artist.imgUrl%>" alt="">
+                
                     <input type="hidden" name="artistId" value="<%= artist._id%>">
                 </div>
                 <!-- 작품 이미지 등록 -->
                 <div class="input-image">
-                    <h2 class="">작품 이미지 등록 
+         
+                    <h2 class="">
+                    
+                        <%= artworkData ? '작품 이미지 수정' : '작품 이미지 등록' %>
                         <span>( * 최소 1장, 최대 5장까지 가능합니다. )</span>
                         <span class="error-message">최소 1개의 이미지필요</span>
                     </h2>
         
                     <div class="img-box">
                         <div class="img-section">
-                            <label for="file1">
-                                <div class="img-wrapper">
-                                    <img src="/img/plus.png" alt="">
-                                </div>
-                            </label>
-                            <label for="file2">
-                                <div class="img-wrapper">
-                                    <img src="/img/plus.png" alt="">
-                                </div>
-                            </label>
-                            <label for="file3">
-                                <div class="img-wrapper">
-                                    <img src="/img/plus.png" alt="">
-                                </div>
-                            </label>
-                            <label for="file4">
-                                <div class="img-wrapper">
-                                    <img src="/img/plus.png" alt="">
-                                </div>
-                            </label>
-                            <label for="file5">
-                                <div class="img-wrapper">
-                                    <img src="/img/plus.png" alt="">
-                                </div>
-                            </label>
+                            <% if(artworkData){ %>
+                                <% const maxFiles = 5; %>
+                                <% const uploadedFiles = artworkData[0].imgUrl.length; %>
+                                
+                                <% for(let i = 0; i < uploadedFiles; i++){ %>
+                                    <label for="file<%= i + 1 %>">
+                                        <div class="img-wrapper">
+                                            <img src="<%= artworkData[0].imgUrl[i] ? artworkData[0].imgUrl[i] : '/img/plus.png' %>" alt="">
+                                            <input type="hidden" name="oldImg" class="oldImg" value="<%= artworkData[0].imgUrl[i] ? artworkData[0].imgUrl[i] : '' %>">
+                        
+                                            <% if (artworkData[0].imgUrl[i]) { %>
+                                                <button type="button" class="delete-img"><p>x</p></button>
+                                            <% } %>
+                                        </div>
+                                    </label>
+                                <% } %>
+                                <% for(let i = uploadedFiles; i < maxFiles; i++){ %>
+                                    <label for="file<%= i+1 %>">
+                                        <div class="img-wrapper">
+                                            <img src="/img/plus.png" alt="">
+                                        </div>
+                                    </label>
+                                <% } %>
+                     
+              
+                            <% }else{ %>
+                                <% const maxFiles = 5; %>
+                                <% for(let i = 0; i < maxFiles; i++){ %>
+                                    <label for="file<%=i+1%>">
+                                        <div class="img-wrapper">
+                                            <img src="/img/plus.png" alt="">
+                                        </div>
+                                    </label>
+                                <% } %>
+
+                              
+                            <% } %>
+
                 
                         </div>
 
@@ -63,7 +87,7 @@
                     <input type="file" class="file4" name="file4" id="file4" accept="image/*">
                     <input type="file" class="file5" name="file5" id="file5" accept="image/*">
 
-                 
+                    
 
                 </div>
                 
@@ -72,20 +96,20 @@
                     <h2 class="">작품 정보 <span>( * 필수 항목 )</span></h2>
                     <div class="wrapper">
                         <div class="input-wrapper">
-                            <input type="text" name="artworkNameKr" placeholder="작품제목(kor)">
-                            <input type="text" name="artworkNameEng" placeholder="작품제목(Eng)">
+                            <input type="text" name="artworkNameKr" placeholder="작품제목(kor)" value="<%= artworkData ? artworkData[0].name[0] : '' %>">
+                            <input type="text" name="artworkNameEng" placeholder="작품제목(Eng)" value="<%= artworkData ? artworkData[0].name[1] : '' %>">
                         </div>
                         <div class="input-wrapper">
-                            <input type="text" name="artworkMedium" placeholder="재료(Medium)">
-                            <input type="number" name="artworkMadeDate" min="1200" max="2100" placeholder="제작년도 (YYYY)">
-                            <input type="number" name="artworkPrice" placeholder="가격">
+                            <input type="text" name="artworkMedium" placeholder="재료(Medium)"  value="<%= artworkData ? artworkData[0].medium : '' %>">
+                            <input type="number" name="artworkMadeDate" min="1200" max="2100" placeholder="제작년도 (YYYY)"  value="<%= artworkData ? artworkData[0].madeDate : '' %>">
+                            <input type="number" name="artworkPrice" placeholder="가격" value="<%= artworkData ? artworkData[0].price : '' %>">
                         </div>
                         <div class="wrapper size">
                             
                             <div class="input-wrapper size">
-                                <input type="number" name="artworkSizeHeight" placeholder="Height">                       
-                                <input type="number" name="artworkSizeWidth" placeholder="Width">                 
-                                <input type="number" name="artworkSizeDepth" placeholder="Depth (*값이 없을경우 공란)">
+                                <input type="number" name="artworkSizeHeight" placeholder="Height" value="<%= artworkData ? artworkData[0].size[0] : '' %>">                       
+                                <input type="number" name="artworkSizeWidth" placeholder="Width" value="<%= artworkData ? artworkData[0].size[1] : '' %>">                 
+                                <input type="number" name="artworkSizeDepth" placeholder="Depth (*값이 없을경우 공란)" value="<%= artworkData ? artworkData[0].size[2] : '' %>">
                             </div>
 
                         </div>
@@ -98,34 +122,46 @@
                     <h2 class="">작품 위치</h2>
     
                         <div class="adress-input-wrapper">
-                            <!-- <div class="addAdress">
-                                <div class="input-wrapper">
-                                    <input type="text" id="postcode" name="postCode" placeholder="우편번호">
-                                    <input id="searchAdress" name="searchAdress" type="button" onclick="execDaumPostcode()" value="우편번호 찾기">
+                            <% if(artworkData){ %>
+                                <% artworkData[0].location.forEach(location => { 
+                                    <!-- 포맷 -->
+                                    const dateObj = new Date(location.date); // location.date를 Date 객체로 변환
+                                    const year = dateObj.getFullYear(); // 년도 추출
+                                    const month = String(dateObj.getMonth() + 1).padStart(2, '0'); // 월 추출, 0부터 시작하므로 +1, 2자리 맞추기 위해 padStart 사용
+                                    const day = String(dateObj.getDate()).padStart(2, '0'); // 일 추출, 2자리 맞추기 위해 padStart 사용
+                                    const formattedDate = `${year}-${month}-${day}`; // YYYY-MM-DD 형식으로 변환
+                                %>
+                             
+                                <div class="addAdress">
+                                    <div class="input-wrapper">
+                                        <input type="text" id="postcode" name="postCode" placeholder="우편번호" value="<%= location.postCode %>">
+                                        <input id="searchAdress" name="searchAdress" type="button" onclick="execDaumPostcode()" value="우편번호 찾기">
+                                    </div>
+                                    <div class="input-wrapper">
+                                        <input type="text" id="roadAddress" name="roadAdress" placeholder="도로명주소" value="<%= location.road %>">
+                                        <input type="text" id="jibunAddress" name="jibunAdress" placeholder="지번주소" value="<%= location.jibun %>">
+                                    </div>
+                                    <div class="input-wrapper">
+                                        <input type="text" name="extraAddress" id="extraAddress" placeholder="참고항목" value="<%= location.extra %>">
+                                        <input type="text" name="detailAddress" id="detailAddress" placeholder="상세주소" value="<%= location.detail %>">
+                                    </div>
+                                    <div class="input-wrapper date">
+                                        <label for="">위치한 날짜 </label>
+                                        <!-- 여기서 date 변수를 사용 -->
+                                        <input type="date" name="locationDate" value="<%= formattedDate %>">
+                                    </div>
+                                    <div class="input-wrapper inner-storage">
+                                        <button type="button">수장고에 위치시 클릭</button>
+                                    </div>
+                                    <button class="close-btn" type="button"><img src="/img/x.png" alt=""></button>
                                 </div>
-                                <div class="input-wrapper">
-                                    <input type="text" id="roadAddress" name="roadAdress" placeholder="도로명주소">
-                                    <input type="text" id="jibunAddress" name="jibunAdress" placeholder="지번주소">
-                                
-                                </div>
-                                <div class="input-wrapper">
-                                    <input type="text" name="extraAddress" id="extraAddress" placeholder="참고항목">
-                                    <input type="text" name="detailAddress" id="detailAddress" placeholder="상세주소">
-                                </div>
-        
-                                <div class="input-wrapper date">
-                                    <label for="">위치한 날짜 </label>
-                                    <input type="date" name="locationDate">
-                                </div>
-                                <div class="input-wrapper inner-storage">
-                                    <button type="button">수장고에 위치시 클릭</button>
-                                </div>
-                                <button class="close-btn" type="button"><img src="/img/x.png" alt=""></button>
-                            </div> -->
-            
+                                <% }) %>
+                            <% } %>
+    
                         </div>
-
+                        
                         <button class="addLocation" type="button"><img src="/img/plus.png" alt="">주소 추가하기</button>
+
         
 
                 </div>
@@ -136,13 +172,13 @@
                     <div class="option-wrapper">
                         <label for="saleStatus">판매여부 : </label>
                         <select name="saleStatus" id="saleStatus">
-                            <option value="N">No</option>
-                            <option value="Y">Yes</option>
+                            <option value="N" <%= artworkData && artworkData[0].sale === 'N' ? 'selected' : '' %>>No</option>
+                            <option value="Y" <%= artworkData && artworkData[0].sale === 'Y' ? 'selected' : '' %>>Yes</option>
                         </select>
                         <label for="certificationStatus">보증서여부 : </label>
                         <select name="certificationStatus" id="saleStatus">
-                            <option value="N">No</option>
-                            <option value="Y">Yes</option>
+                            <option value="N" <%= artworkData && artworkData[0].certification === 'N' ? 'selected' : '' %>>No</option>
+                            <option value="Y" <%= artworkData && artworkData[0].certification === 'Y' ? 'selected' : '' %>>Yes</option>
                         
                         </select>
                     </div>
@@ -151,11 +187,11 @@
                         <div class="wp">
                             <div class="wp">
                                 <label for="">저작시작 : </label>
-                                <input type="date" name="artworkSaleStart" id="artworkSaleStart" >
+                                <input type="date" name="artworkSaleStart" id="artworkSaleStart" value="<%= artworkData ? artworkData[0].copyRight[0] : '' %>"  >
                             </div>
                             <div class="wp">
                                 <label for="">저작만료 : </label>
-                                <input type="date" name="artworkSaleEnd" id="artworkSaleEnd" >
+                                <input type="date" name="artworkSaleEnd" id="artworkSaleEnd"  value="<%= artworkData ? artworkData[0].copyRight[1] : '' %>" >
                             </div>
         
                         </div>
@@ -164,155 +200,195 @@
 
                 </div>
             <button class="addArtwork" type="submit"> 
-                작품등록 마치기 
+                <%= artworkData ? '작품수정 마치기' : '작품등록 마치기'  %>
                 <span> ! 입력값을 제대로 입력해 주세요.</span>
             </button>
             </form>
         <% }) %>
+
+
     </section>
-    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-    <script>
-        
+
+</body>
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script>
+    
 
 
-        // 이미지 미리보기
-        document.querySelectorAll('input[type="file"]').forEach(item => {
-                item.addEventListener('change', function (e) {
-                    const file = e.target.files[0]; // 첫 번째 파일을 가져옴
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onload = function (e) {
-                            const imgLabel = document.querySelector(`label[for="${item.id}"] img`);
-                            console.log(item.id)
-                            imgLabel.src = e.target.result; // 이미지 태그의 src 속성을 파일의 base64 데이터로 변경
-                        };
-                        reader.readAsDataURL(file); // 파일을 Data URL로 읽어옵니다.
-                    }
-                });
-        });
+    // 이미지 미리보기 및 삭제 버튼 처리
+    document.querySelectorAll('input[type="file"]').forEach((item, index) => {
+        item.addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const imgLabel = document.querySelector(`label[for="${item.id}"] img`);
+                    imgLabel.src = e.target.result;
 
-
-        // 다음 주소 API
-        function execDaumPostcode() {
-        new daum.Postcode({
-                oncomplete: function(data) {
-                    const activeAddressSection = document.activeElement.closest('.addAdress');
+                    const imgWrapper = imgLabel.closest('div.img-wrapper');
                     
-                    if (!activeAddressSection) return;
+                    // 기존의 삭제 버튼이 있으면 삭제
+                    const existingDeleteButton = imgWrapper.querySelector('.delete-img');
+                    if (existingDeleteButton) {
+                        existingDeleteButton.remove();
+                    }
 
-                    const roadAddr = data.roadAddress; // 도로명 주소
-                    const extraRoadAddr = data.bname ? `${data.bname}${data.buildingName && data.apartment === 'Y' ? `, ${data.buildingName}` : ''}` : '';
+                    // 새로운 삭제 버튼 생성
+                    const deleteImgButton = document.createElement('button');
+                    deleteImgButton.type = 'button';
+                    deleteImgButton.className = 'delete-img';
+                    deleteImgButton.innerHTML = '<p>x</p>';
 
-                    activeAddressSection.querySelector('#postcode').value = data.zonecode;
-                    activeAddressSection.querySelector("#roadAddress").value = roadAddr;
-                    activeAddressSection.querySelector("#jibunAddress").value = data.jibunAddress;
-                    activeAddressSection.querySelector("#extraAddress").value = extraRoadAddr;
-                    activeAddressSection.querySelector("#detailAddress").value = '';
-                    console.log(data)
-                }
-            }).open();
-            
+                    imgWrapper.appendChild(deleteImgButton);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    });
+
+    document.body.addEventListener('click', function (event) {
+        if (event.target.closest('.delete-img')) {
+            const deleteImgButton = event.target.closest('.delete-img');
+            const imgWrapper = deleteImgButton.closest('div.img-wrapper');
+            const imgLabel = imgWrapper.querySelector('img');
+            const fileInput = imgWrapper.querySelector('input.oldImg');
+
+            if (fileInput) {
+                // 이미지 초기화 및 파일 입력값 비우기
+                imgLabel.src = '/img/plus.png';  // 이미지 초기화
+                fileInput.value = null;  // 파일 입력값을 공란으로 설정
+                deleteImgButton.remove();  // x 버튼 제거
+
+            } 
         }
+    });
+
+
+    // 다음 주소 API
+    function execDaumPostcode() {
+    new daum.Postcode({
+            oncomplete: function(data) {
+                const activeAddressSection = document.activeElement.closest('.addAdress');
+                
+                if (!activeAddressSection) return;
+
+                const roadAddr = data.roadAddress; // 도로명 주소
+                const extraRoadAddr = data.bname ? `${data.bname}${data.buildingName && data.apartment === 'Y' ? `, ${data.buildingName}` : ''}` : '';
+
+                activeAddressSection.querySelector('#postcode').value = data.zonecode;
+                activeAddressSection.querySelector("#roadAddress").value = roadAddr;
+                activeAddressSection.querySelector("#jibunAddress").value = data.jibunAddress;
+                activeAddressSection.querySelector("#extraAddress").value = extraRoadAddr;
+                activeAddressSection.querySelector("#detailAddress").value = '';
+                console.log(data)
+            }
+        }).open();
+        
+    }
+
+
+    // 주소 추가하기 클릭 > 작품 위치 폼 추가
+
 
     
-        // 주소 추가하기 클릭 > 작품 위치 폼 추가
-        const addLocation = document.querySelector('.addLocation');
-        const adressInputWrapper = document.querySelector('.adress-input-wrapper')
-        addLocation.addEventListener('click', function(e){
+    const addLocation = document.querySelector('.addLocation');
+    const adressInputWrapper = document.querySelector('.adress-input-wrapper')
+    addLocation.addEventListener('click', function(e){
 
-            const newAdressForm = document.createElement('div');    
-            newAdressForm.className = 'addAdress-wp'
-            newAdressForm.innerHTML = 
-            `
-                <div class="addAdress">
-                    <div class="input-wrapper">
-                        <input type="text" id="postcode" name="postCode" placeholder="우편번호">
-                        <input id="searchAdress" name="searchAdress" type="button" onclick="execDaumPostcode()" value="우편번호 찾기">
-                    </div>
-                    <div class="input-wrapper">
-                        <input type="text" id="roadAddress" name="roadAdress" placeholder="도로명주소">
-                        <input type="text" id="jibunAddress" name="jibunAdress" placeholder="지번주소">
-                        <!-- <span id="guide" style="color:#999;display:none"></span> -->
-                    </div>
-                    <div class="input-wrapper">
-                        <input type="text" name="extraAddress" id="extraAddress" placeholder="참고항목">
-                        <input type="text" name="detailAddress" id="detailAddress" placeholder="상세주소">
-                    </div>
-
-                    <div class="input-wrapper date">
-                        <label for="">위치한 날짜 </label>
-                        <input type="date" name="locationDate">
-                    </div>
-                    <div class="input-wrapper inner-storage">
-                        <button type="button">수장고에 위치시 클릭</button>
-                    </div>
-                     <button class="close-btn" type="button"><img src="/img/x.png" alt=""></button>
+        const newAdressForm = document.createElement('div');    
+        newAdressForm.className = 'addAdress-wp'
+        newAdressForm.innerHTML = 
+        `
+            <div class="addAdress">
+                <div class="input-wrapper">
+                    <input type="text" id="postcode" name="postCode" placeholder="우편번호">
+                    <input id="searchAdress" name="searchAdress" type="button" onclick="execDaumPostcode()" value="우편번호 찾기">
                 </div>
-            `
-            
-            adressInputWrapper.appendChild(newAdressForm)
+                <div class="input-wrapper">
+                    <input type="text" id="roadAddress" name="roadAdress" placeholder="도로명주소">
+                    <input type="text" id="jibunAddress" name="jibunAdress" placeholder="지번주소">
+                    <!-- <span id="guide" style="color:#999;display:none"></span> -->
+                </div>
+                <div class="input-wrapper">
+                    <input type="text" name="extraAddress" id="extraAddress" placeholder="참고항목">
+                    <input type="text" name="detailAddress" id="detailAddress" placeholder="상세주소">
+                </div>
 
-            
-        });
+                <div class="input-wrapper date">
+                    <label for="">위치한 날짜 </label>
+                    <input type="date" name="locationDate">
+                </div>
+                <div class="input-wrapper inner-storage">
+                    <button type="button">수장고에 위치시 클릭</button>
+                </div>
+                <button class="close-btn" type="button"><img src="/img/x.png" alt=""></button>
+            </div>
+        `
+        
+        adressInputWrapper.appendChild(newAdressForm)
 
-        // 이벤트 델리게이션
+        
+    });
 
-        document.querySelector('.adress-input-wrapper').addEventListener('click', function(e) {
+    // 이벤트 델리게이션
 
-            if (e.target.classList.contains('close-btn')) {
-                const parentDiv = e.target.closest('.addAdress');  // .addAdress를 삭제시켜야함
-                if (parentDiv) {
-                    parentDiv.remove();
-                }
+    document.querySelector('.adress-input-wrapper').addEventListener('click', function(e) {
+        // 클릭한 요소가 .close-btn을 포함하는지 확인
+        const closeBtn = e.target.closest('.close-btn');
+        if (closeBtn) {
+            const parentDiv = closeBtn.closest('.addAdress');  // .addAdress를 찾아서 삭제
+            if (parentDiv) {
+                parentDiv.remove();  // 요소 삭제
             }
+        }
 
-            if (e.target.closest('.inner-storage button')) {
-                const parentDiv = e.target.closest('.addAdress'); // .addAdress의 하위의 input에 벨류값을 넣어줘야함 
-                if (parentDiv) {
-                    const inputElements = parentDiv.querySelectorAll('.input-wrapper input');
-                    const data = {
-                        postCode: '04799',
-                        roadAdress: '서울 성동구 아차산로17길 49',
-                        jibunAdress: 'Storage',
-                        detailAddress: '1218호',
-                        extraAddress: '(성수동2가)',
-                        searchAdress: '우편번호 찾기'
-                    };
+        if (e.target.closest('.inner-storage button')) {
+            const parentDiv = e.target.closest('.addAdress'); // .addAdress의 하위의 input에 벨류값을 넣어줘야함 
+            if (parentDiv) {
+                const inputElements = parentDiv.querySelectorAll('.input-wrapper input');
+                const data = {
+                    postCode: '04799',
+                    roadAdress: '서울 성동구 아차산로17길 49',
+                    jibunAdress: 'Storage',
+                    detailAddress: '1218호',
+                    extraAddress: '(성수동2가)',
+                    searchAdress: '우편번호 찾기'
+                };
 
-                    inputElements.forEach(item => {
-                        if (data[item.name]) {
-                            item.value = data[item.name];
-                        }
-                        
-                    });
-
-                }
+                inputElements.forEach(item => {
+                    if (data[item.name]) {
+                        item.value = data[item.name];
+                    }
+                });
             }
-        });
+        }
+    });
 
 
         // 제출한 오류 메세지 가져오기 
         document.getElementById('artworkForm').addEventListener('submit', async function(e) {
         e.preventDefault(); // 기본 폼 제출 막기
 
-        const formData = new FormData(this); // 폼 데이터 가져오기
+        const form = this;
+        const formData = new FormData(form);
+        const actionUrl = form.getAttribute('action');
 
-        try {
-            const response = await fetch('/admin/write/artwork', {
-            method: 'POST',
-            body: formData
+            try {
+                const response = await fetch(actionUrl, {
+                    method: 'POST', // 서버 라우터에 따라 'PUT' 또는 'PATCH'가 필요할 수 있음
+                    body: formData
             });
 
-            if (!response.ok) {
-            const responseData = await response.json();
-            displayErrors(responseData.errors); // 에러 메시지 처리 함수 호출
-            } else {
-            // 성공 시, 원하는 동작 수행 (예: 페이지 리다이렉트)
-            window.location.href = '/admin/list/artist';
+                if (!response.ok) {
+                    const responseData = await response.json();
+                    displayErrors(responseData.errors); // 에러 메시지 처리 함수 호출
+                } else {
+                    // 성공 시, 원하는 동작 수행 (예: 페이지 리다이렉트)
+                    window.location.href = '/admin/list/artwork'; // 원하는 경로로 변경
+                }
+            } catch (error) {
+                console.error('Error:', error);
             }
-        } catch (error) {
-            console.error('Error:', error);
-        }
         });
 
         function displayErrors(errors) {
@@ -347,11 +423,6 @@
     }
 
 
+</script>
 
-
-
-
-
-    </script>
-</body>
 </html>

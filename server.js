@@ -12,9 +12,11 @@ const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const ArtworkJoinArtist = require('./middleware/ArtistJoinArtwork.js')
-//const { S3Client } = require('@aws-sdk/client-s3')
-const { s3 } = require('./module/s3.js')
+
+const { s3, deleteS3Image } = require('./module/s3.js')
 const artistData = require('./middleware/artistData.js')
+const artworkData = require('./middleware/artworkData.js')
+const validateArtwork = require('./middleware/artworkValidation.js')
 
 const multer = require('multer')
 const multerS3 = require('multer-s3')
@@ -25,7 +27,9 @@ const upload = multer({
     s3: s3,
     bucket: process.env.BUCKET_NAME,
     key: function (req, file, cb) {
-      cb(null, Date.now().toString() + path.extname(file.originalname)); 
+      // 파일 이름 앞에 현재 시간과 파일 원본 이름을 결합하여 고유한 key 생성
+      const uniqueKey = Date.now().toString() + '-' + file.originalname;
+      cb(null, uniqueKey);
     }
   })
 })
@@ -263,7 +267,7 @@ app.get('/admin/list/user', async(req,res)=>{
   res.render('admin/adminMain.ejs',{data:data, result : result , listType : "user"})
 })
 
-
+////////////📌 작가 등록 페이지 POST
 
 app.post('/write/artist', upload.single('artistimg'), artistData , async(req,res)=>{
   const result = req.artistData;
@@ -278,6 +282,8 @@ app.post('/write/artist', upload.single('artistimg'), artistData , async(req,res
     }
  
 })
+
+////////////📌 작가 수정 페이지 POST
 
 app.post('/edit/artist', upload.single('artistimg'), artistData , async (req, res)=>{
 
@@ -342,6 +348,9 @@ app.get('/admin/detail/artist/:Id', async (req,res)=>{
 
 })
 
+
+////////////📌 작가 등록 페이지 GET
+
 app.get('/admin/write/artist', async(req,res)=>{
   try{
     res.render('admin/writeArtist.ejs',{result : req.user || null, data : null})
@@ -352,6 +361,8 @@ app.get('/admin/write/artist', async(req,res)=>{
  
 
 })
+
+////////////📌 작가 수정 페이지 GET  
 
 app.get('/admin/write/artist/:Id', async (req, res)=>{
 
@@ -366,198 +377,131 @@ app.get('/admin/write/artist/:Id', async (req, res)=>{
 
 })
 
+
+
+////////////📌 작품 등록 페이지 GET
+// 등록하려는 작품의 작가 아이디 값이 있어야함
+
 app.get('/admin/write/artwork/:Id' , async(req, res)=>{
 
   const result = req.user || null;
   const artistId =  req.params.Id;
   const artistData = await db.collection('artist').find({_id : new ObjectId(artistId)}).toArray();
 
-  res.render('admin/writeArtwork.ejs', {result : result, artistData : artistData })
+
+  res.render('admin/writeArtwork.ejs', {result : result, artistData : artistData, artworkData : null })
+
 
 })
 
-app.post('/admin/write/artwork',
+////////////📌 작품 수정 페이지 GET
+// 수정하려는 작품의 아이디 값이 있어야함
+// 작품 등록페이지 재활용
+app.get('/admin/edit/artwork/:Id', async(req,res)=>{
+
+  const result = req.user || null;
+  const artworkData = await db.collection('artwork').find({_id : new ObjectId(req.params.Id)}).toArray();
+  const artistData = await db.collection('artist').find({_id : new ObjectId(artworkData[0].artist)}).toArray(); 
+
+
+  res.render('admin/writeArtwork.ejs', {result : result, artworkData : artworkData , artistData : artistData})
+
+})
+
+
+////////////📌 작품 수정 페이지 POST
+app.post('/admin/edit/artwork/:Id', 
+  upload.fields([
+    {name : 'file1', maxCount : 1},
+    {name : 'file2', maxCount : 1},
+    {name : 'file3', maxCount : 1},
+    {name : 'file4', maxCount : 1},
+    {name : 'file5', maxCount : 1},
+  ]), 
+  validateArtwork , ArtworkJoinArtist , artworkData ,async (req, res)=>{
+  
+  try{
+    await db.collection('artwork').updateOne({_id : new ObjectId(req.params.Id)}, {$set : req.data});
+
+  
+    res.redirect('/admin/list/artwork');
+  }catch(error){
+    console.error('작품 수정 중 오류 발생:', error);
+    res.status(500).json('작품 수정 중 서버 오류 발생: ' + error);
+  }
+
+
+
+});
+
+
+////////////📌 작품 등록 페이지 POST
+
+app.post('/admin/write/artwork/:Id',
 upload.fields([
   {name : 'file1', maxCount : 1},
   {name : 'file2', maxCount : 1},
   {name : 'file3', maxCount : 1},
   {name : 'file4', maxCount : 1},
   {name : 'file5', maxCount : 1},
-
 ]), 
-[
-  // 유효성검사
-
-  check('artworkNameKr').trim().notEmpty().withMessage('작품의 국문을 입력하세요'),
-  check('artworkNameEng').trim().notEmpty().withMessage('작품의 영문을 입력하세요'),
-  check('artworkMedium').trim().notEmpty().withMessage('작품의 재료를 입력하세요'),
-  check('artworkMadeDate').trim().isNumeric().withMessage('작품의 제작년도를 입력하세요'),
-  check('artworkSizeHeight').trim().isNumeric().withMessage('작품의 높이를 입력하세요'),
-  check('artworkSizeWidth').trim().isNumeric().withMessage('작품의 넓이를 입력하세요'),
-  check('saleStatus').trim().notEmpty().withMessage('판매 여부를 선택하세요'),
-  check('certificationStatus').trim().notEmpty().withMessage('보증서 여부를 선택하세요'),
-  check('artworkSaleStart').trim().notEmpty().withMessage('저작 시작 날짜를 입력하세요'),
-  check('artworkSaleEnd').trim().notEmpty().withMessage('저작 만료 날짜를 입력하세요'),
-  check('artworkPrice').trim().notEmpty().withMessage('가격을 기입하세요'),
-  // 동적으로 생성되는 필드들에 대한 유효성 검사
-  check('postCode').optional().trim().notEmpty().withMessage('우편번호를 입력하세요'),
-  check('roadAdress').optional().trim().notEmpty().withMessage('도로명을 입력하세요'),
-  check('jibunAdress').optional().trim().notEmpty().withMessage('지번주소를 입력하세요'),
-  check('locationDate').optional().trim().notEmpty().withMessage('작품 위치 날짜를 입력하세요'),
-  
-  check('files')
-  .custom((value, { req }) => {
-    const files = req.files;
-    // 파일이 하나라도 있는지 검사
-    if (files['file1'] || files['file2'] || files['file3'] || files['file4'] || files['file5']) {
-      return true;
-    }
-    throw new Error('최소한 하나의 파일을 업로드해야 합니다.');
-  }),
-
-],
+validateArtwork,
 ArtworkJoinArtist,
+artworkData,
 async(req,res)=>{
-  
-  // 파일이 존재할 경우에만 전송 처리
-  // const files = req.files;
-  // 이미지 저장 주소 files['file1'][0]F
-  // 파일이 존재할 경우에만 전송 처리
-
-  const errors = validationResult(req);
-  if(!errors.isEmpty()){
-    console.log(errors)
-    return res.status(400).json({ errors: errors.array() });
-    
-  }
- 
-  try{
-
-
-    const {
-      artworkNameKr,
-      artworkNameEng,
-      artworkMedium,
-      artworkMadeDate,
-      artworkSizeHeight,
-      artworkSizeWidth,
-      artworkSizeDepth,
-      postCode,
-      roadAdress,
-      jibunAdress,
-      extraAddress,
-      detailAddress,
-      locationDate,
-      saleStatus,
-      certificationStatus,
-      artworkSaleStart,
-      artworkSaleEnd,
-      artistId ,
-      artworkPrice
-      
-
-    } = req.body;
-
-    
-
-    const inputDataNull =(value)=> value === '' ? null : value;
-    // 작품 이름 배열 처리
-    const artworkName = [inputDataNull(artworkNameKr),inputDataNull(artworkNameEng)]
-  
-    // 작품 사이즈 배열 처리
-    const artworkSize = [inputDataNull(artworkSizeHeight), inputDataNull(artworkSizeWidth), inputDataNull(artworkSizeDepth)]
-
-    // 저작기간 배열 정리
-    const artworkCopyRight = [inputDataNull(artworkSaleStart), inputDataNull(artworkSaleEnd)]
-
-    
-
- 
-
-    // 위치 배열 처리
-    if( Array.isArray(postCode) && Array.isArray(roadAdress) &&
-        Array.isArray(extraAddress) && Array.isArray(detailAddress) &&
-        Array.isArray(locationDate) && Array.isArray(jibunAdress)
-      ){
-        location = locationDate.map((date, i)=>{
-
-          return{
-      
-            date : new Date(inputDataNull(date)) ,
-            road : roadAdress[i] +  extraAddress[i] + detailAddress[i],
-            location_Jibun : jibunAdress[i],
-          }
-
-        })
-    }else{
-      location = [{
-          date: new Date(inputDataNull(locationDate)) ,
-          road: roadAdress + extraAddress + detailAddress,
-          location_Jibun: jibunAdress
-      }];
-    }
-    
-    location.sort((a,b)=> a.date - b.date )
-    console.log('솔트된 배열 ' + location)
-    console.log('현재위치' + location[0])
-    
-    //현재 배송지 (추후)
-
-
-    // 분류 > 특징적인 단어 나열 후 추후 검색시에 찾을 수 있게 함. (추후)
-
-
-
-    // 이미지 url 배열처리
-    const imgUrl = [];
-
-    for(let i = 1; i <= 5; i++){
-      const fileNum = `file${i}`;
-      if(req.files[fileNum] && req.files[fileNum][0]){
-        const fileLocation = req.files[fileNum][0].location;
-        imgUrl.push(fileLocation);
-      }
-    }
- 
-
-    
-    
-    // 데이터 등록 
-
-
-    const data = {
-      artist : new ObjectId(artistId) , 
-      imgUrl : imgUrl,
-      location : location,
-      name : artworkName,
-      size : artworkSize,
-      price : artworkPrice,
-      copyRight : artworkCopyRight,
-      registerDate : new Date(),
-      medium: artworkMedium,
-      madeDate: artworkMadeDate,
-      sale : saleStatus,
-      certification : certificationStatus,
-    }
-
-    
-
-    await db.collection('artwork').insertOne(data);
-    
-      
-
+  try{    
+    console.log('location JSON :', JSON.stringify(req.data.location)); 
+    await db.collection('artwork').insertOne(req.data);
 
     res.redirect('/admin/list/artwork')
 
+
   }catch(error){
-    console.log('서버에러', error)
+    res.status(500).json(' 작품 등록 진행중 서버에러 ' + error)
+  } 
+
+})
+
+
+
+////////////📌 작품 삭제  POST
+app.get('/admin/delete/artwork/:Id', async(req,res)=>{
+
+  const artworkId = req.params.Id;
+  console.log(artworkId) 
+
+  // 작품 데이터를 조회하여 이미지 url을 가져옴
+  try{
+
+    const artworkImg = await db.collection('artwork').findOne(
+      {_id : new ObjectId(artworkId )},
+      {projection: { _id: 0, imgUrl: 1 }}
+    )
+      if(!artworkImg){ return res.status(400).json({ message : ' 작품 이미지가 존재하지 않습니다. ' }) }
+    
+      // 작품의 이미지 url를 배열로 가져옴
+      const artworkImgArray = artworkImg.imgUrl;
+
+      // s3에서 이미지 삭제 
+      await deleteS3Image(artworkImgArray);
+    
+      //deleteOne 이용하여 몽고디비에서 데이터삭제
+      await db.collection('artwork').deleteOne({_id : new ObjectId(artworkId)});
+
+      console.log('이미지 및 데이터 삭제 모두 완료')
+      res.redirect('/admin/list/artwork')
+
+  }catch(error){
+
   }
-
-  
-
 
 
 
 
 
 })
+
+
+
+
+////////////📌 작가 삭제  POST

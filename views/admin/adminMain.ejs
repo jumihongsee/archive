@@ -25,10 +25,11 @@
                                 <th>size</th>
                                 <th>Medium</th>
                                 <th>Price</th>
-                                <th>sale</th>
                                 <th>Current Location</th>
                                 <th>located time</th>
+                                <th>sale</th>
                                 <th>Certification</th>
+                                <th>관리</th>      
                              
                             </tr>
                     <% }else if(listType === 'artist'){ %>
@@ -42,6 +43,8 @@
                                 <th>email</th>
                                 <th>homepage</th>
                                 <th>등록날짜</th>               
+                                <th>관리</th>               
+            
                             </tr>
                     <% }else if(listType === 'user') {%>
                         <tr class="user">
@@ -64,15 +67,30 @@
                                     <td><%= i + 1 %></td>
                                     <td>
                                         <div class="img-wrapper artwork">
-                                            <img src="<%=  artwork.imgUrl[0] %>" alt="">
+                                            <% 
+                                                // 기본 이미지 경로 설정
+                                                let imageSrc = '/img/plus.png'; 
+                                                
+                                                // 이미지 배열에서 첫 번째로 존재하는 이미지 찾기
+                                                for (let j = 0; j < 5; j++) {
+                                                    if (artwork.imgUrl[j]) {
+                                                        imageSrc = artwork.imgUrl[j];
+                                                        break;
+                                                    }
+                                                }
+                                            %>
+                                            <img src="<%= imageSrc %>" alt="">
                                         </div>
                                     </td>
                       
                                     <td><%= artwork.name[0] %></td>
                                     <% artwork.artistData.forEach(item => { %>
-                                        <td><%= item.artistName[0] %> 
-                                            ( <p><%= item.artistName[1] %></p> )
+
+                                        <td class="artistPage" onclick="location.href='/admin/detail/artist/<%= item._id %>'"><%= item.artistName[0] %> 
+                                            ( <p><%= item.artistName[1] %></p> ) 
+                                         
                                         </td>
+
                                     <% }) %>
 
                                     <td><%= artwork.registerDate %></td>
@@ -86,7 +104,7 @@
                                     </td>
                                     <td><%= artwork.medium %></td>
                                     <td><%= artwork.price%></td>
-                                    <td><%= artwork.sale%></td>
+                         
                                     <% if (artwork.location.length === 0) { %>
                                         <td>-</td>
                                     <% }else { %>
@@ -98,8 +116,12 @@
                                     <% }else { %>
                                         <td><%= artwork.location[0].date %></td>
                                     <% } %>
-                                 
+                                    <td><%= artwork.sale %></td>
                                     <td><%= artwork.certification %></td>
+                                    <td class="manageBtn">
+                                        <button onclick="location.href='/admin/edit/artwork/<%=artwork._id %>'">수정 </button>
+                                        <button onclick="location.href='/admin/delete/artwork/<%=artwork._id %>'">삭제</button>
+                                    </td> 
                              
                                 </tr>
                            <% }) %>
@@ -107,25 +129,28 @@
                             <% data.map((artist, i) => { %>
                                 <tr class="artist">
                                     <td><%= i + 1 %></td>
-                                    <td onclick="location.href='/admin/detail/artist/<%= artist._id %>'">
+                                    <td class="artistPage" onclick="location.href='/admin/detail/artist/<%= artist._id %>'">
                                         <div class="img-wrapper artist">
                                             <img class="artist-img" src="<%= artist.imgUrl %>" alt="">
                                         </div>
                                     </td>
                                     <td><%= artist.artistName[0] %> <span>(<%= artist.artistName[1] %>)</span> </td>
-                                    <td><button class="addArtwork" onclick="location.href='/admin/write/artwork/<%=artist._id %>'">작품등록</button></td>
+                                    <td class="addArtwork"><button onclick="location.href='/admin/write/artwork/<%=artist._id %>'">작품등록</button></td>
                                     <td><%= artist.artistBirth %></td>
                                     <td><%= artist.artistTel %></td>
                                     <td><%= artist.artistEmail %></td>
                                     <td>데이터3</td>
                                     <td><%= artist.registerDate %></td>
-                             
+                                    <td class="manageBtn">
+                                        <button>수정</button>
+                                        <button>삭제</button>
+                                    </td>                             
                                 </tr>
                             <% }) %>
                        <%}else if(listType === 'user') {%>
 
                             <% data.map((user, i) => { %>
-                                <tr>
+                                <tr class="user">
                                     <td><%= i + 1 %></td>
                                     <td><%= user.username %></td>
                                     <td><%= user.realname %></td>
@@ -149,4 +174,6 @@
     </section>
    
 </body>
+
+
 </html>

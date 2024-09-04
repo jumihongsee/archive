@@ -28,6 +28,8 @@ async function artistData (req, res, next){
           // 기존 이미지 URL
           const oldImg = req.body.oldImg;
 
+
+          
           // 새이미지
           // 등록 파일이 있다? 그럼 새 파일 저장소를 가져와
           // 등록 파일이 없다?  : 아니면 이전 이미지 값 다시 넣어줘

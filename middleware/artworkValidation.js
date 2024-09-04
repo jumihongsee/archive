@@ -22,6 +22,13 @@ const validateArtwork = [
     check('files')
     .custom((value, { req }) => {
       const files = req.files;
+      const oldImg = req.body.oldImg;
+      
+      // 수정 페이지에서 oldImg가 있으면 검사 x
+      if(oldImg && oldImg.length > 0){
+        return true;
+      }
+
       // 파일이 하나라도 있는지 검사
       if (files['file1'] || files['file2'] || files['file3'] || files['file4'] || files['file5']) {
         return true;
