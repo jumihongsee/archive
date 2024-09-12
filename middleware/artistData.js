@@ -21,13 +21,18 @@ async function artistData (req, res, next){
             awardTitle,
             EducationDate,
             EducationTitle,
-    
+            registerDate
           } = req.body;
 
           // IMG
           // 기존 이미지 URL
           const oldImg = req.body.oldImg;
 
+          // 등록 시간 
+          // 등록시간이 이미 있으면 그 시간으로 등록
+          //등록시간이 없으면 new Date로 등록시간
+      
+          const registerDateValue = registerDate ? registerDate : formatDate(new Date());
 
           
           // 새이미지
@@ -104,12 +109,13 @@ async function artistData (req, res, next){
             award: award,
             education : education,
             artistBirth: inputDataNull(artistBirth),
-            artistEmail: inputDataNull(artistEmail),
-            artistTel: inputDataNull(formatArtistTel),
+            artistEmail: artistEmail ? inputDataNull(artistEmail) : null,
+            artistTel:  artistTel ? inputDataNull(formatArtistTel) : null ,
             artistHome: inputDataNull(artistHome),
             artistNote: inputDataNull(artistNote),
             artistDescription: inputDataNull(artistDescription),
-            registerDate : formatDate(new Date())
+            registerDate : registerDateValue,
+            createtDate :new Date()
          
           };
 

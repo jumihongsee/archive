@@ -115,8 +115,6 @@ passport.deserializeUser(async (id, done) => {
 });
 
 
-
-
 app.set('view engine', 'ejs');
 
 // 라우트 설정
@@ -132,7 +130,6 @@ app.get('/', (req, res) => {
 
 
 });
-
 
 
 app.get('/login', ArtworkJoinArtist, async (req, res) => {
@@ -151,9 +148,7 @@ app.get('/login', ArtworkJoinArtist, async (req, res) => {
   return res.render('index.ejs', { result: result });
 
 
-
 });
-
 
 
 app.post('/login', (req, res, next) => {
@@ -170,7 +165,6 @@ app.post('/login', (req, res, next) => {
 
 
 
-
 app.get('/logout', (req, res, next)=>{
   req.logout((err)=>{
 
@@ -182,7 +176,6 @@ app.get('/logout', (req, res, next)=>{
   });
 
 })
-
 
 
 
@@ -245,7 +238,6 @@ app.get('/admin/list/artwork', ArtworkJoinArtist, async(req,res)=>{
 
   return res.render('admin/adminMain.ejs', { result: result, data: data, listType: "artwork" });
 
-  
 
 })
 
@@ -253,37 +245,62 @@ app.get('/admin/list/artist', async(req,res)=>{
 
   let result = req.user || null;
   let data = await db.collection('artist').find().toArray()
-
-
   res.render('admin/adminMain.ejs',{data:data, result : result , listType : "artist"})
+
 })
 
-app.get('/admin/list/user', async(req,res)=>{
 
+app.get('/admin/list/user', async(req,res)=>{
   let result = req.user || null;
   let data = await db.collection('user').find().toArray()
-
-
   res.render('admin/adminMain.ejs',{data:data, result : result , listType : "user"})
 })
 
-////////////📌 작가 등록 페이지 POST
 
-app.post('/write/artist', upload.single('artistimg'), artistData , async(req,res)=>{
-  const result = req.artistData;
+//////////// ✨👩‍🎨 [POST] 작가 등록페이지 - 작가 데이터 등록하기 
+
+app.post('/write/artist',
+upload.single('artistimg'),
+[
+
+  check('artistnameKr').trim().isLength({ min: 1 }).withMessage('작가의 국문이름을 입력하세요'),
+  check('artistnameEng').trim().isLength({ min: 1 }).withMessage('작가의 영문이름을 입력하세요'),
+  check('EducationDate').optional().trim().isLength({ min: 1 }).withMessage('학력 날짜를 선택하세요'),
+  check('EducationTitle').optional().trim().isLength({ min: 1 }).withMessage('학력 타이틀을 입력하세요'),
+  check('soloExDate').optional().trim().isLength({ min: 1 }).withMessage('개인전 날짜를 선택하세요'),
+  check('soloExTitle').optional().trim().isLength({ min: 1 }).withMessage('개인전 타이틀을 입력하세요'),
+  check('groupExDate').optional().trim().isLength({ min: 1 }).withMessage('그룹전 날짜를 선택하세요'),
+  check('groupExTitle').optional().trim().isLength({ min: 1 }).withMessage('그룹전 타이틀을 입력하세요'),
+  check('awardExDate').optional().trim().isLength({ min: 1 }).withMessage('수상 날짜를 선택하세요'),
+  check('awardTitle').optional().trim().isLength({ min: 1 }).withMessage('수상 타이틀을 입력하세요'),
+
+],
+artistData , async(req,res)=>{
+    const result = req.artistData;
+    const errors = validationResult(req);
+
+
+
+       try{   
+          if(!errors.isEmpty()){
+            console.log(errors)
+            return res.status(400).json({ errors: errors.array() });
+          }else{
+            await db.collection('artist').insertOne(result);
+          }  
     
-    try{     
-      await db.collection('artist').insertOne(result);
-       
-      res.redirect('/admin/list/artist');
-    }catch(error){
-      console.log('데이터 에러', error);
-      res.status(500).send('서버 에러')
-    }
+         res.redirect('/admin/list/artist');
+       }catch(error){
+         console.log('데이터 에러', error);
+         res.status(500).send('서버 에러')
+       }
+    
+
+
  
 })
 
-////////////📌 작가 수정 페이지 POST
+//////////// ✨👩‍🎨 [POST] 작가 수정페이지 - 작가 데이터 수정하기
 
 app.post('/edit/artist', upload.single('artistimg'), artistData , async (req, res)=>{
 
@@ -303,6 +320,85 @@ app.post('/edit/artist', upload.single('artistimg'), artistData , async (req, re
   }
 
 })
+
+//////////// ✨👩‍🎨 [GET] 작가 등록 페이지  - 페이지 띄우기 
+
+app.get('/admin/write/artist', async(req,res)=>{
+  try{
+    res.render('admin/writeArtist.ejs',{result : req.user || null, data : null})
+  }catch(error){
+    console.error('Rendering error:', error);
+    res.status(500).send('Server Error');
+  }
+ 
+
+})
+
+//////////// ✨👩‍🎨 [GET] 작가 수정 페이지  - 서버사이드 랜더링 위한 데이터 보내기 
+
+app.get('/admin/write/artist/:Id', async (req, res)=>{
+
+  const result = req.user || null;
+  const artistId = req.params.Id;
+
+  let data = await db.collection('artist').find({_id : new ObjectId(artistId)}).toArray()
+
+
+  res.render('admin/writeArtist.ejs', {result : result, data : data})
+
+
+})
+
+//////////// ✨👩‍🎨 [POST] 작가 삭제 페이지  -  fetch를 사용하여 작가 데이터 삭제하기
+app.post('/admin/delete/artist/:Id', async(req,res)=>{
+
+  //fetch에서 아이디값 받아옴
+  artistId = req.params.Id;
+
+  try{
+
+    // 몽고디비에서 아티스트 imgUrl 가져옴 
+    const artistImg = await db.collection('artist').findOne(
+      {_id : new ObjectId(artistId)},
+      {projection : {_id : 0, imgUrl : 1}}
+    )
+
+    // 작가의 작품 모두 조회
+    const artworks = await db.collection('artwork').find({ artist: new ObjectId(artistId) }).toArray();
+
+
+    //1. aws s3에서 작가 이미지 데이터 삭제해줌 (오로지 단일 이미지)
+       await deleteS3Image(artistImg.imgUrl)
+
+    //2. aws s3에서 작품 이미지들 삭제 해줌
+    // 작품 이미지url들 배열돌면서 꺼내기
+    artworks.forEach(artworkImg => {
+      deleteS3Image(artworkImg.imgUrl);
+    });
+
+    //3. 몽고디비에서 작품 데이터 삭제
+    await db.collection('artwork').deleteMany({artist: new ObjectId(artistId)})
+
+
+    //4. 몽고디비에서 아티스트 데이터 삭제
+    await db.collection('artist').deleteOne({_id : new ObjectId(artistId)})
+
+
+    // 완료시 리다이렉트
+    res.redirect('/admin/list/artist')
+
+
+  }catch(error){
+    res.status(500).json('작가 삭제실패' + error)
+  }
+
+})
+
+
+
+
+
+//////////// ✨👩‍🎨 [GET] 작가 디테일 페이지  - 페이지 띄우기 
 
 app.get('/admin/detail/artist/:Id', async (req,res)=>{
   const result = req.user || null;
@@ -337,7 +433,8 @@ app.get('/admin/detail/artist/:Id', async (req,res)=>{
         artistDescription: 1,
         'artworkData._id': 1,
         'artworkData.name': 1,
-        'artworkData.price': 1
+        'artworkData.price': 1,
+        'artworkData.imgUrl' : 1
       }
     }
   ]).toArray();
@@ -349,37 +446,8 @@ app.get('/admin/detail/artist/:Id', async (req,res)=>{
 })
 
 
-////////////📌 작가 등록 페이지 GET
 
-app.get('/admin/write/artist', async(req,res)=>{
-  try{
-    res.render('admin/writeArtist.ejs',{result : req.user || null, data : null})
-  }catch(error){
-    console.error('Rendering error:', error);
-    res.status(500).send('Server Error');
-  }
- 
-
-})
-
-////////////📌 작가 수정 페이지 GET  
-
-app.get('/admin/write/artist/:Id', async (req, res)=>{
-
-  const result = req.user || null;
-  const artistId = req.params.Id;
-
-  let data = await db.collection('artist').find({_id : new ObjectId(artistId)}).toArray()
-
-
-  res.render('admin/writeArtist.ejs', {result : result, data : data})
-
-
-})
-
-
-
-////////////📌 작품 등록 페이지 GET
+//////////// 🖼️  [GET] 작품 등록 - 페이지 띄우기 
 // 등록하려는 작품의 작가 아이디 값이 있어야함
 
 app.get('/admin/write/artwork/:Id' , async(req, res)=>{
@@ -394,7 +462,8 @@ app.get('/admin/write/artwork/:Id' , async(req, res)=>{
 
 })
 
-////////////📌 작품 수정 페이지 GET
+//////////// 🖼️ [GET] 작품 수정 페이지 - 서버사이드 랜더링 위한 데이터 보내기 
+
 // 수정하려는 작품의 아이디 값이 있어야함
 // 작품 등록페이지 재활용
 app.get('/admin/edit/artwork/:Id', async(req,res)=>{
@@ -409,7 +478,7 @@ app.get('/admin/edit/artwork/:Id', async(req,res)=>{
 })
 
 
-////////////📌 작품 수정 페이지 POST
+//////////// 🖼️ [POST] 작품 수정 페이지 - 작품 데이터 수정하기
 app.post('/admin/edit/artwork/:Id', 
   upload.fields([
     {name : 'file1', maxCount : 1},
@@ -435,7 +504,7 @@ app.post('/admin/edit/artwork/:Id',
 });
 
 
-////////////📌 작품 등록 페이지 POST
+//////////// 🖼️ [POST] 작품 등록 페이지 - 작품 데이터 등록하기
 
 app.post('/admin/write/artwork/:Id',
 upload.fields([
@@ -464,13 +533,15 @@ async(req,res)=>{
 
 
 
-////////////📌 작품 삭제  POST
-app.get('/admin/delete/artwork/:Id', async(req,res)=>{
+//////////// 🖼️ [POST] 작품 삭제  - fetch를 사용하여 작품 데이터 삭제하기
+
+app.post('/admin/delete/artwork/:Id', async(req,res)=>{
 
   const artworkId = req.params.Id;
   console.log(artworkId) 
 
   // 작품 데이터를 조회하여 이미지 url을 가져옴
+
   try{
 
     const artworkImg = await db.collection('artwork').findOne(
@@ -492,16 +563,38 @@ app.get('/admin/delete/artwork/:Id', async(req,res)=>{
       res.redirect('/admin/list/artwork')
 
   }catch(error){
-
+    res.status(500).json('작품 삭제실패' + error)
   }
 
+})
+
+//////////// 🖼️ [GET] 작품 디테일 
+app.get('/admin/detail/artwork/:Id', async(req, res)=>{
+  
+
+  const result = req.user || null;
 
 
+  try{
+
+    const artworkId = req.params.Id;
+
+    // 1. 해당하는 아트워크 DB 조회
+    const artworkData = await db.collection('artwork').findOne({ _id: new ObjectId(artworkId) });
+    let artistName = await db.collection('artist').findOne({_id : artworkData.artist})
+    artistName = artistName.artistName[0]
+
+    console.log(artworkData)
+
+
+
+    res.render('artworkDetail.ejs', {result : result, artworkData : artworkData , artistName : artistName})
+
+  }catch(error){
+
+  }
 
 
 })
 
 
-
-
-////////////📌 작가 삭제  POST

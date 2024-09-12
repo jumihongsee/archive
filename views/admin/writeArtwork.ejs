@@ -16,7 +16,6 @@
 
         <% artistData.forEach(artist => { %>
             <form id="artworkForm" action="<%= artworkData ? '/admin/edit/artwork/' + artworkData[0]._id : '/admin/write/artwork/' + artistData[0]._id %>" method="POST" enctype="multipart/form-data">
-             
                
                 <div class="artwork-artist-info">
                     <h2 class="title">
@@ -26,6 +25,8 @@
                     <img onclick="location.href='/admin/detail/artist/<%= artist._id%>'" src="<%= artist.imgUrl%>" alt="">
                 
                     <input type="hidden" name="artistId" value="<%= artist._id%>">
+                   
+                    
                 </div>
                 <!-- 작품 이미지 등록 -->
                 <div class="input-image">
@@ -102,7 +103,7 @@
                         <div class="input-wrapper">
                             <input type="text" name="artworkMedium" placeholder="재료(Medium)"  value="<%= artworkData ? artworkData[0].medium : '' %>">
                             <input type="number" name="artworkMadeDate" min="1200" max="2100" placeholder="제작년도 (YYYY)"  value="<%= artworkData ? artworkData[0].madeDate : '' %>">
-                            <input type="number" name="artworkPrice" placeholder="가격" value="<%= artworkData ? artworkData[0].price : '' %>">
+                            <input type="number" name="artworkPrice" placeholder="가격" value="<%= artworkData ? artworkData[0].price.replace(/,/g, '') : '' %>">
                         </div>
                         <div class="wrapper size">
                             
@@ -377,7 +378,7 @@
                 const response = await fetch(actionUrl, {
                     method: 'POST', // 서버 라우터에 따라 'PUT' 또는 'PATCH'가 필요할 수 있음
                     body: formData
-            });
+                });
 
                 if (!response.ok) {
                     const responseData = await response.json();

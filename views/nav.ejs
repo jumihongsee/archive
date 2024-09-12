@@ -1,39 +1,29 @@
-<nav class="nav">
-    <ul>       
-        <li><a href="/">ARCHIVE</a></li>
-    </ul>
-
-    <ul class="list-btn">
-        <li><button id="artworkBtn" onclick="location.href='/admin/list/artwork'"  >Artwork</button></li>
-        <li><button id="artistBtn" onclick="location.href='/admin/list/artist'">Artist</button></li>
-        <li><button id="userBtn" onclick="location.href='/admin/list/user'">User</button></li>
-    </ul>
-    
+<nav class="nav">    
     <ul>
-        <li class="admin">
-            <p>Admin <strong><%= result.realname %></strong> </p>
-            <img src="/img/user.svg" alt="">
+        <li class="search"><img src="/img/search.svg" alt="">
+            <input type="text" placeholder="Search">
         </li>
-        <li>
-            <a href="/logout">LOGOUT</a>
+        <li class="admin">
+            <img class="user" src="/img/user.svg" alt="">
+            <div class="wp">
+                <p class="name"><%= result.realname %>  <a href="/logout"><img src="/img/logout.png" alt=""></a> </p>
+                <p class="email"><%= result.useremail %> </p>
+           
+            </div>
+
         </li>
     </ul>       
 </nav>
-
 <script>
-    // 현재 URL에 따라 active 클래스를 추가하는 함수
-    window.onload = function() {
-        
-        const currentPath = window.location.pathname;
+    const nav = document.querySelector('nav')
+    window.addEventListener('scroll', function(){
 
-        if (currentPath.includes('/admin/list/artwork') || currentPath.includes('/login')) {
-            document.getElementById('artworkBtn').classList.add('active');
-        } else if (currentPath.includes('/admin/list/artist')) {
-            document.getElementById('artistBtn').classList.add('active');
-        } else if (currentPath.includes('/admin/list/user')) {
-            document.getElementById('userBtn').classList.add('active');
-            document.getElementById('artworkBtn').classList.remove('active');
+        if(window.scrollY > 50){
+            nav.classList.add('active');
+        }else{
+            nav.classList.remove('active');
         }
-      
-    };
+    })
 </script>
+
+

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <%- include('./nav.ejs') %>
+    <%- include('./sidenav.ejs') %>
+    <section class="artwork-detail admin">
+    
+      
+        <div class="wp">
+            <div class="artworkInfo">
+                <button class="modify" onclick="location.href='/admin/edit/artwork/<%= artworkData._id %>'">
+                    작품 수정
+                </button>
+                <div class="slider">
+                    <div class="swiper mySwiper">
+                        <div class="swiper-wrapper">
+                            <% artworkData.imgUrl.forEach((item, i) => { 
+                                if (item) { // item이 빈 문자열이 아닌 경우에만 실행
+                            %>
+                                <div class="swiper-slide"><img src="<%= item %>" alt=""></div>
+                            <% 
+                                } 
+                            }) %>
+                        </div>
+                        <div class="swiper-pagination"></div>
+                      </div>
+                </div>
+                <div class="artwork-info">
+                    <ul>
+                        <li>
+                            <h1><%= artworkData.name[0] %><span>(<%= artworkData.name[1] %>)</span></h1>
+                        </li>
+                        <li>
+                            <a href="/admin/detail/artist/66c5a9fbc9edaac2aa544f4a"> <%= artistName %></a> 작가
+                        </li>
+                        <li>
+                            <h3>작품가격</h3>
+                            <p><%= artworkData.price %>원</p>
+                        </li>
+                        <li>
+                            <h3>사이즈</h3>
+                            <p class="size-wrapper">
+                                <span class="size">H</span>
+                                <span><%= artworkData.size[0] %> cm</span>
+                            </p>
+                            <p class="size-wrapper">
+                                <span class="size">W</span>
+                                <span><%= artworkData.size[1] %> cm</span>
+                            </p>
+                     
+                            <% if (artworkData.size[2]) { %>
+                                <p class="size-wrapper">
+                                    <span class="size">D</span>
+                                    <span><%= artworkData.size[2] %> cm</span>
+                                </p>
+                            <% }else{ %>
+
+                            <% } %>
+                        
+                        </li>
+    
+                        <li>
+                            <h3>저작날짜</h3>
+                            <span>시작 : <%= artworkData.copyRight[0] %></span>
+                            -
+                            <span>종료 : <%= artworkData.copyRight[1] %></span>
+                        </li>
+                    </ul>    
+                </div>
+            </div>
+            <div class="status">
+                <ul>
+                    <li>
+                        <h3>작품등록</h3>
+                        <p><%= artworkData.registerDate %></p>
+                        <p>홍주미 작성</p>
+                    </li>
+                    <li>
+                        <h3>최근수정</h3>
+                        <p>언젤까 옵션 추가해야함</p>
+                        <p>홍주미 수정</p>
+                    </li>
+                    <li>
+                        <button>작품 삭제하기</button>
+                    </li>
+
+            </div>
+        </div>
+        
+
+
+
+  
+
+        
+        <div class="artworkIocation">
+            <div class="location-load">
+                <h2>Location Info</h2>
+                <div class="location-wrapper">        
+                    <div class="location-box-wrapper">
+                        <h3>Current Location</h3>
+                    </div>        
+                    <div class="location-box-wrapper">
+                        <h3>Location history</h3>
+                        <!-- 1. 시간순서 별로 송출 ( 내림 차순 )  -->
+                        <!-- 2. 시간 포맷하여 넣기  -->
+                        <% 
+                            artworkData.location.sort((a, b) => new Date(a.date) - new Date(b.date)); // 날짜 기준 내림차순 정렬
+                            artworkData.location.forEach((item, i) => { 
+                                const date = new Date(item.date);
+                                const year = date.getFullYear(); // 연도 추출
+                                const month = date.getMonth() + 1; // 월 추출 (0부터 시작하므로 +1)
+                                const day = date.getDate(); // 일 추출
+                                const formattedDate = `${year}-${month}-${day}`;
+                        %>
+                            <div class="location-box">
+                                <ul>
+                                    <p class="number-tag"><%= i + 1 %></p>
+                                    <li>
+                                        <h3>적재날짜</h3>
+                                        <p><%= formattedDate %></p>
+                                    </li>
+                                    <li>
+                                        <h3>위치</h3>
+                                        <p><%= item.road %></p>
+                                    </li>
+                                    <li>
+                                        <h3>우편번호</h3>
+                                        <p><%= item.postCode %></p>
+                                    </li>
+                                    <% if(item.detail){ %> 
+                                        <li>
+                                            <p class="tag">사무실 수장고</p>
+                                        </li>
+                                    <% }else{ %>
+
+                                    <% } %>
+
+                                </ul>
+                            </div>
+                        <% }) %>
+
+ 
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script>
+    var swiper = new Swiper(".mySwiper", {
+      pagination: {
+        el: ".swiper-pagination",
+      },
+    });
+</script>
+
+</html>

@@ -1,9 +1,42 @@
 <nav class="side-nav">
     
     <ul>
-        <li class="search"><img src="/img/search.svg" alt=""><input type="text"></li>
-        <li class="active"><a href="/admin/write/artist"><img src="/img/plus.png" alt=""> ARTIST </a></li>
-        <!-- <li><a href="/admin/write/artwork"><img src="/img/plus.png" alt=""> ARTWORK </a></li> -->
-        <li><a href="/admin/write/user"><img src="/img/plus.png" alt=""> USER </a></li>
+        <li class="logo"><a href="/">ARCHIVE</a></li>
+        <li><button id="artworkBtn" onclick="location.href='/admin/list/artwork'" >
+                <img src="/img/artwork.png" alt="">
+                Artwork
+            </button>
+        </li>
+        <li>
+            <button id="artistBtn" onclick="location.href='/admin/list/artist'">
+                <img src="/img/artist.png" alt="">
+                Artist
+            </button>
+        </li>
+        <li>
+            <button id="userBtn" onclick="location.href='/admin/list/user'">
+                <img src="/img/user.svg" alt="">
+                User
+            </button>
+        </li>
+
     </ul>
 </nav>
+
+<script>
+
+    window.onload = function() {
+        
+        const currentPath = window.location.pathname;
+
+        if (currentPath.includes('/admin/list/artwork') || currentPath.includes('/login')) {
+            document.getElementById('artworkBtn').classList.add('active');
+        } else if (currentPath.includes('/admin/list/artist')) {
+            document.getElementById('artistBtn').classList.add('active');
+        } else if (currentPath.includes('/admin/list/user')) {
+            document.getElementById('userBtn').classList.add('active');
+            document.getElementById('artworkBtn').classList.remove('active');
+        }
+      
+    };
+</script>

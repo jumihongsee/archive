@@ -12,7 +12,7 @@
 
     <section class="artist-write admin">
      
-        <form action="<%= data ? '/edit/artist' : '/write/artist' %>" method="POST" enctype="multipart/form-data">
+        <form id="artistForm" action="<%= data ? '/edit/artist' : '/write/artist' %>" method="POST" enctype="multipart/form-data">
             <div class="img">       
                 <label for="file">
                     <div class="preview-img-wrapper">
@@ -33,78 +33,82 @@
                 </label>              
             </div>
             <div class="info-form info">
-                <h2>Artist Info</h2>
-                <label for="artistnameKr">
-                    <p>이름 (Kor) <span>* 필수 입력값</span></p>
-                    <% if(data){ %>
-                        <%  data.forEach((item) =>{ %>
-                            <input type="text" name="artistnameKr" id="artistnameKr" value="<%= item.artistName[0]  %>">
-                        <% }) %>
-                    <% }else{ %>
-                        <input type="text" name="artistnameKr" id="artistnameKr" value="">
-                    <% } %>
-
-                </label>
-                <label for="artistnameEng">
-                    <p>이름 (Eng) <span>* 필수 입력값</span></p> 
-                    <% if(data){ %>
-                        <%  data.forEach((item) =>{ %>
-                            <input type="text" name="artistnameEng" id="artistnameEng" value="<%= item.artistName[1]  %>">
-                        <% }) %>
-                    <% }else{ %>
-                        <input type="text" name="artistnameEng" id="artistnameEng" >
-                    <% } %>
-                
-                </label>
-                <label for="artistBirth">
-                    <p>생년월일</p>   
-                    <% if(data){ %>
-                        <%  data.forEach((item) =>{ %>
-                            <input type="date" name="artistBirth" id="artistBirth" value="<%= item.artistBirth %>" >
-                        <% }) %>
-                    <% }else{ %>
-                        <input type="date" name="artistBirth" id="artistBirth" >
-                    <% } %>
-
-
+                <h2>Artist Info <span>/ 작가 정보</span></h2>
+                <div class="wp">
+                    <label for="artistnameKr">
+                        <p>작가명  <span>* 필수 입력값</span></p>
+                        <% if(data){ %>
+                            <%  data.forEach((item) =>{ %>
+                                <input type="text" name="artistnameKr" id="artistnameKr" value="<%= item.artistName[0]  %>">
+                                <input type="hidden" name="registerDate" id="registerDate" value="<%= item.registerDate  %>">
+                                
+                            <% }) %>
+                        <% }else{ %>
+                            <input type="text" name="artistnameKr" id="artistnameKr" value="" placeholder="국문이름을 입력하세요">
+                        <% } %>
+                    </label>
+                    <label for="artistnameEng">
+                 
+                        <% if(data){ %>
+                            <%  data.forEach((item) =>{ %>
+                                <input type="text" name="artistnameEng" id="artistnameEng" value="<%= item.artistName[1]  %>">
+                            <% }) %>
+                        <% }else{ %>
+                            <input type="text" name="artistnameEng" id="artistnameEng" placeholder="영문름을 입력하세요" >
+                        <% } %>
                     
-                </label>
-                <label for="artistEmail">
-                    <p>연락처 (email)</p> 
-                    <% if(data){ %>
-                        <%  data.forEach((item) =>{ %>
-                            <input type="email" name="artistEmail" id="artistEmail" value="<%= item.artistEmail %>">
-                        <% }) %>
-                    <% }else{ %>
-                        <input type="email" name="artistEmail" id="artistEmail">
-                    <% } %>                   
-                </label>
-
-                <label for="artistTel">
-                    <p>연락처 (tel)</p> 
-                    <% if(data){ %>
-                        <%  data.forEach((item) =>{ %>
-                            <input type="number" name="artistTel" id="artistTel" value="<%= item.artistTel %>">
-                        <% }) %>
-                    <% }else{ %>
-                        <input type="number" name="artistTel" id="artistTel"> 
-                    <% } %>
-                                  
-                </label>
-                <label for="artistHome">
-                    <p>홈페이지 (homepage)</p> 
-                    <% if(data){ %>
-                        <%  data.forEach((item) =>{ %>
-                            <input type="text" name="artistHome" id="artistHome" value="<%= item.artistHome %>">
-                        <% }) %>
-                    <% }else{ %>
-                        <input type="text" name="artistHome" id="artistHome">  
-                    <% } %>
-                             
-                </label>
+                    </label>
+                    <label for="artistBirth">
+                        <p>생년월일</p>   
+                        <% if(data){ %>
+                            <%  data.forEach((item) =>{ %>
+                                <input type="date" name="artistBirth" id="artistBirth" value="<%= item.artistBirth %>" >
+                            <% }) %>
+                        <% }else{ %>
+                            <input type="date" name="artistBirth" id="artistBirth" >
+                        <% } %>
+    
+    
+                        
+                    </label>
+                    <label for="artistEmail">
+                        <p>연락처 (email)</p> 
+                        <% if(data){ %>
+                            <%  data.forEach((item) =>{ %>
+                                <input type="email" name="artistEmail" id="artistEmail" value="<%= item.artistEmail %>">
+                            <% }) %>
+                        <% }else{ %>
+                            <input type="email" name="artistEmail" id="artistEmail" >
+                        <% } %>                   
+                    </label>
+    
+                    <label for="artistTel">
+                        <p>연락처 (tel)</p> 
+                        <% if(data){ %>
+                            <%  data.forEach((item) =>{ %>
+                                <input type="number" name="artistTel" id="artistTel" value="<%= item.artistTel %>">
+                            <% }) %>
+                        <% }else{ %>
+                            <input type="number" name="artistTel" id="artistTel"> 
+                        <% } %>
+                                      
+                    </label>
+                    <label for="artistHome">
+                        <p>홈페이지 (homepage)</p> 
+                        <% if(data){ %>
+                            <%  data.forEach((item) =>{ %>
+                                <input type="text" name="artistHome" id="artistHome" value="<%= item.artistHome %>">
+                            <% }) %>
+                        <% }else{ %>
+                            <input type="text" name="artistHome" id="artistHome">  
+                        <% } %>
+                                 
+                    </label>
+                </div>
+               
             </div>
             <div class="info-form career">
-                <h2>Artist Career</h2>   
+                <h2>Artist Career <span>/ 학력및 경력 추가</span></h2>   
                 <div class="education wrapper">
                     <% if(data){ %>
                         <% data.forEach((item)=>{ %>
@@ -251,6 +255,8 @@
                 <% }else{ %>
                     등록하기
                 <% } %>
+
+                <span> ! 입력값을 제대로 입력해 주세요.</span>
             </button>
 
         </form>
@@ -283,14 +289,15 @@
                 if(inputWrapperClass === "education wrapper"){
                     newInputGroup.innerHTML =
                     `
-                        <div class="solo-ex-input">
+                        <div class="edu-ex-input">
                             <label for="soloExDate">
-                                학력
-                                <input type="date" name="EducationDate" id="soloExDate">
+                                학력(년도)
+                                <input type="date" name="EducationDate[]" id="soloExDate">
+                                
                             </label>
                             <label for="soloExTitle">
                                 학교이름
-                                <input type="text" name="EducationTitle" id="soloExTitle">
+                                <input type="text" name="EducationTitle[]" id="soloExTitle" placeholder="학교명 기재">
                             </label>
                             <button type="button" class="input-delete"><img src="/img/x.png" alt=""></button>
                         </div>
@@ -301,12 +308,12 @@
                     `
                         <div class="solo-ex-input">
                             <label for="soloExDate">
-                                개인전 
-                                <input type="date" name="soloExDate" id="soloExDate">
+                                개인전(년도)
+                                <input type="date" name="soloExDate[]" id="soloExDate">
                             </label>
                             <label for="soloExTitle">
                                 전시 타이틀
-                                <input type="text" name="soloExTitle" id="soloExTitle">
+                                <input type="text" name="soloExTitle[]" id="soloExTitle" placeholder="개인전 타이틀 기재">
                             </label>
                             <button type="button" class="input-delete"><img src="/img/x.png" alt=""></button>
                         </div>
@@ -319,12 +326,12 @@
                     `
                         <div class="group-ex-input">
                             <label for="groupExDate">
-                                단체전 
-                                <input type="date" name="groupExDate" id="groupExDate">
+                                단체전(년도)
+                                <input type="date" name="groupExDate[]" id="groupExDate">
                             </label>
                             <label for="groupExTitle">
                                 전시 타이틀
-                                <input type="text" name="groupExTitle" id="groupExTitle">
+                                <input type="text" name="groupExTitle[]" id="groupExTitle" placeholder="그룹전 타이틀 기재">
                             </label>
                              <button type="button" class="input-delete"><img src="/img/x.png" alt=""></button>
                         </div>
@@ -335,12 +342,12 @@
                     `
                         <div class="award-input">
                             <label for="awardExDate">
-                                수상
-                                <input type="date" name="awardExDate" id="awardExDate">
+                                수상(년도)
+                                <input type="date" name="awardExDate[]" id="awardExDate">
                             </label>
                             <label for="awardTitle">
                                 수상 타이틀
-                                <input type="text" name="awardTitle" id="awardTitle">
+                                <input type="text" name="awardTitle[]" id="awardTitle" placeholder="수상명 기재">
                             </label>
                              <button type="button" class="input-delete"><img src="/img/x.png" alt=""></button>
                         </div>
@@ -357,7 +364,7 @@
         })
 
         //이벤트 델리게이션을 사용하여 삭제 버튼 클릭 
-        const deleteBtnWrapper = document.querySelector('.write'); // 전체 form을 감싸는 상위 요소 선택
+        const deleteBtnWrapper = document.querySelector('.artist-write'); // 전체 form을 감싸는 상위 요소 선택
         deleteBtnWrapper.addEventListener('click', function(e){
             if(e.target && e.target.closest('.input-delete')){
                 const deleteInputBtn = e.target.closest('.input-delete');
@@ -392,8 +399,79 @@
             console.log(reader.result)
         }
 
+        // 서버에서 오류 메세지 받아오기
+        document.getElementById('artistForm').addEventListener('submit', async function(e){ //폼에 무언가를 제출시 이벤트가 트리거
 
+            e.preventDefault(); 
+            const form = this; // 현재 폼요소 변수에 저장
+            const formData = new FormData(form); // 폼의 데이터를 formData객체로 변환 
+            const actionUrl = form.getAttribute('action'); // 폼의 action속성에 지정된 url을 가져옴 
 
+            try{
+                const response = await fetch(actionUrl,{ //fetch를 사용하여 비동기로 서버에 데이터를 전송함 
+                    method : 'POST',
+                    body: formData
+                });
+                if(!response.ok){ 
+                    // 서버의 응답상태가 성공적이지 않으면 / 응답 데이터를 response.json()으로 처리함 
+                    // 에러 데이터를 가져와 줌
+                    const responseData = await response.json();
+                    console.log('Error:', responseData.errors);
+                    displayErrors(responseData.errors) // 에러 처리 함수 호출
+                    
+                }else{
+                    window.location.href = '/admin/list/artist'
+                }
+            }catch(error){
+                console.error('Error' , error)
+            }
+
+        });
+
+        function displayErrors(errors) {
+    // 모든 input 필드를 초기화
+    const inputFields = document.querySelectorAll('input');
+    inputFields.forEach(input => {
+        input.style.borderColor = ''; 
+        input.style.backgroundColor = '';
+    });
+
+    // 각 에러에 대해 처리
+    errors.forEach(error => {
+        console.log(error);  // 에러 정보 확인
+        const inputElements = document.querySelectorAll(`[name="${error.path}"]`); // 배열 name을 처리할 경우
+        
+        // 동적 필드의 name이 배열일 경우 처리
+        if (inputElements.length === 0) {
+            const arrayInputElements = document.querySelectorAll(`[name="${error.path}[]"]`);
+            arrayInputElements.forEach(inputElement => {
+                applyErrorStyles(inputElement, error.msg);
+            });
+        }
+
+        document.querySelector('.submit-btn').classList.add('fail');
+
+        // NodeList로 반환된 inputElements에 대해 각각 처리
+        inputElements.forEach(inputElement => {
+            if (inputElement) {
+                applyErrorStyles(inputElement, error.msg);
+            }
+        });
+    });
+}
+
+// 에러 스타일 적용과 이벤트 리스너 등록을 담당하는 함수
+function applyErrorStyles(inputElement, errorMsg) {
+    inputElement.style.borderColor = 'red';
+    inputElement.style.backgroundColor = '#ffe6e6';
+    inputElement.setAttribute('placeholder', errorMsg);
+
+    // 값이 입력되면 스타일을 원래대로 되돌리는 이벤트 리스너 추가
+    inputElement.addEventListener('input', function() {
+        inputElement.style.borderColor = '#c0bdbd'; // 테두리 색을 원래대로
+        inputElement.style.backgroundColor = '#fff'; // 배경색을 원래대로
+    });
+}
     </script>
 
 

@@ -11,17 +11,43 @@
     <%- include('../sidenav.ejs') %>
     <section class="admin-main admin">
 
-        <div class="main-section-wrapper">
+        <div class="info">
+            <h2>
+                <% if(listType === 'artwork'){ %>
+                    Artwork
+                <% }else if(listType === 'artist'){ %>
+                    Artist
+                <% }else if(listType === 'user'){ %>
+                    User
+                <% } %>                
+            </h2>
 
+            <button onclick="location.href='/admin/write/artist'"><img src="/img/plus.png" alt=""> Add New Artist</button>
+        </div>
+        <div class="main-section-wrapper">
+                <div id="deletePopup" class="delete-alert">
+                    <h2> '<span id="deleteName"> </span>' 을/를 리스트에서 <strong> 삭제 </strong>하겠습니까?</h2>
+                    <p>( 삭제시 복구가 불가능합니다. )</p>
+                    <p id="deleteAlertMessage"></p>
+                    <div class="select-button">
+                        <button type="button" id="confirmDelete">네</button>
+                        <button type="button" id="noDelete" onclick="closePopup()">아니요</button>
+                    </div>
+                    <div class="close-button">
+                        <button type="button" onclick="closePopup()"><img src="/img/x.png" alt=""></button>
+                    </div>
+
+                </div>
                 <table>
                     <thead class="fixed-title">
                         <% if(listType === 'artwork'){ %>
                             <tr class="artwork">
                                 <th>NO.</th>
                                 <th>IMG</th>
+                                <th>관리</th>      
                                 <th>Title</th>
                                 <th>Artist</th>
-                                <th>Date</th>
+                                <th>Register Date</th>
                                 <th>size</th>
                                 <th>Medium</th>
                                 <th>Price</th>
@@ -29,7 +55,7 @@
                                 <th>located time</th>
                                 <th>sale</th>
                                 <th>Certification</th>
-                                <th>관리</th>      
+                   
                              
                             </tr>
                     <% }else if(listType === 'artist'){ %>
@@ -53,6 +79,7 @@
                             <th>Name</th>
                             <th>Class</th>
                             <th>Register Date</th>          
+  
                              
                         </tr>
                     <%}%>
@@ -65,7 +92,7 @@
                             
                                 <tr class="artwork">
                                     <td><%= i + 1 %></td>
-                                    <td>
+                                    <td class="artworkPage" onclick="location.href='/admin/detail/artwork/<%= artwork._id %>'">
                                         <div class="img-wrapper artwork">
                                             <% 
                                                 // 기본 이미지 경로 설정
@@ -82,7 +109,11 @@
                                             <img src="<%= imageSrc %>" alt="">
                                         </div>
                                     </td>
-                      
+                                    <td class="manageBtn">
+                                        <button onclick="location.href='/admin/edit/artwork/<%=artwork._id %>'">수정 </button>
+                                        <!-- <button onclick="location.href='/admin/delete/artwork/<%=artwork._id %>'">삭제</button> -->
+                                        <button onclick="openDeletePop('<%= artwork.name[0] %>', '<%= artwork._id %>', 'artwork')">삭제</button>
+                                    </td> 
                                     <td><%= artwork.name[0] %></td>
                                     <% artwork.artistData.forEach(item => { %>
 
@@ -103,7 +134,7 @@
                                   
                                     </td>
                                     <td><%= artwork.medium %></td>
-                                    <td><%= artwork.price%></td>
+                                    <td><%= artwork.price%> 원</td>
                          
                                     <% if (artwork.location.length === 0) { %>
                                         <td>-</td>
@@ -113,15 +144,18 @@
 
                                     <% if (artwork.location.length === 0) { %>
                                         <td>-</td>
-                                    <% }else { %>
-                                        <td><%= artwork.location[0].date %></td>
+                                    <% } else { 
+                                        const locationDate = new Date(artwork.location[0].date);  // 날짜를 Date 객체로 변환
+                                        const YY = locationDate.getFullYear();
+                                        const mm = String(locationDate.getMonth() + 1).padStart(2, '0');
+                                        const day = String(locationDate.getDate()).padStart(2, '0');                                    
+                                        const formattedLocationDate = YY + '-' + mm + '-' + day 
+                                    %>
+                                        <td><%= formattedLocationDate %></td>
                                     <% } %>
                                     <td><%= artwork.sale %></td>
                                     <td><%= artwork.certification %></td>
-                                    <td class="manageBtn">
-                                        <button onclick="location.href='/admin/edit/artwork/<%=artwork._id %>'">수정 </button>
-                                        <button onclick="location.href='/admin/delete/artwork/<%=artwork._id %>'">삭제</button>
-                                    </td> 
+       
                              
                                 </tr>
                            <% }) %>
@@ -131,19 +165,19 @@
                                     <td><%= i + 1 %></td>
                                     <td class="artistPage" onclick="location.href='/admin/detail/artist/<%= artist._id %>'">
                                         <div class="img-wrapper artist">
-                                            <img class="artist-img" src="<%= artist.imgUrl %>" alt="">
+                                            <img class="artist-img" src="<%= artist.imgUrl ? artist.imgUrl : '/img/user.svg' %>" alt="">
                                         </div>
                                     </td>
                                     <td><%= artist.artistName[0] %> <span>(<%= artist.artistName[1] %>)</span> </td>
-                                    <td class="addArtwork"><button onclick="location.href='/admin/write/artwork/<%=artist._id %>'">작품등록</button></td>
-                                    <td><%= artist.artistBirth %></td>
-                                    <td><%= artist.artistTel %></td>
-                                    <td><%= artist.artistEmail %></td>
-                                    <td>데이터3</td>
+                                    <td class="addArtwork"><button onclick="location.href='/admin/write/artwork/<%= artist._id %>'">작품등록</button></td>
+                                    <td><%= artist.artistBirth ? artist.artistBirth : '-' %></td>
+                                    <td><%= artist.artistTel ? artist.artistTel : '-' %></td>
+                                    <td><%= artist.artistEmail ? artist.artistEmail : '-' %></td>
+                                    <td><%= artist.artistHome ? artist.artistHome : '-' %></td>
                                     <td><%= artist.registerDate %></td>
                                     <td class="manageBtn">
-                                        <button>수정</button>
-                                        <button>삭제</button>
+                                        <button onclick="location.href='/admin/write/artist/<%= artist._id %>'">수정</button>
+                                        <button onclick="openDeletePop('<%= artist.artistName[0] %>','<%= artist._id %>', 'artist' , '작가 삭제시 등록된 작가의 작품들도 일괄 삭제됩니다.' )">삭제</button>
                                     </td>                             
                                 </tr>
                             <% }) %>
@@ -174,6 +208,83 @@
     </section>
    
 </body>
+<script>
 
+    
+    // 삭제 팝업 구현
+    let deleteUrl = '';
+    let deleteName = '';
+    let deleteMessage = '';
+
+    function openDeletePop(name, url, type, message){
+        deleteUrl = url;
+        deleteName = name;
+
+        document.getElementById('deleteName').textContent = name;
+        document.getElementById('deletePopup').style.display = "block"
+        document.getElementById('deleteAlertMessage').textContent = message;
+
+        document.getElementById('confirmDelete').onclick =()=>{
+            if(type === 'artwork'){
+                deleteArtwork(url);
+            }else if(type == 'artist'){
+                deleteArtist(url)
+            }
+
+            closePopup();
+        }
+
+
+    }
+
+    
+    function closePopup() {
+        document.getElementById('deletePopup').style.display = 'none';
+    }
+
+
+    // 작품삭제
+    function deleteArtwork(url){
+        fetch(`/admin/delete/artwork/${url}`,{
+            method : 'POST',
+            headers : {
+                'Content-Type': 'application/json'
+            },
+            body : JSON.stringify({id : url}) //제이슨 형식으로 보내야함 
+        })
+        .then(response =>{
+            if(response.ok){
+                // 서버에서 삭제 성공함
+                location.reload(); 
+            }else{
+                console.log('삭제실패')
+            }
+        })
+        .catch(error => console.error('Error발생', error) )
+    }
+
+
+    // 작가삭제
+    function deleteArtist(url){
+        fetch(`/admin/delete/artist/${url}`,{
+            method : 'POST',
+            headers : {
+                'Content-Type' : 'application/json'
+            },
+            body : JSON.stringify({id : url})
+        })
+        .then(response =>{
+            if(response.ok){
+                location.reload(); 
+            }else{
+                console.log('삭제실패')
+            }
+       
+        })
+        .catch(error => console.error('error발생',error))
+    }
+
+
+</script>
 
 </html>

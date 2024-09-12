@@ -16,7 +16,7 @@
             <div class="artist-wrapper">
                 <div class="artist-info">
                     <div class="artist-pic">
-                        <img src="<%= item.imgUrl %>" alt="">
+                        <img src="<%= item.imgUrl ? item.imgUrl : '/img/user.svg'  %>" alt="">
                     </div>
                     <div class="text-wrapper">
                         <div class="name">
@@ -73,9 +73,14 @@
                     <div class="wp">
                         <% item.artworkData.forEach((artwork)=>{ %>
                             <div class="img-description" onclick="location.href ='/admin/detail/artwork/<%= artwork._id %>'">
-                                <img src="" alt="">
+                                <% if(artwork.imgUrl[0]){ %>
+                                    <img src="<%= artwork.imgUrl[0]  %>" alt=""> 
+                                <% }else{ %>
+                                    <p>작품 등록을 진행해주세요</p>
+                                <% } %>
+
                                 <p><%= artwork.name %></p>
-                                <p><%= artwork.price %></p>
+                                <p><%= artwork.price %>원</p>
                             </div>   
                         <% }) %>
                  
@@ -86,47 +91,54 @@
                 <div class="artist-cv">
                     <ul class="education">
                         <h2>Education</h2>
-                        <% if(item.education && item.education.length > 0){ %>
-                            <% item.education.map((edu, i)=>{ %>
-                                <li>
-                                    <p><%= edu.date %></p>
-                                    <span><%= edu.school %></span> 
-                                </li>
+                        <% if (item.education && item.education.length > 0) { %>
+                            <% item.education
+                                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                                .map((edu, i) => { %>
+                                    <li>
+                                        <p><%= edu.date %></p>
+                                        <span><%= edu.school %></span>
+                                    </li>
                             <% }) %>
-                        <% }else{ %>
+                        <% } else { %>
                             <li><p class="no-data-label">Data none</p></li>
-                        <%}%>
+                        <% } %>
             
                     </ul>
                     <ul class="soloex">
                         <h2>Solo Exhibition</h2>
-                        <% if(item.soloEx && item.soloEx.length > 0){ %>
-                            <% item.soloEx.map((exhibition, i)=>{ %>
-                                <li>
-                                    <p><%= exhibition.date  %></p>
-                                    <span><%= exhibition.exTitle  %></span> 
-                                </li>
+
+                        <% if (item.soloEx && item.soloEx.length > 0) { %>
+                            <% item.soloEx
+                                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                                .forEach((exhibition, i) => { %> <!-- map 대신 forEach 사용 -->
+                                    <li>
+                                        <p><%= exhibition.date %></p>
+                                        <span><%= exhibition.exTitle %></span>
+                                    </li>
                             <% }) %>
-                        <% }else{ %>
+                        <% } else { %>
                             <li><p class="no-data-label">Data none</p></li>
-                        <%}%>
+                        <% } %>
 
 
                     </ul>
                     <ul class="groupex">
                         <h2>Group Exhibition</h2>
+
                         <% if(item.groupEx && item.groupEx.length > 0){ %>
-                            <% item.groupEx.map((exhibition,i)=>{ %>
-                                <li>
-                                    <p><%= exhibition.date %></p>
-                                    <span><%= exhibition.exTitle %></span>                             
-                                </li>
-                            <% }) %>          
+                            <% item.groupEx.sort((a,b)=> new Date(b.date) - new Date(a.date)) 
+                                .forEach((exhibition, i)=>{ %>
+                                    <li>
+                                        <p><%= exhibition.date %></p>
+                                        <span><%= exhibition.exTitle %></span>                             
+                                    </li>
+                                <% }) %>
                         <% }else{ %>
-                            <li>
-                                <p class="no-data-label">Data none</p>                           
-                            </li>
+                            <li><p class="no-data-label">Data none</p></li>
                         <% } %>
+
+ 
                     </ul>
                     <ul class="award">
                         <h2>Award</h2>

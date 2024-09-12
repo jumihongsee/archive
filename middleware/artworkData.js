@@ -1,5 +1,6 @@
 const { ObjectId } = require('mongodb');
 const { deleteS3Image } = require('../module/s3');
+const { formatPrice, formatDate } = require('../module/Formatting')
 
 async function artworkData(req, res, next) {
     
@@ -23,7 +24,8 @@ async function artworkData(req, res, next) {
             artworkSaleStart,
             artworkSaleEnd,
             artistId,
-            artworkPrice
+            artworkPrice,
+            registerDate,
         } = req.body;
 
         const inputDataNull = (value) => value === '' ? null : value;
@@ -36,6 +38,13 @@ async function artworkData(req, res, next) {
 
         // 저작기간 배열 정리
         const artworkCopyRight = [inputDataNull(artworkSaleStart), inputDataNull(artworkSaleEnd)];
+
+        // 등록 시간 
+        // 등록시간이 이미 있으면 그 시간으로 등록
+        //등록시간이 없으면 new Date로 등록시간
+    
+        const registerDateValue = registerDate ? registerDate : formatDate(new Date());
+
 
         // 위치 배열 처리
         let location;
@@ -116,9 +125,9 @@ async function artworkData(req, res, next) {
             location: location,
             name: artworkName,
             size: artworkSize,
-            price: artworkPrice,
+            price: formatPrice(artworkPrice),
             copyRight: artworkCopyRight,
-            registerDate: new Date(),
+            registerDate: registerDateValue ,
             medium: artworkMedium,
             madeDate: artworkMadeDate,
             sale: saleStatus,

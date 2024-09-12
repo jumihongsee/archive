@@ -20,13 +20,14 @@ input{ -webkit-appearance: none;-webkit-border-radius: 0;}
 
 
 ::-webkit-scrollbar-track {
-    background: #3b3b3b;
+    background: #eae8e8;
  
 }
 
 
 ::-webkit-scrollbar-thumb {
     background: #bdbdbd;
+    cursor: pointer;
 
 
 }
@@ -41,116 +42,114 @@ input:focus::-ms-input-placeholder{
     color:transparent;
 }
 
+input{
+    border: 2px solid #c0bdbd; height: 40px;
+    border-radius: 5px; padding: 0 7px; color: #000;
+}
+textarea{
+    border: 2px solid #c0bdbd;border-radius: 5px; padding: 10px;
+}
+
 /////////////////////////////* default */////////////////////////////
 
 $main-color : #E9501A;
 
 
-
+body{
+    background: rgb(233, 233, 233);
+}
 
 .nav{
-    width: 100%; position: fixed; background: #fff;
-    padding: 0 20px; z-index: 100;
-    height: 100px; align-items: center; 
-    display: flex; justify-content: space-between;
-    background: #f8f8f8;
- 
-    > ul{
-        display: flex; align-items: center;
-        width: calc(100% / 3 ); height: 100%; 
-        &.list-btn{
-            display: flex; 
-             button{
-                 padding: 5px;
-                  width: 100px;background: #fff;
-                 border: 1px solid #000;
-                 margin: 10px 10px 10px 0;
-                 &.active{
-                     background: #000;
-                     color: $main-color;
-                 }
-             }
-         }
-        &:nth-child(1){ 
-            justify-content: flex-start;
-            li.hambuger{
-                margin-left: 5px;
-            }
-        }
-
-        &:last-child{ 
-            justify-content: flex-end; 
-            img{
-                width: 20px;
-                margin: 0 10px;
-            }
-      
-        }
-        &:nth-child(1),  &:last-child{
-            > li{
-                background: #000; height: 30px;
-                padding: 5px 15px; display: flex; align-items: center; justify-content: center;
-                a{
-                    color: #fff;
-            }}
-            > li.admin{
-                background: transparent; 
-                p{
-                    font-size: 12px; 
-                    strong{
-                        border-bottom: 1px solid #000;
-                    }
+    position: fixed; top: 0; right: 0; padding: 0 5vw 0 3vw;
+    width: 88vw; height: 100px;  z-index: 1000;
+    transition:  height 0.2s linear;
+    &.active{
+        backdrop-filter: blur(5px); height: 70px;
+        
+    }
+    ul{
+        display: flex; height: 100%;
+        width: 100%; justify-content: space-between; 
+        padding-right: 8px;
+        li{
+            display: flex; align-items: center; justify-content: flex-end;
+            &.search{ 
+                position: relative; width: 35vw;
+            
+                input{
+                    width: 100%;  border-radius: 20px; padding-left: 40px;
+                    border:none;
+                }
+                img{
+                    height: 20px; position: absolute; left: 10px;
                 }
             }
-        }
-
-        li{
-           
-            a{
-                font-size: 13px; color: #000;
+            &.admin{
+                width: 40%;
+                img.user{
+                    height: 30px;
+                    border: 1px solid #eee; background: #fff;
+                    border-radius: 50%; padding: 10px; margin-right: 20px;
+                }
+                .wp{
+                    line-height: 1.5;
+                    p{
+                        &.name{
+                            display: flex; align-items: center;
+                            font-size: 15px;
+                            a{display: flex;align-items: center; margin-left: 5px;}
+                            img{
+                                width: 15px;
+                            }
+                        }
+                        font-size: 12px;
+        
+                    }
+                    a{font-size: 12px; color: #000; }
+                }
             }
+            
         }
-    
-
     }
-    
-    
 
 }
 .side-nav{
-    width: 15vw; height: 100%; 
-    position: fixed; padding-top: 140px;
+    position: fixed; width: 13vw; height: 100vh; background: #fff;
+    z-index: 1001;
     ul{
-        width: 90%;
+        padding: 0 25px;
         li{
-
-            background:#121213;
-            margin: 0 10px 10px 10px; border-radius: 30px; 
-            padding: 10px;
-            a{
-                display: flex; align-items: center; color: #fff;
-                font-size: 12px; 
-            }
-            img{
-                width: 30px;
-            }
-
-            &.search{
-                display: flex; background: #eee;
-                img{
-                    width: 25px; cursor: pointer;
+            &.logo{
+                height: 100px; display: flex; align-items: center; margin-bottom: 20px;
+                a{
+                    font-size: 2vw; color: #000;
                 }
-                input{
-                    width: calc(100% - 20px);
-                    border: none;  background: transparent; color: #000;
-                    padding-left: 5px;
-                    &:focus{
-                        outline: none;
+            }
+            button{
+                &:hover{
+                    background: #278afc; color: #fff;
+                    img{
+                        filter: invert(1);
                     }
                 }
+                &.active{
+                    background: #278afc; color: #fff;
+                    img{
+                        filter: invert(1);
+                    }
+                }
+                img{
+                    width: 15px; margin-right: 10px;
+                }
+               font-size: 12px;
+                margin: 10px 0;
+                border-radius: 10px;height: 50px; width: 80%;
+                display: flex; align-items: center;text-transform: uppercase;
+             
             }
         }
     }
+
 }
 section{
  
@@ -263,35 +262,89 @@ section{
     }
     &.admin{
         width: 80vw;
-        margin: 140px 3vw 100px 15vw;
+        margin: 100px 3vw 100px 15vw;
        
     }
     &.admin-main{
-        height: calc(100vh - 200px);
+        height: calc(100vh - 150px);
         display: flex; width: 100%;
-
+        flex-direction: column; position: fixed;
+        .info{
+            display: flex; width: 80vw;
+            justify-content: space-between;  align-items: center;
+            padding: 10px 0;
+            h2{
+                text-transform: uppercase;
+                font-size: 20px;
+            }
+            button{
+                background: #278afc; color: #fff;
+                border-radius: 10px; display: flex; align-items: center;
+                padding: 5px 15px 5px 0; font-size: 12px; margin-right: 8px;
+                img{
+                    height: 25px;
+                }
+            }
+        }
         .main-section-wrapper{
             overflow-y: scroll; 
             overflow-x: scroll; 
-            position: fixed; 
+            background: #fff;
             width: 80vw; height: 80vh;
-            border: 3px solid #000;
+            border-radius: 10px; 
+         
+   
+            .delete-alert{
+                position: fixed; top: 50%; left: 50%; background: fff;
+                transform: translate(-50%, -50%); width: 30%; z-index: 1010;
+                background: #f1f1f1; padding: 50px 20px; border-radius: 10px;
+                line-height: 1.5; display: none;
+                h2{
+                    font-size: 20px; 
+                    strong{
+                        color: #f00;
+                    }
+                }
+                p{font-size: 12px;}
+                .select-button{
+                    margin-top: 20px;
+                    display: flex;  justify-content: flex-end;
+                    button{
+                        background: #278afc; color: #fff;
+                        padding: 5px; width: 100px; margin-left: 10px;
+                        &:last-child{
+                            background: #dddddd; color: #000;
+                        }
+                    }
+                }
+                .close-button{
+                    position: absolute; top: 15px; right: 20px;
+                    button{
+                        margin: 0;
+                        img{
+                            width: 20px; height: 20px;
+                        }
+                    }
+                }
+
+            }
+        
             table{
                 width: 100%; height: 100%;
                 border-top: none;
-                border-bottom: 3px solid #000;
-                // 공용
+  
 
+                // 공용
                 thead, tbody{
                     tr{
                         display: flex; width: 100%; 
                         td{ height: 50px; border: 0.5px solid #eee; border-top: none; border-left: none;}
                         th,td{
-                            font-size: 12px; padding: 2px;
-                            width: 200px; text-align: center; 
+                            font-size: 12px; padding: 5px 10px;
+                            width: 150px; text-align: center; 
                             display: flex; align-items: center; justify-content: center;
                             &:first-child{width: 20px;} 
-                            &:nth-child(2){width: 100px;}
+                            &:nth-child(2),  &:nth-child(3){width: 100px;}
            
                         }
 
@@ -302,14 +355,13 @@ section{
                 thead{
                      height: 20px; 
                     tr{
-                        background: #000;
-                        color: #fff;
+                         padding: 10px 2px; 
                     }
                 }
 
                 // 컨텐츠
                 tbody{
-                    border: 1px solid #000;
+                    border: 2px solid #eee;
                     tr{
                           border-bottom: 1px solid #ececec; 
                         &:hover{
@@ -331,6 +383,7 @@ section{
                                     }
                                 }
                             }
+
 
                         &.artist{       
                             td{
@@ -371,13 +424,16 @@ section{
                             }
                         }
                         &.artwork{
-                            td.artistPage{
-                                cursor: pointer; z-index: 100;
-                                &:hover{
-                                   background: #55a5d3;
-                               
+                            td{
+                                &.artistPage, &.artworkPage{
+                                    cursor: pointer; z-index: 100;
+                                    &:hover{
+                                       background: #55a5d3;
+                                   
+                                    }
                                 }
                             }
+                          
                         }
                        
                     }
@@ -393,11 +449,12 @@ section{
          min-height: 80vh;
          margin-bottom: 50px;
          form{
-            display: flex; flex-direction: column;
+            display: flex; flex-direction: column; padding: 30px; 
+            background: #fff; border-radius: 10px;
          }
         .img{
             width: 200px; height: 200px; 
-            margin: 0 auto; position: relative; 
+            position: relative;     margin-bottom: 30px;
             label{
                 background: #000; width: 100%; height: 100%; position: relative;
                 position: absolute;border-radius: 50%; cursor: pointer;
@@ -422,24 +479,27 @@ section{
             }
         }
         .info-form{
-            width: 50%; margin: 0 auto;  max-width: 500px;
+            width: 50%; max-width: 600px;
+            padding-bottom: 20px; border-bottom: 1px solid #c8c4c4;  border-top: 1px solid #c8c4c4;
             h2{
-                margin: 20px 0; background: #000; color: $main-color;
-                padding: 5px; font-size: 18px;
+                margin: 20px 0; text-transform: uppercase;
+                font-size: 35px; font-weight: bold;  letter-spacing: -1.5px;
+                span{
+                    font-size: 15px; letter-spacing: 0;
+                }
             }
             label{
                 display: flex; flex-direction: column;
-                font-size: 12px; margin-top: 5px;
+                font-size: 15px;  margin-top: 10px;
                 input{
-                    height: 30px; margin: 5px 0;
-                    border: 1px solid #c0bdbd; padding: 0 7px;
-                    height: 40px;
+                   margin: 5px 0; margin: 10px 0; height: 40px;
                     &:focus{
                         outline: 1px solid $main-color;
                  
                     }
                 }
                 p{
+                    font-size: 12px;
                     span{
                         color: #f00;
                     }
@@ -456,7 +516,7 @@ section{
                 .addInput{
                     display: flex; align-items: center;
                     justify-content: center; padding: 10px 0;
-                    background: #e4edf3; border-radius: 20px;
+                    background: #bfdef3; border-radius: 20px;
                     margin-top: 10px;
                     img{
                         width: 20px; filter: invert(1);
@@ -466,9 +526,13 @@ section{
                 }
                 > div{
                    
-                    padding: 20px; margin-bottom: 10px;
+                    margin-bottom: 10px;
                     border-radius: 5px; background: #cee7f7;
-                    border-bottom: 1px solid #000;
+                    div{ 
+                        padding: 20px; background:  #e3ecf1;
+                    
+                
+                    }
                     button{
                         width: 30px; height: 30px;
                         background: #fff; border-radius: 50%;
@@ -484,13 +548,24 @@ section{
         .submit-btn{
             text-align: center;
             background: #bbbbbb;
-            width: 200px; margin: 0 auto; margin-top: 10px;
+            width: 200px;  margin-top: 10px;
             padding: 10px 0;  border-radius: 10px;
+            transition: background 0.2s ease-in-out; position: relative;
             &.active{
                 background: $main-color;
-           
+            }
+
+            &.fail{
+                animation: failSubmit 1s forwards ease-in-out;
+            }
+            span{
+                position: absolute; background: #fc0707d8;color: #fff;right: 0%;
+                padding: 5px; width: 250px; border-radius: 10px;
+                top: -20px; left: 50%; transform: translateX(-50%);
+                opacity: 0;
             }
         }
+       
 
     }
     &.artist-detail{
@@ -504,9 +579,7 @@ section{
             font-style: italic;
         }
 
-        .artist-work{
 
-        }
         .artist-wrapper{
             .artist-info{
                 display: flex; align-items: center; justify-content: space-between;
@@ -555,14 +628,18 @@ section{
                 padding: 10px 10px 20px 10px;
                 border-top: 1px solid #eee;
                 ul{
-               
                     padding-top: 10px;
+                    margin-bottom: 20px; padding-bottom: 20px;
+                    border-bottom: 1px solid #eee;
+                    &:last-child{
+                        border: none;
+                    }
                     h2{
-                        font-size: 15px; margin-bottom: 5px;
+                        font-size: 20px; margin-bottom: 20px;
                     }
                     li{
-                        display: flex; align-items: center; line-height: 1.5;
-                        p{margin-right: 10px; font-size: 13px;}
+                        display: flex; align-items: center; line-height: 2;
+                        p{margin-right: 10px; font-size: 12px;}
                         span{font-size: 12px;}
                     }
                 }
@@ -579,18 +656,26 @@ section{
             }
             .artist-work{
                 width: 100%;
-                padding: 10px;
+                padding: 30px 10px;
                     h2{
-                        font-size: 15px; margin-bottom: 10px;
+                        font-size: 20px; margin-bottom: 10px;
                     }
                     .wp{  width: 100%;
                         display: flex;
                         justify-content: flex-start;
                         .img-description{
-                            width: calc(100% / 6 - 10px);
-                            margin: 0 5px; border: 1px solid #f00; cursor: pointer;
+                            width: calc(100% / 10 - 10px);
+                            margin: 0 5px;  cursor: pointer;
+                            background: #000; border-radius: 10px;
                             p{
-                                font-size: 12px; text-align: center;
+                                font-size: 12px; text-align: center; line-height: 1.5;
+                                color: #fff;
+                                &:nth-child(2){
+                                    padding-top: 10px;
+                                }
+                                &:last-child{
+                                    padding-bottom: 10px;
+                                }
                             }
                         }
                     }
@@ -602,8 +687,9 @@ section{
 
     }
     &.artwork-write{
-        border: 4px solid #000;
-        padding: 0 20px 20px 20px;
+      
+        padding: 0 20px 20px 20px; border-radius: 10px;
+        background: #fff;
         form{
             > div{
                 padding: 20px 0;
@@ -677,7 +763,7 @@ section{
                                  .delete-img{
                                     position: absolute; background: #000; cursor: pointer; 
                                     width: 25px; height: 25px; top: 10px; right: 10px;display: flex; align-items: center; justify-content: center;
-                                    border-radius: 50%; display: none; z-index: 1000;
+                                    border-radius: 50%; display: none; z-index: 100;
                                     p{color: #fff;}
 
                                 }
@@ -799,6 +885,165 @@ section{
 
                 }
             }
+        }
+    }
+    &.artwork-detail{
+       > .wp{
+        display: flex; justify-content: space-between;
+        .artworkInfo{
+            display: flex;  background: #fff; border-radius: 10px;
+            padding: 30px;  width: 70%; position: relative;
+            .modify{
+                position: absolute; background: #0f98f3; color: #fff;
+                right: 20px; top: 20px; padding: 10px 20px; border-radius: 10px;
+            }
+            .slider{
+                width: 20vw; height: 20vw; cursor: pointer;
+                display: flex; align-items: center; justify-content: center;
+                background: #eee; border-radius: 10px;
+                .swiper-slide{
+                    display: flex; align-items: center; justify-content: center;
+                 
+                    img{
+                        height: 300px;
+
+                    }
+                }
+            }
+            .artwork-info{
+                padding: 0 30px; 
+
+                ul{
+                    width: 100%; height: 100%;
+                    display: flex; flex-direction: column; justify-content: space-between;
+                    li{
+                        line-height: 1.5;
+                        border-top: 1px solid #eeeeee;
+                        padding: 10px 0; 
+                        &:first-child{
+                            border-top: none; padding-top: 0;
+                        }
+                        &:last-child{
+                            padding-bottom: 0;
+                        }
+                        h3{font-size: 15px;}
+                        p{
+                            font-size: 12px;
+                            &.size-wrapper{
+                                display: flex; margin: 5px 0;
+                                span{
+                                    &.size{ 
+                                        background: #eee;display: inline-block;
+                                        border: 1px solid #7c7b7b; 
+                                        width: 25px; height: 25px;
+                                        display: flex; align-items: center; justify-content: center; margin-right: 5px;
+                                    }
+                                }
+                            }
+                        }
+                        
+                        span{
+                            font-size: 12px; 
+    
+                        }
+
+                        a{
+                            color: #000; border-bottom: 2px solid #000; font-size: 20px;
+                        }
+                    }
+                }
+            }
+        }
+        .status{
+            padding: 30px; border-radius: 10px;
+            background: #fff; width: calc(30% - 20px);
+            ul{
+                li{
+                    padding: 20px 0; border-bottom: 1px solid #eee;
+                    line-height: 1.5;
+                    &:first-child{
+                        padding-top: 0;
+                    }
+                    &:last-child{
+                        border-bottom: none;
+                    }
+                    h3{
+                        font-size: 15px;
+                    }
+                    p{
+                        font-size: 12px; 
+                        &:last-child{
+                            padding-top: 10px;  color: #5f5f5f;
+                        }
+                    }
+                    button{
+                        background: #eee;  padding: 10px 20px;
+                        border-radius: 10px;
+                    }
+                }
+            }
+        } 
+       }
+
+        .artworkIocation{
+            padding: 30px; border-radius: 10px; background: #fff;
+            height: auto; margin-top: 20px;
+            
+            h2{
+                font-size: 30px; text-transform: uppercase;
+            }
+
+            .location-wrapper{
+                display: flex; padding: 20px 0;  justify-content: space-between;
+
+                .location-box-wrapper{
+                     width: calc(50% - 10px);
+                    h3{
+                        font-size: 20px;
+                        margin-bottom: 20px;
+                    }
+                    .location-box{
+                        background: #f5f5f5; padding: 25px; border-radius: 10px;
+                        margin-bottom: 10px; margin-left: 30px;
+                        position: relative;
+                        .number-tag{
+                            position: absolute; top: 0; left: 0; background: #000; width: 20px; height: 20px;
+                            color: #fff; display: flex; align-content: center; justify-content: center;
+                            font-size: 12px;
+                        }
+                        &::before{
+                            position: absolute; content: ""; width: 1px; height:  calc(100% + 10px);
+                            background: #000; left: - 20px; top: 0;
+                        }
+                        &::after{
+                            position: absolute; content: ""; width: 5px; height: 5px; background: #000;
+                            left: -22.5px; top: 50%; transform: translateY(-50%); border-radius: 50px;
+                        }
+                        &:nth-child(even){
+                            background: #e2e3f8;
+                        }
+                        ul{
+                            display: flex; align-items: flex-start;
+                            li{
+                                display: flex; flex-direction: column; 
+                                margin-right: 15px; border-right: 1px solid #acacac; padding-right: 15px;
+
+                                &:last-child{ border: none; margin-right: 0; padding-right: 0; }
+                                h3{ font-size: 15px; margin-bottom: 5px;}  
+                                p{
+                                    font-size: 12px; padding: 5px 0;
+                                    &.tag{
+                                        background: #aa78f1; color: #fff;  border-radius: 5px; padding:5px 10px; 
+                                    }
+                                }
+
+
+                            }
+                        }
+                    }
+                }
+            }
+            
         }
     }
 }
