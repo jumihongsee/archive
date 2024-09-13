@@ -20,11 +20,16 @@
                 <% }else if(listType === 'user'){ %>
                     User
                 <% } %>                
-            </h2>
 
+                <% if(search){ %>
+                    <span class="search-result"> '<%= search %>' 검색결과 : <strong><%= data.length %> </strong>  건</span>
+                <% } %>
+
+            </h2>
             <button onclick="location.href='/admin/write/artist'"><img src="/img/plus.png" alt=""> Add New Artist</button>
+
         </div>
-        <div class="main-section-wrapper">
+        <div class="main-section-wrapper" >
                 <div id="deletePopup" class="delete-alert">
                     <h2> '<span id="deleteName"> </span>' 을/를 리스트에서 <strong> 삭제 </strong>하겠습니까?</h2>
                     <p>( 삭제시 복구가 불가능합니다. )</p>
@@ -38,170 +43,175 @@
                     </div>
 
                 </div>
-                <table>
-                    <thead class="fixed-title">
-                        <% if(listType === 'artwork'){ %>
-                            <tr class="artwork">
-                                <th>NO.</th>
-                                <th>IMG</th>
-                                <th>관리</th>      
-                                <th>Title</th>
-                                <th>Artist</th>
-                                <th>Register Date</th>
-                                <th>size</th>
-                                <th>Medium</th>
-                                <th>Price</th>
-                                <th>Current Location</th>
-                                <th>located time</th>
-                                <th>sale</th>
-                                <th>Certification</th>
-                   
-                             
-                            </tr>
-                    <% }else if(listType === 'artist'){ %>
-                            <tr class="artist">
-                                <th>NO.</th>
-                                <th>IMG</th>
-                                <th>Name</th>
-                                <th>작품등록</th>
-                                <th>Birth</th>
-                                <th>tel</th>
-                                <th>email</th>
-                                <th>homepage</th>
-                                <th>등록날짜</th>               
-                                <th>관리</th>               
-            
-                            </tr>
-                    <% }else if(listType === 'user') {%>
-                        <tr class="user">
-                            <th>NO.</th>
-                            <th>Id</th>
-                            <th>Name</th>
-                            <th>Class</th>
-                            <th>Register Date</th>          
-  
-                             
-                        </tr>
-                    <%}%>
+                <% if(data.length > 0){ %>
+                    <table>
 
-                    </thead>
-                    <tbody>
-                        <% if (listType === 'artwork') { %>
-                            <% data.map((artwork, i) => { %>
-
-                            
-                                <tr class="artwork">
-                                    <td><%= i + 1 %></td>
-                                    <td class="artworkPage" onclick="location.href='/admin/detail/artwork/<%= artwork._id %>'">
-                                        <div class="img-wrapper artwork">
-                                            <% 
-                                                // 기본 이미지 경로 설정
-                                                let imageSrc = '/img/plus.png'; 
-                                                
-                                                // 이미지 배열에서 첫 번째로 존재하는 이미지 찾기
-                                                for (let j = 0; j < 5; j++) {
-                                                    if (artwork.imgUrl[j]) {
-                                                        imageSrc = artwork.imgUrl[j];
-                                                        break;
-                                                    }
-                                                }
-                                            %>
-                                            <img src="<%= imageSrc %>" alt="">
-                                        </div>
-                                    </td>
-                                    <td class="manageBtn">
-                                        <button onclick="location.href='/admin/edit/artwork/<%=artwork._id %>'">수정 </button>
-                                        <!-- <button onclick="location.href='/admin/delete/artwork/<%=artwork._id %>'">삭제</button> -->
-                                        <button onclick="openDeletePop('<%= artwork.name[0] %>', '<%= artwork._id %>', 'artwork')">삭제</button>
-                                    </td> 
-                                    <td><%= artwork.name[0] %></td>
-                                    <% artwork.artistData.forEach(item => { %>
-
-                                        <td class="artistPage" onclick="location.href='/admin/detail/artist/<%= item._id %>'"><%= item.artistName[0] %> 
-                                            ( <p><%= item.artistName[1] %></p> ) 
-                                         
-                                        </td>
-
-                                    <% }) %>
-
-                                    <td><%= artwork.registerDate %></td>
-                                    <td>
-                                        <%= artwork.size[0] %>(H)
-                                        <%= artwork.size[1] %>(W)
-                                        <% if(artwork.size[2]){ %>
-                                            <%= artwork.size[2] %>(D)
-                                        <% } %>
-                                  
-                                    </td>
-                                    <td><%= artwork.medium %></td>
-                                    <td><%= artwork.price%> 원</td>
-                         
-                                    <% if (artwork.location.length === 0) { %>
-                                        <td>-</td>
-                                    <% }else { %>
-                                        <td><%= artwork.location[0].road %></td>
-                                    <% } %>
-
-                                    <% if (artwork.location.length === 0) { %>
-                                        <td>-</td>
-                                    <% } else { 
-                                        const locationDate = new Date(artwork.location[0].date);  // 날짜를 Date 객체로 변환
-                                        const YY = locationDate.getFullYear();
-                                        const mm = String(locationDate.getMonth() + 1).padStart(2, '0');
-                                        const day = String(locationDate.getDate()).padStart(2, '0');                                    
-                                        const formattedLocationDate = YY + '-' + mm + '-' + day 
-                                    %>
-                                        <td><%= formattedLocationDate %></td>
-                                    <% } %>
-                                    <td><%= artwork.sale %></td>
-                                    <td><%= artwork.certification %></td>
-       
-                             
-                                </tr>
-                           <% }) %>
-                       <%}else if(listType === 'artist') {%>
-                            <% data.map((artist, i) => { %>
-                                <tr class="artist">
-                                    <td><%= i + 1 %></td>
-                                    <td class="artistPage" onclick="location.href='/admin/detail/artist/<%= artist._id %>'">
-                                        <div class="img-wrapper artist">
-                                            <img class="artist-img" src="<%= artist.imgUrl ? artist.imgUrl : '/img/user.svg' %>" alt="">
-                                        </div>
-                                    </td>
-                                    <td><%= artist.artistName[0] %> <span>(<%= artist.artistName[1] %>)</span> </td>
-                                    <td class="addArtwork"><button onclick="location.href='/admin/write/artwork/<%= artist._id %>'">작품등록</button></td>
-                                    <td><%= artist.artistBirth ? artist.artistBirth : '-' %></td>
-                                    <td><%= artist.artistTel ? artist.artistTel : '-' %></td>
-                                    <td><%= artist.artistEmail ? artist.artistEmail : '-' %></td>
-                                    <td><%= artist.artistHome ? artist.artistHome : '-' %></td>
-                                    <td><%= artist.registerDate %></td>
-                                    <td class="manageBtn">
-                                        <button onclick="location.href='/admin/write/artist/<%= artist._id %>'">수정</button>
-                                        <button onclick="openDeletePop('<%= artist.artistName[0] %>','<%= artist._id %>', 'artist' , '작가 삭제시 등록된 작가의 작품들도 일괄 삭제됩니다.' )">삭제</button>
-                                    </td>                             
-                                </tr>
-                            <% }) %>
-                       <%}else if(listType === 'user') {%>
-
-                            <% data.map((user, i) => { %>
+                            <thead class="fixed-title">
+                                <h2></h2>
+                                <% if(listType === 'artwork'){ %>
+                                    <tr class="artwork">
+                                        <th>NO.</th>
+                                        <th>IMG</th>
+                                        <th>관리</th>      
+                                        <th>Title</th>
+                                        <th>Artist</th>
+                                        <th>Register Date</th>
+                                        <th>size</th>
+                                        <th>Medium</th>
+                                        <th>Price</th>
+                                        <th>Current Location</th>
+                                        <th>located time</th>
+                                        <th>sale</th>
+                                        <th>Certification</th>                             
+                                    </tr>
+                            <% }else if(listType === 'artist'){ %>
+                                    <tr class="artist">
+                                        <th>NO.</th>
+                                        <th>IMG</th>
+                                        <th>Name</th>
+                                        <th>작품등록</th>
+                                        <th>Birth</th>
+                                        <th>tel</th>
+                                        <th>email</th>
+                                        <th>homepage</th>
+                                        <th>등록날짜</th>               
+                                        <th>관리</th>               
+                                    </tr>
+                            <% }else if(listType === 'user') {%>
                                 <tr class="user">
-                                    <td><%= i + 1 %></td>
-                                    <td><%= user.username %></td>
-                                    <td><%= user.realname %></td>
-                                    <td><%= user.class %></td>
-                                    <td>데이터3</td>
-                                    
+                                    <th>NO.</th>
+                                    <th>Id</th>
+                                    <th>Name</th>
+                                    <th>Class</th>
+                                    <th>Register Date</th>                                       
                                 </tr>
-                            <% }) %>
-                       <%}%>
-
-                        
-
-
-
-
-                    </tbody>
-                </table>
+                            <%}%>
+        
+                            </thead>
+                            <tbody>
+                                <% if (listType === 'artwork') { %>
+                                    <% data.map((artwork, i) => { %>
+        
+                                    
+                                        <tr class="artwork">
+                                            <td><%= i + 1 %></td>
+                                            <td class="artworkPage" onclick="location.href='/admin/detail/artwork/<%= artwork._id %>'">
+                                                <div class="img-wrapper artwork">
+                                                    <% 
+                                                        // 기본 이미지 경로 설정
+                                                        let imageSrc = '/img/plus.png'; 
+                                                        
+                                                        // 이미지 배열에서 첫 번째로 존재하는 이미지 찾기
+                                                        for (let j = 0; j < 5; j++) {
+                                                            if (artwork.imgUrl[j]) {
+                                                                imageSrc = artwork.imgUrl[j];
+                                                                break;
+                                                            }
+                                                        }
+                                                    %>
+                                                    <img src="<%= imageSrc %>" alt="">
+                                                </div>
+                                            </td>
+                                            <td class="manageBtn">
+                                                <button onclick="location.href='/admin/edit/artwork/<%=artwork._id %>'">수정 </button>
+                                                <!-- <button onclick="location.href='/admin/delete/artwork/<%=artwork._id %>'">삭제</button> -->
+                                                <button onclick="openDeletePop('<%= artwork.name[0] %>', '<%= artwork._id %>', 'artwork')">삭제</button>
+                                            </td> 
+                                            <td><%= artwork.name[0] %></td>
+                                            <% artwork.artistData.forEach(item => { %>
+        
+                                                <td class="artistPage" onclick="location.href='/admin/detail/artist/<%= item._id %>'"><%= item.artistName[0] %> 
+                                                    ( <p><%= item.artistName[1] %></p> ) 
+                                                
+                                                </td>
+        
+                                            <% }) %>
+        
+                                            <td><%= artwork.registerDate %></td>
+                                            <td>
+                                                <%= artwork.size[0] %>(H)
+                                                <%= artwork.size[1] %>(W)
+                                                <% if(artwork.size[2]){ %>
+                                                    <%= artwork.size[2] %>(D)
+                                                <% } %>
+                                        
+                                            </td>
+                                            <td><%= artwork.medium %></td>
+                                            <td><%= artwork.price%> 원</td>
+                                
+                                            <% if (artwork.location.length === 0) { %>
+                                                <td>-</td>
+                                            <% }else { %>
+                                                <td><%= artwork.location[0].road %></td>
+                                            <% } %>
+        
+                                            <% if (artwork.location.length === 0) { %>
+                                                <td>-</td>
+                                            <% } else { 
+                                                const locationDate = new Date(artwork.location[0].date);  // 날짜를 Date 객체로 변환
+                                                const YY = locationDate.getFullYear();
+                                                const mm = String(locationDate.getMonth() + 1).padStart(2, '0');
+                                                const day = String(locationDate.getDate()).padStart(2, '0');                                    
+                                                const formattedLocationDate = YY + '-' + mm + '-' + day 
+                                            %>
+                                                <td><%= formattedLocationDate %></td>
+                                            <% } %>
+                                            <td><%= artwork.sale %></td>
+                                            <td><%= artwork.certification %></td>
+            
+                                    
+                                        </tr>
+                                <% }) %>
+                            <%}else if(listType === 'artist') {%>
+                                    <% data.map((artist, i) => { %>
+                                        <tr class="artist">
+                                            <td><%= i + 1 %></td>
+                                            <td class="artistPage" onclick="location.href='/admin/detail/artist/<%= artist._id %>'">
+                                                <div class="img-wrapper artist">
+                                                    <img class="artist-img" src="<%= artist.imgUrl ? artist.imgUrl : '/img/user.svg' %>" alt="">
+                                                </div>
+                                            </td>
+                                            <td><%= artist.artistName[0] %> <span>(<%= artist.artistName[1] %>)</span> </td>
+                                            <td class="addArtwork"><button onclick="location.href='/admin/write/artwork/<%= artist._id %>'">작품등록</button></td>
+                                            <td><%= artist.artistBirth ? artist.artistBirth : '-' %></td>
+                                            <td><%= artist.artistTel ? artist.artistTel : '-' %></td>
+                                            <td><%= artist.artistEmail ? artist.artistEmail : '-' %></td>
+                                            <td><%= artist.artistHome ? artist.artistHome : '-' %></td>
+                                            <td><%= artist.registerDate %></td>
+                                            <td class="manageBtn">
+                                                <button onclick="location.href='/admin/write/artist/<%= artist._id %>'">수정</button>
+                                                <button onclick="openDeletePop('<%= artist.artistName[0] %>','<%= artist._id %>', 'artist' , '작가 삭제시 등록된 작가의 작품들도 일괄 삭제됩니다.' )">삭제</button>
+                                            </td>                             
+                                        </tr>
+                                    <% }) %>
+                            <%}else if(listType === 'user') {%>
+        
+                                    <% data.map((user, i) => { %>
+                                        <tr class="user">
+                                            <td><%= i + 1 %></td>
+                                            <td><%= user.username %></td>
+                                            <td><%= user.realname %></td>
+                                            <td><%= user.class %></td>
+                                            <td>데이터3</td>
+                                            
+                                        </tr>
+                                    <% }) %>
+                            <%}%>
+        
+                                
+        
+        
+        
+        
+                            </tbody>
+                    </table>
+                <% }else{ %>
+                    <div class="nodata">
+                        <img src="/img/noData.png" alt="">
+                        <h3> NO DATA ... </h3>
+                        <p>옵션값을 바꿔서 검색해보세요</p>
+                    </div>
+                <% } %>
            
         </div>
 

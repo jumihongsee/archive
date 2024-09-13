@@ -142,7 +142,7 @@ app.get('/login', ArtworkJoinArtist, async (req, res) => {
   }
 
   if (req.user.username === 'admin' || req.user.class === 0) {
-      return res.render('admin/adminMain.ejs', { result: result, data: data, listType: "artwork" });
+      return res.render('admin/adminMain.ejs', { result: result, data: data, listType: "artwork" , search : false });
   }
 
   return res.render('index.ejs', { result: result });
@@ -236,7 +236,7 @@ app.get('/admin/list/artwork', ArtworkJoinArtist, async(req,res)=>{
 
   const data = req.ArtworkJoinArtist; // 미들웨어에서 추가된 데이터 사용
 
-  return res.render('admin/adminMain.ejs', { result: result, data: data, listType: "artwork" });
+  return res.render('admin/adminMain.ejs', { result: result, data: data, listType: "artwork", search : false });
 
 
 })
@@ -245,7 +245,7 @@ app.get('/admin/list/artist', async(req,res)=>{
 
   let result = req.user || null;
   let data = await db.collection('artist').find().toArray()
-  res.render('admin/adminMain.ejs',{data:data, result : result , listType : "artist"})
+  res.render('admin/adminMain.ejs',{data:data, result : result , listType : "artist", search : false })
 
 })
 
@@ -253,7 +253,7 @@ app.get('/admin/list/artist', async(req,res)=>{
 app.get('/admin/list/user', async(req,res)=>{
   let result = req.user || null;
   let data = await db.collection('user').find().toArray()
-  res.render('admin/adminMain.ejs',{data:data, result : result , listType : "user"})
+  res.render('admin/adminMain.ejs',{data:data, result : result , listType : "user", search : false})
 })
 
 
@@ -570,10 +570,9 @@ app.post('/admin/delete/artwork/:Id', async(req,res)=>{
 
 //////////// 🖼️ [GET] 작품 디테일 
 app.get('/admin/detail/artwork/:Id', async(req, res)=>{
-  
+
 
   const result = req.user || null;
-
 
   try{
 
@@ -584,10 +583,7 @@ app.get('/admin/detail/artwork/:Id', async(req, res)=>{
     let artistName = await db.collection('artist').findOne({_id : artworkData.artist})
     artistName = artistName.artistName[0]
 
-    console.log(artworkData)
-
-
-
+  
     res.render('artworkDetail.ejs', {result : result, artworkData : artworkData , artistName : artistName})
 
   }catch(error){
@@ -596,5 +592,31 @@ app.get('/admin/detail/artwork/:Id', async(req, res)=>{
 
 
 })
+
+//  🌐 SEARCH 
+app.get('/search/artwork', async(req,res)=>{
+
+  const result = req.user || null;
+  const searchVal = req.query.val;
+
+  let option = [
+    {
+      $search : {
+        index : 'artistName_index',
+        text : { query : req.query.val , path : 'artistName' }
+      }
+    }
+  ]
+
+  let searchData = await db.collection('artist').aggregate(option).toArray();
+
+  res.render('admin/adminMain.ejs', { listType: "artist" , search : searchVal , data: searchData , result: result})
+
+
+})
+
+
+
+
 
 

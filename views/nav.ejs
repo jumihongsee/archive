@@ -1,29 +1,131 @@
 <nav class="nav">    
     <ul>
-        <li class="search"><img src="/img/search.svg" alt="">
-            <input type="text" placeholder="Search">
+        <li class="search">
+
+            <img class="searchImg" src="/img/search.svg" alt="검색이미지">
+
+            <!-- 
+                
+                디폴트 > 작품 검색
+                옵션 작품 / 작가 / 유저 
+
+            -->
+
+            <input type="text" class="search" placeholder="아트워크 찾기 ">
+            <div class="option">
+                <img class="optionImg" src="/img/option.png" alt="옵션이미지">
+                <ul class="options">
+                    <li class="artist"><img src="/img/artist.png" alt=""></li>
+                    <li class="artwork"><img src="/img/artwork.png" alt=""></li>
+                    <li class="user"><img src="/img/user.svg" alt=""></li>
+                </ul>
+            </div>
+
         </li>
         <li class="admin">
             <img class="user" src="/img/user.svg" alt="">
             <div class="wp">
                 <p class="name"><%= result.realname %>  <a href="/logout"><img src="/img/logout.png" alt=""></a> </p>
                 <p class="email"><%= result.useremail %> </p>
-           
             </div>
-
         </li>
     </ul>       
+
 </nav>
 <script>
-    const nav = document.querySelector('nav')
+document.addEventListener('DOMContentLoaded', function() {
+    const nav = document.querySelector('nav');
     window.addEventListener('scroll', function(){
-
-        if(window.scrollY > 50){
+        if (window.scrollY > 50) {
             nav.classList.add('active');
-        }else{
+        } else {
             nav.classList.remove('active');
         }
+    });
+
+    const search_input = document.querySelector('input.search');
+    const search_icon = document.querySelector('.searchImg')
+    const option_section = document.querySelector('.option')
+    const search_img = document.querySelector('.searchImg')
+    let searchOption = 'artwork'
+
+    // 옵션에 따른 placeholder 설정 함수
+    const updatePlaceholder = () => {
+        if (searchOption === 'artist') {
+            search_input.placeholder = '아티스트 찾기';
+        } else if (searchOption === 'artwork') {
+            search_input.placeholder = '아트워크 찾기';
+        } else if (searchOption === 'user') {
+            search_input.placeholder = '사용자 찾기';
+        }
+    };
+
+
+    // 인풋이 포커스 되면 searchImg / optionImg 없어지게 ㄲ
+    search_input.addEventListener('focus', function(){
+        search_input.value = '';  
+        search_input.style.color = '#000';  
+        search_icon.style.display = "none"
+        option_section.style.display = "none"
+        search_input.style.padding = " 0 20px"
     })
+
+
+    // 포커스를 벗어났을 때 blur
+    search_input.addEventListener('blur', function(){
+        if(search_input.value.trim() === ""){
+            updatePlaceholder(); 
+            search_input.placeholder = '아트워크 찾기';  
+            search_input.style.color = '#000'; 
+            search_icon.style.display = "block";  
+            option_section.style.display = "flex"; 
+            search_input.style.padding = " 0 80px 0 40px"; 
+        }
+    })
+
+    search_input.addEventListener('keydown', function(e) {
+        let inputVal = search_input.value;  // 구체적으로 'input.search'로 변경
+
+        if (e.key === 'Enter') {
+
+            //두글자 이상인지 검사
+            if(inputVal.length < 2){
+                search_input.value = '검색어는 두글자 이상이어야 합니다.'
+                search_input.style.color = '#f03636'
+            } else{
+                // 옵션에 따라 다른 라우터로 ,...
+                location.href = `/search/${searchOption}?val=${inputVal}`  
+            }
+
+
+
+        }else{
+
+        }
+    });
+    
+    // 클릭이 되면 옵션 톱니바퀴의 이미지가 바뀐다 > 
+    const options = document.querySelectorAll('.options li')
+    options.forEach(option =>{
+        option.addEventListener('click', function(){
+            const img = this.querySelector('img');
+            const newImgSrc =img.src;
+            search_img.src = newImgSrc;
+            searchOption = this.className; 
+            updatePlaceholder(); 
+        })
+    })
+
+
+
+    // location href에 val 말고 option 값도 넣어준다  기본 옵션값은 artwork
+
+
+  
+
+
+});
+
 </script>
 
 
