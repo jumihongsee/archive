@@ -24,6 +24,7 @@ async function artworkData(req, res, next) {
             artworkSaleStart,
             artworkSaleEnd,
             artistId,
+            artistName,
             artworkPrice,
             registerDate,
         } = req.body;
@@ -78,7 +79,7 @@ async function artworkData(req, res, next) {
 
 
         const imgUrl = Array(5).fill(null);  // 5개의 이미지 URL을 담을 배열을 null로 초기화
-        const oldImg = Array.isArray(req.body.oldImg) ? req.body.oldImg : [req.body.oldImg];
+        const oldImg = Array.isArray(req.body.oldImg) ? req.body.oldImg : [req.body.oldImg]; // 배열 변환 작업 
 
         for (let i = 0; i < 5; i++) {
             const fileNum = `file${i + 1}`;
@@ -121,6 +122,7 @@ async function artworkData(req, res, next) {
         // 최종 데이터 설정
         req.data = {
             artist: new ObjectId(artistId),
+            artistName : artistName,
             imgUrl: finalImgUrl,  // 여기서 imgUrl 대신 finalImgUrl을 사용
             location: location,
             name: artworkName,

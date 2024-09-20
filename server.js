@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
 const sassMiddleware = require('node-sass-middleware');
-const { check, validationResult } = require('express-validator');
+const { check, validationResult, header } = require('express-validator');
 const app = express();
 const { ObjectId } = require('mongodb')
 const MongoStore = require('connect-mongo')
@@ -682,7 +682,7 @@ app.get('/search/artwork', async (req, res) => {
     });
   } catch (error) {
     console.error('검색에러:', error);
-    res.status(500).json({ message: '서버 검색 에러', error });
+    res.status(500).json({ message: '검색실패', error });
   }
 });
 
@@ -695,17 +695,89 @@ app.get('/search/artwork', async (req, res) => {
 // ✅ 엑셀로 다운로드 
 app.get('/admin/list/download/:Id', async (req, res) => {
 
-  try{
-    const workbook = new ExcelJS.Workbook();
-      workbook.creator = 'Me';
-      workbook.lastModifiedBy = 'Her';
-      workbook.created = new Date(1985, 8, 30);
-      workbook.modified = new Date();
-      workbook.lastPrinted = new Date(2016, 9, 27);
 
-      console.log(workbook)
+  try{
+    //아트워크 
+    const workbook = new ExcelJS.Workbook();
+      // 문서 첫 행 고정 
+      const sheet = workbook.addWorksheet( `${req.params.Id} - 리스트`, {
+        views:[
+          {state: 'frozen', xSplit: 1, ySplit: 1}
+        ],
+        
+      });
+
+      // 
+      sheet.columns = [
+        { header: 'Title', key: 'title_kor', width: 10 },
+        { header: 'Title', key: 'title_eng', width: 10 },
+        { header: 'Artist', key: 'artist', width: 10 },
+        { header: 'Register Date', key: 'register_date', width: 10 },
+        { header: 'Size(h)', key: 'size_h', width: 10 },
+        { header: 'Size(w)', key: 'size_w', width: 10 },
+        { header: 'Size(d)', key: 'size_d', width: 10 },
+        { header: 'Price', key: 'price', width: 10 },
+        { header: 'Current Location', key: 'current_location', width: 50 },
+        { header: 'Located Date', key: 'located_date', width: 20 },
+        { header: 'Sale', key: 'sale', width: 10 },
+        { header: 'Certification', key: 'certification', width: 10 },
+      ]
+
+     //데이터 가져오기 
+     let data = await db.collection(req.params.Id).find().toArray();
+
+     //데이터 가공
+
+
+      console.log(data)
+
+    const rowData = data.map(data=>{
+
+      const latestLocation = data.location
+      .sort((a, b) => new Date(b.date) - new Date(a.date))[0]; // 최신 날짜 객체 선택
+  
+      return{
+        title_kor:data.name[0],
+        title_eng:data.name[1],
+        artist: data.artistName,
+        register_date: data.registerDate,
+        size_h: data.size[0],
+        size_w: data.size[1],
+        size_d: data.size[2],
+        price: data.price,
+        located_date : latestLocation.date,
+        current_location:  `${latestLocation.road} ${latestLocation.extra} ${latestLocation.detail} (${latestLocation.postCode}) `,
+        sale: data.sale,
+        certification: data.certification,
+      }
+
+
+    })
+
+      // 데이터를 시트에 추가하기 
+      rowData.forEach(data => {
+        sheet.addRow(data);
+      });
+
+      res.setHeader(
+        'Content-Type',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      );
+      res.setHeader(
+        'Content-Disposition',
+        `attachment; filename=${req.params.Id}_list.xlsx`
+      );
+
+
+      await workbook.xlsx.write(res);
+      res.end(); // 응답 완료
+      
+
+  
 
   }catch(error){
+    console.error('엑셀 다운로드 에러', error)
+    res.status(500).json({message : '엑셀 다운로드 실패', error})
 
   }
 });
