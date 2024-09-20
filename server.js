@@ -11,9 +11,14 @@ const bcrypt = require('bcrypt')
 const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-const ArtworkJoinArtist = require('./middleware/ArtistJoinArtwork.js')
+
+
+const ExcelJS = require('exceljs');
+
 
 const { s3, deleteS3Image } = require('./module/s3.js')
+
+const ArtworkJoinArtist = require('./middleware/ArtistJoinArtwork.js')
 const artistData = require('./middleware/artistData.js')
 const artworkData = require('./middleware/artworkData.js')
 const validateArtwork = require('./middleware/artworkValidation.js')
@@ -215,11 +220,12 @@ app.post('/checkid', async(req,res)=>{
 
 })
 
-let checkLogin = require('./middleware/checkLogin.js');
+// let checkLogin = require('./middleware/checkLogin.js');
 const { title } = require('process');
 const { register } = require('module');
+const { localsName } = require('ejs');
 
-app.use(checkLogin)
+// app.use(checkLogin)
 
 app.get('/viewer', (req, res) => {
   if(req.user){
@@ -593,30 +599,123 @@ app.get('/admin/detail/artwork/:Id', async(req, res)=>{
 
 })
 
-//  🌐 SEARCH 
-app.get('/search/artwork', async(req,res)=>{
+//  🌐 SEARCH Artist
+app.get('/search/artist', async(req,res)=>{
 
   const result = req.user || null;
   const searchVal = req.query.val;
 
-  let option = [
-    {
-      $search : {
-        index : 'artistName_index',
-        text : { query : req.query.val , path : 'artistName' }
+  try{
+    let option = [
+      {
+        $search : {
+          index : 'artistName_index',
+          text : { query : searchVal , path : 'artistName' }
+        }
       }
-    }
-  ]
+    ]
+  
+    let searchData = await db.collection('artist').aggregate(option).toArray();
+  
+    res.render('admin/adminMain.ejs', { listType: "artist" , search : searchVal , data: searchData , result: result})
+  }catch(error){
+    console.error('검색에러:', error);
+    res.status(500).json({ message: '검색에러', error });
+  }
 
-  let searchData = await db.collection('artist').aggregate(option).toArray();
 
-  res.render('admin/adminMain.ejs', { listType: "artist" , search : searchVal , data: searchData , result: result})
+
 
 
 })
 
+//  🌐 SEARCH Artwork
+
+app.get('/search/artwork', async (req, res) => {
+  const result = req.user || null;
+  const searchVal = req.query.val;
+
+  try {
+    // `artwork` 컬렉션에서 검색 쿼리와 artist 조인 수행
+    let searchData = await db.collection('artwork').aggregate([
+      {
+        $search: {
+          index: 'artwork_name',
+          text: { 
+            query: searchVal, 
+            path: ['name', 'artistName'] 
+          }
+        }
+      },
+      {
+        $lookup: {
+          from: 'artist', // artist 컬렉션과 조인
+          localField: 'artist',
+          foreignField: '_id',
+          as: 'artistData'
+        }
+      },
+      {
+        $project: {
+          imgUrl: 1,
+          location: 1,
+          name: 1,
+          size: 1,
+          price: 1,
+          copyRight: 1,
+          registerDate: 1,
+          medium: 1,
+          madeDate: 1,
+          sale: 1,
+          certification: 1,
+          'artistData.artistName': 1,
+          'artistData._id': 1
+        }
+      }
+    ]).toArray();
+
+    res.render('admin/adminMain.ejs', { 
+      listType: "artwork", 
+      search: searchVal, 
+      data: searchData, 
+      result: result 
+    });
+  } catch (error) {
+    console.error('검색에러:', error);
+    res.status(500).json({ message: '서버 검색 에러', error });
+  }
+});
 
 
 
 
+//  🌐 SEARCH User ( 추후에 진행)
 
+
+// ✅ 엑셀로 다운로드 
+app.get('/admin/list/download/:Id', async (req, res) => {
+
+  try{
+    const workbook = new ExcelJS.Workbook();
+      workbook.creator = 'Me';
+      workbook.lastModifiedBy = 'Her';
+      workbook.created = new Date(1985, 8, 30);
+      workbook.modified = new Date();
+      workbook.lastPrinted = new Date(2016, 9, 27);
+
+      console.log(workbook)
+
+  }catch(error){
+
+  }
+});
+
+// 검색 결과 다운로드 
+
+
+
+app.get('/search/:Id', async(req,res)=>{
+  console.log(req.params.Id)
+
+
+})

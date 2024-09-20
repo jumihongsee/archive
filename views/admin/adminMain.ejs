@@ -26,7 +26,11 @@
                 <% } %>
 
             </h2>
-            <button onclick="location.href='/admin/write/artist'"><img src="/img/plus.png" alt=""> Add New Artist</button>
+            <div class="btn-wrapper">
+                <button onclick="location.href='/admin/list/download/<%=listType%>'"><img src="/img/download.png" alt=""> </button>
+                <button onclick="location.href='/admin/write/artist'"><img src="/img/plus.png" alt=""> Add New Artist</button>
+            </div>
+
 
         </div>
         <div class="main-section-wrapper" >
