@@ -5,6 +5,11 @@ async function ArtworkJoinArtist(req, res, next) {
     try {
         const client = await connectDB();
         const db = client.db('artworklist'); 
+        const pageNum = req.params.Page;
+
+
+
+
         const data = await db.collection('artwork').aggregate([
             {
                 $lookup: {
@@ -31,8 +36,9 @@ async function ArtworkJoinArtist(req, res, next) {
                     'artistData._id': 1
                 }
             }
-        ]).toArray();
-
+        ]).skip(0).limit(5).toArray();
+        // skip((pageNum - 1) * 5).limit(5).toArray();
+        
 
         req.ArtworkJoinArtist = data;
         next();

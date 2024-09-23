@@ -25,8 +25,19 @@
         <li class="admin">
             <img class="user" src="/img/user.svg" alt="">
             <div class="wp">
-                <p class="name"><%= result.realname %>  <a href="/logout"><img src="/img/logout.png" alt=""></a> </p>
-                <p class="email"><%= result.useremail %> </p>
+                <% if(result){ %>
+                    <p class="name"><%= result.realname %>  <a href="/logout"><img src="/img/logout.png" alt=""></a> </p>
+                    <p class="email"><%= result.useremail %> </p>
+                <% }else{ %>
+                    <div class="login-pop">로그인 후 이용해 주세요</div>
+                    <script>
+                        // 로그인 정보가 없을 경우 로그인 페이지로 리디렉션
+                        setTimeout(function() {
+                            window.location.href = '/login'; // 로그인 페이지 URL로 리디렉션
+                        }, 2000); // 2초 후에 리디렉션
+                    </script>
+                <% } %>
+
             </div>
         </li>
     </ul>       

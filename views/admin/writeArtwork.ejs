@@ -22,8 +22,8 @@
                         <%= artist.artistName[0]%>
                             <span> <%= artworkData ? '작품 수정' : '작품 등록' %></span>
                     </h2>
+
                     <img onclick="location.href='/admin/detail/artist/<%= artist._id%>'" src="<%= artist.imgUrl%>" alt="">
-                
                     <input type="hidden" name="artistId" value="<%= artist._id%>">
                     <input type="hidden" name="artistName" value="<%= artist.artistName[0] %>">                   
                     
@@ -136,31 +136,32 @@
                                     const month = String(dateObj.getMonth() + 1).padStart(2, '0'); // 월 추출, 0부터 시작하므로 +1, 2자리 맞추기 위해 padStart 사용
                                     const day = String(dateObj.getDate()).padStart(2, '0'); // 일 추출, 2자리 맞추기 위해 padStart 사용
                                     const formattedDate = `${year}-${month}-${day}`; // YYYY-MM-DD 형식으로 변환
+
                                 %>
-                             
-                                <div class="addAdress">
-                                    <div class="input-wrapper">
-                                        <input type="text" id="postcode" name="postCode" placeholder="우편번호" value="<%= location.postCode %>">
-                                        <input id="searchAdress" name="searchAdress" type="button" onclick="execDaumPostcode()" value="우편번호 찾기">
+                                    
+                                    <div class="addAdress">
+                                        <div class="input-wrapper">
+                                            <input type="text" id="postcode" name="postCode" placeholder="우편번호" value="<%= location.postCode %>">
+                                            <input id="searchAdress" name="searchAdress" type="button" onclick="execDaumPostcode()" value="우편번호 찾기">
+                                        </div>
+                                        <div class="input-wrapper">
+                                            <input type="text" id="roadAddress" name="roadAdress" placeholder="도로명주소" value="<%= location.road %>">
+                                            <input type="text" id="jibunAddress" name="jibunAdress" placeholder="지번주소" value="<%= location.jibun %>">
+                                        </div>
+                                        <div class="input-wrapper">
+                                            <input type="text" name="extraAddress" id="extraAddress" placeholder="참고항목" value="<%= location.extra %>">
+                                            <input type="text" name="detailAddress" id="detailAddress" placeholder="상세주소" value="<%= location.detail %>">
+                                        </div>
+                                        <div class="input-wrapper date">
+                                            <label for="">위치한 날짜 </label>
+                                            <!-- 여기서 date 변수를 사용 -->
+                                            <input type="date" name="locationDate" value="<%= formattedDate %>">
+                                        </div>
+                                        <div class="input-wrapper inner-storage">
+                                            <button type="button">수장고에 위치시 클릭</button>
+                                        </div>
+                                        <button class="close-btn" type="button"><img src="/img/x.png" alt=""></button>
                                     </div>
-                                    <div class="input-wrapper">
-                                        <input type="text" id="roadAddress" name="roadAdress" placeholder="도로명주소" value="<%= location.road %>">
-                                        <input type="text" id="jibunAddress" name="jibunAdress" placeholder="지번주소" value="<%= location.jibun %>">
-                                    </div>
-                                    <div class="input-wrapper">
-                                        <input type="text" name="extraAddress" id="extraAddress" placeholder="참고항목" value="<%= location.extra %>">
-                                        <input type="text" name="detailAddress" id="detailAddress" placeholder="상세주소" value="<%= location.detail %>">
-                                    </div>
-                                    <div class="input-wrapper date">
-                                        <label for="">위치한 날짜 </label>
-                                        <!-- 여기서 date 변수를 사용 -->
-                                        <input type="date" name="locationDate" value="<%= formattedDate %>">
-                                    </div>
-                                    <div class="input-wrapper inner-storage">
-                                        <button type="button">수장고에 위치시 클릭</button>
-                                    </div>
-                                    <button class="close-btn" type="button"><img src="/img/x.png" alt=""></button>
-                                </div>
                                 <% }) %>
                             <% } %>
     
@@ -274,11 +275,7 @@
                 ImgStatus.value = 'full'
             }
 
-            
-          
-
         })
-
     })
 
 
@@ -382,6 +379,13 @@
         if (closeBtn) {
             const parentDiv = closeBtn.closest('.addAdress');  // .addAdress를 찾아서 삭제
             if (parentDiv) {
+
+                //자꾸 location time input이 기록된다 인풋을 비우고 삭제를 진행해준다
+                parentDiv.querySelectorAll('input').forEach(input=>{
+                    input.value = ''
+                })
+
+
                 parentDiv.remove();  // 요소 삭제
             }
         }
@@ -409,6 +413,9 @@
     });
 
 
+
+
+    
     // 제출한 오류 메세지 가져오기 
     document.getElementById('artworkForm').addEventListener('submit', async function(e) {
     e.preventDefault(); // 기본 폼 제출 막기

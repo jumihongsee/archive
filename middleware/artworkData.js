@@ -54,7 +54,9 @@ async function artworkData(req, res, next) {
             Array.isArray(locationDate) && Array.isArray(jibunAdress)) {
             location = locationDate.map((date, i) => {
                 return {
-                    date: new Date(inputDataNull(date)),
+                    // 클라이언트에서 넘어온 빈 값이 new Date()로 처리되면서 기본값이 1970-01-01로 저장되는 문제 발생
+                    // 날짜가 빈 값이면 null 로 처리해 주어야
+                    date: date ? new Date(inputDataNull(date)): null,
                     postCode: postCode[i],
                     road: roadAdress[i],
                     jibun: jibunAdress[i],
@@ -65,7 +67,7 @@ async function artworkData(req, res, next) {
             });
         } else {
             location = [{
-                date: new Date(inputDataNull(locationDate)),
+                date: locationDate ? new Date(inputDataNull(locationDate)) : null,
                 postCode: postCode,
                 road: roadAdress,
                 jibun: jibunAdress,
@@ -75,8 +77,16 @@ async function artworkData(req, res, next) {
             }];
         }
 
+        // 날짜가 있는 항목만 정렬
+        location = location.filter(location => location.date !== null)
+        
         location.sort((a, b) => a.date - b.date);
 
+
+
+
+
+        // 이미지 설정 
 
         const imgUrl = Array(5).fill(null);  // 5개의 이미지 URL을 담을 배열을 null로 초기화 안그러면 따움표가 두번 저장됨 
         const oldImg = Array.isArray(req.body.oldImg) ? req.body.oldImg : [req.body.oldImg]; // 배열 변환 작업 

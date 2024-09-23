@@ -236,6 +236,8 @@ app.get('/viewer', (req, res) => {
 
 });
 
+
+
 app.get('/admin/list/artwork', ArtworkJoinArtist, async(req,res)=>{
 
   const result = req.user || null;
@@ -261,6 +263,21 @@ app.get('/admin/list/user', async(req,res)=>{
   let data = await db.collection('user').find().toArray()
   res.render('admin/adminMain.ejs',{data:data, result : result , listType : "user", search : false})
 })
+
+
+/// 페이지 네이션 ///
+
+app.get('/admin/list/artwork/:Page', ArtworkJoinArtist, async(req,res)=>{
+
+  const result = req.user || null;
+
+  const data = req.ArtworkJoinArtist; // 미들웨어에서 추가된 데이터 사용
+
+  return res.render('admin/adminMain.ejs', { result: result, data: data, listType: "artwork", search : false });
+
+
+})
+
 
 
 //////////// ✨👩‍🎨 [POST] 작가 등록페이지 - 작가 데이터 등록하기 
@@ -493,7 +510,8 @@ app.post('/admin/edit/artwork/:Id',
     {name : 'file4', maxCount : 1},
     {name : 'file5', maxCount : 1},
   ]), 
-  validateArtwork , ArtworkJoinArtist , artworkData ,async (req, res)=>{
+  validateArtwork ,
+   ArtworkJoinArtist , artworkData ,async (req, res)=>{
   
   try{
     await db.collection('artwork').updateOne({_id : new ObjectId(req.params.Id)}, {$set : req.data});
@@ -546,7 +564,6 @@ app.post('/admin/delete/artwork/:Id', async(req,res)=>{
   const artworkId = req.params.Id;
   console.log(artworkId) 
 
-  // 작품 데이터를 조회하여 이미지 url을 가져옴
 
   try{
 
@@ -558,7 +575,6 @@ app.post('/admin/delete/artwork/:Id', async(req,res)=>{
     
       // 작품의 이미지 url를 배열로 가져옴
       const artworkImgArray = artworkImg.imgUrl;
-
       // s3에서 이미지 삭제 
       await deleteS3Image(artworkImgArray);
     
