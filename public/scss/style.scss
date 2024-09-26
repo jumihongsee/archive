@@ -59,6 +59,7 @@ body{
     background: rgb(233, 233, 233);
 }
 
+
 .nav{
     position: fixed; top: 0; right: 0; padding: 0 5vw 0 3vw;
     width: 88vw; height: 100px;  z-index: 1000;
@@ -208,28 +209,29 @@ section{
         h1.title{
             font-size: 9vw; text-transform: uppercase;  
         }
+        // 메인페이지
         .btn-wrapper{
-        display: flex; align-items: center; justify-content: center;
-        button{
-            cursor: pointer;  padding: 5px 10px;
-            
-        }
-        .line{
-            width: 22vw; height: 1px; background: #000;
-         position: relative;
-            .circle{
-                width: 5px; height: 5px; background: #000;
-                position: absolute; border-radius: 50%; top: 50%; left: 50%; 
-                transform: translate(-50%,-50%);
-                transition: all ease-in-out 0.8s;
-                &.left{
-                    left: 100%;
-                }
-                &.right{
-                    left: 0;
+            display: flex; align-items: center; justify-content: center;
+            button{
+                cursor: pointer;  padding: 5px 10px;
+                
+            }
+            .line{
+                width: 22vw; height: 1px; background: #000;
+            position: relative;
+                .circle{
+                    width: 5px; height: 5px; background: #000;
+                    position: absolute; border-radius: 50%; top: 50%; left: 50%; 
+                    transform: translate(-50%,-50%);
+                    transition: all ease-in-out 0.8s;
+                    &.left{
+                        left: 100%;
+                    }
+                    &.right{
+                        left: 0;
+                    }
                 }
             }
-        }
         }
         .copyright{
         position: absolute; font-size: 13px; font-weight: bold;
@@ -309,22 +311,39 @@ section{
         flex-direction: column; position: fixed;
         .info{
             display: flex; width: 80vw;
-            justify-content: space-between;  align-items: center;
+            justify-content: space-between;  
             padding: 10px 0;
-            h2{
-                text-transform: uppercase;
-                font-size: 20px; 
-                .search-result{
-                    font-size: 15px; 
-                    margin-left: 10px;
-                    strong{
-                        color: rgb(251, 38, 77);
+            .left-section{
+                display: flex; align-items: flex-end;
+                .filter-btn{
+                    width: 50px; height: 25px;
+                    display: flex; align-items: center; justify-content: center;
+                    margin-right: 10px;
+                    .filter{
+                        width: 100%; height: 100%; background: #000; color: #fff;
+                        border-radius: 5px; border: none; 
+                        option{
+                            color: #fff;
+                        }
                     }
-                  
+                }
+                h2{
+                    text-transform: uppercase;
+                    font-size: 20px; 
+                    .search-result{
+                        font-size: 15px; 
+                        margin-left: 10px;
+                        strong{
+                            color: rgb(251, 38, 77);
+                        }
+                      
+                    }
                 }
             }
+
             .btn-wrapper{
                 display: flex;
+      
                 button{
                     background: #278afc; color: #fff;
                     border-radius: 10px; display: flex; align-items: center;
@@ -332,8 +351,33 @@ section{
                     img{
                         height: 25px;
                     }
-                    &:first-child{
+
+                    &.excelDown{
                         padding: 10px; background: $main-color;
+                    }
+                }
+                .page-btn{
+                    display: flex; align-items: flex-end; margin-right: 20px;
+                    button{
+                        padding: 0; width: 35px; height: 35px; transition: transform 0.3s ease-in-out;
+                        display: flex; align-items: center; justify-content: center;
+                        background: #000; border-radius: 5px; 
+                        &:hover{
+                            transform: scale(0.9);
+                        }
+                        img{
+                   
+                            width: 20px; height: 20px;
+                            filter: invert(1);
+                        }
+                        &:last-child{
+                            img{
+                                transform: rotate(180deg);
+                            }
+                        }
+                        &:disabled{
+                            background: #c0c0c0;
+                        }
                     }
                 }
             }
@@ -406,7 +450,7 @@ section{
                             font-size: 12px; padding: 5px 10px;
                             width: 150px; text-align: center; 
                             display: flex; align-items: center; justify-content: center;
-                            &:first-child{width: 20px;} 
+                            &:first-child{width: 30px;} 
                             &:nth-child(2),  &:nth-child(3){width: 100px;}
            
                         }
@@ -419,6 +463,7 @@ section{
                      height: 20px; 
                     tr{
                          padding: 10px 2px; 
+                        &:first-child{}
                     }
                 }
 
@@ -450,7 +495,7 @@ section{
 
                         &.artist{       
                             td{
-                                height: 100px;
+                                height: 100px; flex-direction: column;
                                 &.artistPage{
                                     cursor: pointer;
                                     &:hover{
@@ -475,11 +520,11 @@ section{
                                 }
 
                                 .img-wrapper{
-                                    width: 100px; height: 100px;
+                                    width: 100px; height: 80px;
                                     display: flex; align-items: center; justify-content: center;
                                     img{
                                         border-radius: 10px; border: 3px solid #000;
-                                        height: 80%;
+                                        height: 90%;
                                     }
                                 }
            
@@ -653,6 +698,7 @@ section{
                     width: 150px; height: 150px;
                     border-radius: 50%; overflow: hidden;
                     display: flex;align-items: center; justify-content: center;
+                    border: 3px solid #e9e6e6;
 
                 }
                 .text-wrapper{
@@ -671,6 +717,9 @@ section{
                         button{
                             background: #000000; color: #fff;
                             font-size: 12px; border-radius: 5px; padding: 10px;
+                            &:last-child{
+                                margin-left: 5px; background: $main-color;
+                            }
                         }
                     }
         
@@ -722,15 +771,16 @@ section{
                 width: 100%;
                 padding: 30px 10px;
                     h2{
-                        font-size: 20px; margin-bottom: 10px;
+                        font-size: 20px; 
                     }
                     .wp{  width: 100%;
                         display: flex;
-                        justify-content: flex-start;
+                        justify-content: flex-start; flex-wrap: wrap;
                         .img-description{
                             width: calc(100% / 10 - 10px);
                             margin: 0 5px;  cursor: pointer;
-                            background: #000; border-radius: 10px;
+                            background: #000; border-radius: 10px; margin-top: 10px;
+          
                             p{
                                 font-size: 12px; text-align: center; line-height: 1.5;
                                 color: #fff;

@@ -19,7 +19,7 @@
                         <% if(data){ %>
                             <% data.forEach((item)=>{ %>
                                  
-                                <img src="<%= item.imgUrl %>"  id="previewImg" name="" alt="">    
+                                <img src="<%= item.imgUrl ? item.imgUrl : '/img/user.svg' %>"  id="previewImg" name="" alt="">    
                                 <input type="hidden" name="oldImg"  value="<%= item.imgUrl %>">
 
                             <% }) %>
@@ -420,7 +420,7 @@
                     displayErrors(responseData.errors) // 에러 처리 함수 호출
                     
                 }else{
-                    window.location.href = '/admin/list/artist'
+                    window.location.href = '/admin/list/artist/5'
                 }
             }catch(error){
                 console.error('Error' , error)

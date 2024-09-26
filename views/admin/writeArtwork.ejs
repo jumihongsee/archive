@@ -113,9 +113,9 @@
                         <div class="wrapper size">
                             
                             <div class="input-wrapper size">
-                                <input type="number" name="artworkSizeHeight" placeholder="Height" value="<%= artworkData ? artworkData[0].size[0] : '' %>">                       
-                                <input type="number" name="artworkSizeWidth" placeholder="Width" value="<%= artworkData ? artworkData[0].size[1] : '' %>">                 
-                                <input type="number" name="artworkSizeDepth" placeholder="Depth (*값이 없을경우 공란)" value="<%= artworkData ? artworkData[0].size[2] : '' %>">
+                                <input type="number" step="0.01" name="artworkSizeHeight" placeholder="Height" value="<%= artworkData ? artworkData[0].size[0] : '' %>">                       
+                                <input type="number" step="0.01" name="artworkSizeWidth" placeholder="Width" value="<%= artworkData ? artworkData[0].size[1] : '' %>">                 
+                                <input type="number" step="0.01" name="artworkSizeDepth" placeholder="Depth (*값이 없을경우 공란)" value="<%= artworkData ? artworkData[0].size[2] : '' %>">
                             </div>
 
                         </div>

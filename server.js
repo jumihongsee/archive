@@ -7,25 +7,21 @@ const { ObjectId } = require('mongodb')
 const MongoStore = require('connect-mongo')
 require('dotenv').config();
 const bcrypt = require('bcrypt') 
-
 const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-
-
 const ExcelJS = require('exceljs');
-
-
 const { s3, deleteS3Image } = require('./module/s3.js')
 
-const ArtworkJoinArtist = require('./middleware/ArtistJoinArtwork.js')
+const ArtworkListData = require('./middleware/ListDataArtwork.js')
+const ArtistListData = require('./middleware/ListDataArtist.js')
+
 const artistData = require('./middleware/artistData.js')
 const artworkData = require('./middleware/artworkData.js')
-const validateArtwork = require('./middleware/artworkValidation.js')
 
+const validateArtwork = require('./middleware/artworkValidation.js')
 const multer = require('multer')
 const multerS3 = require('multer-s3')
-
 
 const upload = multer({
   storage: multerS3({
@@ -38,8 +34,6 @@ const upload = multer({
     }
   })
 })
-
-
 
 let connectDB = require('./database.js')
 let db;
@@ -68,7 +62,6 @@ app.use(session({
 
 // SCSS를 CSS로 자동 컴파일하기 위한 미들웨어 설정
 app.use(sassMiddleware({
-
     src: path.join(__dirname, 'public/scss'),
     dest: path.join(__dirname, 'public/css'),
     prefix: '/css',
@@ -124,7 +117,7 @@ app.set('view engine', 'ejs');
 
 // 라우트 설정
 app.get('/', (req, res) => {
- //res.sendFile(path.join(__dirname, 'index.html'));
+
  if(req.user){
   return  res.render('index.ejs',{result : req.user})
  }
@@ -137,17 +130,28 @@ app.get('/', (req, res) => {
 });
 
 
-app.get('/login', ArtworkJoinArtist, async (req, res) => {
+app.get('/login', ArtworkListData, async (req, res) => {
 
   const result = req.user || null;
-  const data = req.ArtworkJoinArtist;
+  const data = req.ArtworkListData.data;
+  const nextDirection = req.ArtworkListData.nextDirection || false; 
+  const prevDirection = req.ArtworkListData.prevDirection || false;
+  const nextBtnStatus = req.ArtworkListData.nextBtnStatus || false;
+  const prevBtnStatus = req.ArtworkListData.prevBtnStatus || false;
+  const pageFilter = req.ArtworkListData.pageFilter || 5;
 
   if (!req.user) {
     return res.render('login.ejs');
   }
 
   if (req.user.username === 'admin' || req.user.class === 0) {
-      return res.render('admin/adminMain.ejs', { result: result, data: data, listType: "artwork" , search : false });
+      return res.render('admin/adminMain.ejs',
+         { result: result, data: data, listType: "artwork" ,
+           search : false, pageNum:0, 
+           nextDirection:nextDirection,  prevDirection :  prevDirection , 
+           nextBtnStatus : nextBtnStatus , prevBtnStatus : prevBtnStatus ,pageFilter:pageFilter
+         }
+        );
   }
 
   return res.render('index.ejs', { result: result });
@@ -169,19 +173,15 @@ app.post('/login', (req, res, next) => {
 });
 
 
-
 app.get('/logout', (req, res, next)=>{
   req.logout((err)=>{
-
     if(err){
       return next(err)
     }
       res.redirect('/')
-   
   });
 
 })
-
 
 
 app.get('/register', (req, res) => {
@@ -191,7 +191,9 @@ app.get('/register', (req, res) => {
   res.render('register.ejs');
 });
 
+
 app.post('/register', async (req, res)=>{
+
   let hashing = await bcrypt.hash(req.body.password, 10);
 
   await db.collection('user').insertOne({
@@ -208,7 +210,6 @@ app.post('/register', async (req, res)=>{
 app.post('/checkid', async(req,res)=>{
 
 
-
   let result = await db.collection('user').findOne({ username : req.body.username })
   console.log(result)
   if(result){
@@ -220,10 +221,10 @@ app.post('/checkid', async(req,res)=>{
 
 })
 
-// let checkLogin = require('./middleware/checkLogin.js');
-const { title } = require('process');
-const { register } = require('module');
-const { localsName } = require('ejs');
+
+// const { title } = require('process');
+// const { register } = require('module');
+// const { localsName } = require('ejs');
 
 // app.use(checkLogin)
 
@@ -238,45 +239,205 @@ app.get('/viewer', (req, res) => {
 
 
 
-app.get('/admin/list/artwork', ArtworkJoinArtist, async(req,res)=>{
+app.get('/admin/list/artwork/:filter', ArtworkListData, async(req,res)=>{
 
   const result = req.user || null;
+  const data = req.ArtworkListData.data; // 미들웨어에서 추가된 데이터 사용
+  const nextDirection = req.ArtworkListData.nextDirection || false; 
+  const prevDirection = req.ArtworkListData.prevDirection || false;
+  const nextBtnStatus = req.ArtworkListData.nextBtnStatus || false;
+  const prevBtnStatus = req.ArtworkListData.prevBtnStatus || false;
+  const pageFilter = req.ArtworkListData.pageFilter || 5;
 
-  const data = req.ArtworkJoinArtist; // 미들웨어에서 추가된 데이터 사용
-
-  return res.render('admin/adminMain.ejs', { result: result, data: data, listType: "artwork", search : false });
-
+  return res.render('admin/adminMain.ejs',
+     { 
+      result: result, data: data, listType: "artwork", search : false , 
+      pageNum: 0, nextDirection: nextDirection , nextBtnStatus : nextBtnStatus, prevDirection : prevDirection , prevBtnStatus: prevBtnStatus
+      , pageFilter:pageFilter
+     });
 
 })
 
-app.get('/admin/list/artist', async(req,res)=>{
 
-  let result = req.user || null;
-  let data = await db.collection('artist').find().toArray()
-  res.render('admin/adminMain.ejs',{data:data, result : result , listType : "artist", search : false })
-
-})
-
-
-app.get('/admin/list/user', async(req,res)=>{
-  let result = req.user || null;
-  let data = await db.collection('user').find().toArray()
-  res.render('admin/adminMain.ejs',{data:data, result : result , listType : "user", search : false})
-})
-
-
-/// 페이지 네이션 ///
-
-app.get('/admin/list/artwork/:Page', ArtworkJoinArtist, async(req,res)=>{
-
+app.get('/admin/list/artwork/:filter/:Id/:Page', ArtworkListData, async(req,res)=>{
   const result = req.user || null;
+  const data = req.ArtworkListData.data; // 미들웨어에서 추가된 데이터 사용
+  const pageNum = parseInt(req.params.Page) ;
+  const nextDirection = req.ArtworkListData.nextDirection || false; 
+  const prevDirection = req.ArtworkListData.prevDirection || false;
+  const nextBtnStatus = req.ArtworkListData.nextBtnStatus || false;
+  const prevBtnStatus = req.ArtworkListData.prevBtnStatus || false;
+  const pageFilter = req.ArtworkListData.pageFilter || 5;
 
-  const data = req.ArtworkJoinArtist; // 미들웨어에서 추가된 데이터 사용
+  return res.render('admin/adminMain.ejs', 
+    { 
+      result: result, data: data, listType: "artwork", search : false, 
+      pageNum:pageNum, nextDirection : nextDirection, prevDirection : prevDirection, 
+      nextBtnStatus : nextBtnStatus, prevBtnStatus:prevBtnStatus , pageFilter:pageFilter
 
-  return res.render('admin/adminMain.ejs', { result: result, data: data, listType: "artwork", search : false });
-
+    });
 
 })
+
+
+
+app.get('/admin/list/artist/:filter', async(req,res)=>{
+
+  let result = req.user || null;
+  const pageNum = 0 ;
+  const nextDirection = false; 
+  const prevDirection = false;
+  const nextBtnStatus = true;
+  const prevBtnStatus = true;
+  const pageFilter = parseInt(req.params.filter);
+  // 클라이언트 url에서 pageNum을 받아와야함
+  // 클라이언트 url에서 boardId를 받아와야함
+  // 클라이언트 url에서 버튼의 direction 값을 가져와야함
+
+  console.log(pageFilter)
+
+
+  // pageNum이 있으며, boardId가 유효한 아이디 일때 matchQuery 설정을 해줘야함
+  // matchQuery 설정
+  // 이전 버튼을 눌렀을때는 리스트를 찾을때 boardId(게시글의 첫번째값) lt를 활용하여 이전의 값을 가져와야함 ,sort의 방향을 반대로 -1 , direction 의 불린 값을 설정
+  // 다음 버튼을 눌렀을때는 리스트를 찾을때 boardId (게시글의 마지막값) gt를 활용하여 다음의 값을 가져와야함  , direction 의 불린 값을 설정
+
+  // aggregate를 활용하여 상단의 값들을 필터링하여 가져온다.
+  let data = await db.collection('artist').aggregate([
+    {$limit : pageFilter}
+
+  ]).toArray()
+  // limit값은 pageFilter를 통해 클라이언트측에서 url로 받아온 필터옵션값을 가져온다
+
+  // 버튼의 활성화 유무 체크
+  // 첫번째 페이지는 무조건 이전버튼을 비활성화 해준다.
+  // 이전버튼을 눌렀을때 게시글 - 필터 = 0 dlaus disabled 이전에 값이 없다는 뜻이다 
+
+  // 다음 버튼을 눌렀을때 
+  // 게시글의 마지막 id값을 가져와서 그 다음의 값이 있는지 확인해줘야한다. 있으면 true 없으면 false(button disabled)
+
+
+  res.render('admin/adminMain.ejs',{
+    data:data, result : result , listType : "artist", search : false,
+    pageNum:pageNum, nextDirection : nextDirection, prevDirection : prevDirection, 
+    nextBtnStatus : nextBtnStatus, prevBtnStatus:prevBtnStatus , pageFilter:pageFilter
+  })
+
+})
+
+
+app.get('/admin/list/artist/:filter/:Id/:Page', async(req,res)=>{
+
+  let result = req.user || null;
+   // 클라이언트 url에서 pageNum을 받아와야함
+  const pageNum = parseInt(req.params.Page) ;
+  let nextDirection = true;
+  let prevDirection = true;
+  const nextBtnStatus = true;
+  const prevBtnStatus = false;
+  const pageFilter = parseInt(req.params.filter);
+  // 클라이언트 url에서 boardId를 받아와야함
+  const boardId = req.params.Id;
+  // 클라이언트 url에서 버튼의 direction 값을 가져와야함
+  const direction = req.query.direction;
+  let sortDirection = 1;
+  console.log(pageNum)
+
+
+  // pageNum이 있으며, boardId가 유효한 아이디 일때 matchQuery 설정을 해줘야함
+  let matchQuery = {};
+  if(pageNum && ObjectId.isValid(boardId)){
+  // 이전 버튼을 눌렀을때는 리스트를 찾을때 boardId(게시글의 첫번째값) lt를 활용하여 이전의 값을 가져와야함 ,sort의 방향을 반대로 -1 , direction 의 불린 값을 설정
+  if(direction === 'prev'){
+    matchQuery = {_id : {$lt : new ObjectId(boardId)}}
+    sortDirection = -1;
+    prevDirection = true;
+    nextDirection = false;
+  }else{
+    matchQuery = {_id : {$gt : new ObjectId(boardId)}}
+    prevDirection = false;
+    nextDirection = true;
+  }
+  
+  // 다음 버튼을 눌렀을때는 리스트를 찾을때 boardId (게시글의 마지막값) gt를 활용하여 다음의 값을 가져와야함  , direction 의 불린 값을 설정
+  
+  }
+  // matchQuery 설정
+ 
+  // aggregate를 활용하여 상단의 값들을 필터링하여 가져온다.
+  let data = await db.collection('artist').aggregate([
+    {$match : matchQuery},
+    {$limit : pageFilter},
+    {$sort :{_id : sortDirection}}
+  ]).toArray()
+  // limit값은 pageFilter를 통해 클라이언트측에서 url로 받아온 필터옵션값을 가져온다
+
+  // 버튼의 활성화 유무 체크
+  // 첫번째 페이지는 무조건 이전버튼을 비활성화 해준다.
+  // 이전버튼을 눌렀을때 게시글 - 필터 = 0 dlaus disabled 이전에 값이 없다는 뜻이다 
+
+  // 다음 버튼을 눌렀을때 
+  // 게시글의 마지막 id값을 가져와서 그 다음의 값이 있는지 확인해줘야한다. 있으면 true 없으면 false(button disabled)
+
+
+  res.render('admin/adminMain.ejs',{
+    data:data, result : result , listType : "artist", search : false,
+    pageNum:pageNum, nextDirection : nextDirection, prevDirection : prevDirection, 
+    nextBtnStatus : nextBtnStatus, prevBtnStatus:prevBtnStatus , pageFilter:pageFilter
+  })
+
+})
+
+
+app.get('/admin/list/user/:filter', async(req,res)=>{
+  let result = req.user || null;
+
+  const pageNum = parseInt(req.params.Page) ;
+  const nextDirection = false; 
+  const prevDirection = false;
+  const nextBtnStatus = false;
+  const prevBtnStatus = false;
+  const pageFilter = parseInt(req.params.filter);
+console.log(pageFilter)
+  // 클라이언트 url에서 pageNum을 받아와야함
+  // 클라이언트 url에서 boardId를 받아와야함
+  // 클라이언트 url에서 버튼의 direction 값을 가져와야함
+
+  // pageNum이 있으며, boardId가 유효한 아이디 일때 matchQuery 설정을 해줘야함
+  // matchQuery 설정
+  // 이전 버튼을 눌렀을때는 리스트를 찾을때 boardId(게시글의 첫번째값) lt를 활용하여 이전의 값을 가져와야함 ,sort의 방향을 반대로 -1 , direction 의 불린 값을 설정
+  // 다음 버튼을 눌렀을때는 리스트를 찾을때 boardId (게시글의 마지막값) gt를 활용하여 다음의 값을 가져와야함  , direction 의 불린 값을 설정
+
+  // aggregate를 활용하여 상단의 값들을 필터링하여 가져온다.
+  let data = await db.collection('user').aggregate([
+    {$limit : pageFilter}
+  ]).toArray()
+  // limit값은 pageFilter를 통해 클라이언트측에서 url로 받아온 필터옵션값을 가져온다
+
+  // 버튼의 활성화 유무 체크
+  // 첫번째 페이지는 무조건 이전버튼을 비활성화 해준다.
+  // 이전버튼을 눌렀을때 게시글 - 필터 = 0 dlaus disabled 이전에 값이 없다는 뜻이다 
+
+  // 다음 버튼을 눌렀을때 
+  // 게시글의 마지막 id값을 가져와서 그 다음의 값이 있는지 확인해줘야한다. 있으면 true 없으면 false(button disabled)
+
+
+  
+
+
+
+
+
+
+  res.render('admin/adminMain.ejs',{
+    data:data, result : result , listType : "user", search : false,
+       pageNum:pageNum, nextDirection : nextDirection, prevDirection : prevDirection, 
+      nextBtnStatus : nextBtnStatus, prevBtnStatus:prevBtnStatus , pageFilter:pageFilter
+  })
+})
+
+
+
 
 
 
@@ -312,7 +473,7 @@ artistData , async(req,res)=>{
             await db.collection('artist').insertOne(result);
           }  
     
-         res.redirect('/admin/list/artist');
+         res.redirect('/admin/list/artist/5');
        }catch(error){
          console.log('데이터 에러', error);
          res.status(500).send('서버 에러')
@@ -424,6 +585,7 @@ app.post('/admin/delete/artist/:Id', async(req,res)=>{
 //////////// ✨👩‍🎨 [GET] 작가 디테일 페이지  - 페이지 띄우기 
 
 app.get('/admin/detail/artist/:Id', async (req,res)=>{
+
   const result = req.user || null;
   const artistId = req.params.Id;
 
@@ -511,7 +673,7 @@ app.post('/admin/edit/artwork/:Id',
     {name : 'file5', maxCount : 1},
   ]), 
   validateArtwork ,
-   ArtworkJoinArtist , artworkData ,async (req, res)=>{
+   ArtworkListData , artworkData ,async (req, res)=>{
   
   try{
     await db.collection('artwork').updateOne({_id : new ObjectId(req.params.Id)}, {$set : req.data});
@@ -539,7 +701,7 @@ upload.fields([
   {name : 'file5', maxCount : 1},
 ]), 
 validateArtwork,
-ArtworkJoinArtist,
+ArtworkListData,
 artworkData,
 async(req,res)=>{
   try{    
@@ -799,8 +961,6 @@ app.get('/admin/list/download/:Id', async (req, res) => {
 });
 
 // 검색 결과 다운로드 
-
-
 
 app.get('/search/:Id', async(req,res)=>{
   console.log(req.params.Id)

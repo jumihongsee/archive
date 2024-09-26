@@ -10,24 +10,64 @@
     <%- include('../nav.ejs') %>
     <%- include('../sidenav.ejs') %>
     <section class="admin-main admin">
-
+   
         <div class="info">
-            <h2>
-                <% if(listType === 'artwork'){ %>
-                    Artwork
-                <% }else if(listType === 'artist'){ %>
-                    Artist
-                <% }else if(listType === 'user'){ %>
-                    User
-                <% } %>                
+        
+            <div class="left-section">
+                <div class="filter-btn">
+                    <select class="filter" onchange="filterValue(this)">
+                    
+                        <option value="5" <%= pageFilter == 5 ? 'selected' : '' %>>5</option>
+                        <option value="10" <%= pageFilter == 10 ? 'selected' : '' %>>10</option>
+                        <option value="50" <%= pageFilter == 50 ? 'selected' : '' %>>50</option>
+                        <option value="100" <%= pageFilter == 100 ? 'selected' : '' %>>100</option>
+                    </select>
+                </div>
+               
+                <h2>
+                    <% if(listType === 'artwork'){ %>
+                        Artwork
+                    <% }else if(listType === 'artist'){ %>
+                        Artist
+                    <% }else if(listType === 'user'){ %>
+                        User
+                    <% } %>                
+    
+                    <% if(search){ %>
+                        <span class="search-result"> '<%= search %>' 검색결과 : <strong><%= data.length %> </strong>  건</span>
+                    <% } %>
+                        
+                </h2>
+                <!-- 필터 -->
 
-                <% if(search){ %>
-                    <span class="search-result"> '<%= search %>' 검색결과 : <strong><%= data.length %> </strong>  건</span>
-                <% } %>
+            </div>
 
-            </h2>
+            
             <div class="btn-wrapper">
-                <button onclick="location.href='/admin/list/download/<%=listType%>'"><img src="/img/download.png" alt=""> </button>
+
+
+
+                <div class="page-btn">
+
+                    <button
+                        type="button"
+                        onclick="goToPrev()"                       
+                        <%= prevBtnStatus ? '': 'disabled'  %>
+                    >
+                    <img src="/img/arrow.png" alt="">
+                    </button>                      
+                   
+                    <button 
+                        type="button" 
+                        onclick="goToNext()"
+                        <%= nextBtnStatus ? '': 'disabled'  %>
+                    >
+                    <img src="/img/arrow.png" alt="다음 페이지">
+                    </button>
+
+                </div>
+
+                <button class="excelDown" onclick="location.href='/admin/list/download/<%=listType%>'"><img src="/img/download.png" alt=""></button>
                 <button onclick="location.href='/admin/write/artist'"><img src="/img/plus.png" alt=""> Add New Artist</button>
             </div>
 
@@ -54,7 +94,7 @@
                                 <h2></h2>
                                 <% if(listType === 'artwork'){ %>
                                     <tr class="artwork">
-                                        <th>NO.</th>
+                                        <th>No</th>
                                         <th>IMG</th>
                                         <th>관리</th>      
                                         <th>Title</th>
@@ -94,11 +134,18 @@
                             </thead>
                             <tbody>
                                 <% if (listType === 'artwork') { %>
+                                  
                                     <% data.map((artwork, i) => { %>
-        
-                                    
-                                        <tr class="artwork">
-                                            <td><%= i + 1 %></td>
+                                                                 
+                                        <tr class="artwork"> 
+                                            <% if(nextDirection){ %>
+                                                <td class="pageNum"><%= pageNum + i + 1 %></td>
+
+                                            <% }else if(prevDirection){ %>
+                                                <td class="pageNum"><%= pageNum - (data.length - 1) + i %></td>
+                                            <% } %>
+                                           
+                                            <!-- pgeNum이 점점 늘어야함 -->
                                             <td class="artworkPage" onclick="location.href='/admin/detail/artwork/<%= artwork._id %>'">
                                                 <div class="img-wrapper artwork">
                                                     <% 
@@ -116,9 +163,9 @@
                                                     <img src="<%= imageSrc %>" alt="">
                                                 </div>
                                             </td>
+
                                             <td class="manageBtn">
                                                 <button onclick="location.href='/admin/edit/artwork/<%=artwork._id %>'">수정 </button>
-                                                <!-- <button onclick="location.href='/admin/delete/artwork/<%=artwork._id %>'">삭제</button> -->
                                                 <button onclick="openDeletePop('<%= artwork.name[0] %>', '<%= artwork._id %>', 'artwork')">삭제</button>
                                             </td> 
                                             <td><%= artwork.name[0] %></td>
@@ -165,11 +212,22 @@
             
                                     
                                         </tr>
+
+
+
+
                                 <% }) %>
                             <%}else if(listType === 'artist') {%>
                                     <% data.map((artist, i) => { %>
                                         <tr class="artist">
-                                            <td><%= i + 1 %></td>
+                             
+                                            <% if(nextDirection){ %>
+                                                <td class="pageNum"><%= pageNum + i + 1 %></td>
+
+                                            <% }else if(prevDirection){ %>
+                                                <td class="pageNum"><%= pageNum - (data.length - 1) + i %></td>
+                                            <% } %>
+                                   
                                             <td class="artistPage" onclick="location.href='/admin/detail/artist/<%= artist._id %>'">
                                                 <div class="img-wrapper artist">
                                                     <img class="artist-img" src="<%= artist.imgUrl ? artist.imgUrl : '/img/user.svg' %>" alt="">
@@ -297,6 +355,35 @@
         })
         .catch(error => console.error('error발생',error))
     }
+
+
+    let filterVal = "<%= pageFilter %>"
+    let listType = "<%= listType %>"
+
+    // 필터 값 가져오기
+    function filterValue(element){
+        const selectVal = element.value;
+        console.log('값' + selectVal)
+        window.location.href = `/admin/list/${listType}/${selectVal}`
+
+    }
+    
+
+    // next 및 prev 게시글 url
+    const boards = document.querySelectorAll('tbody tr');
+
+    function goToNext (){
+
+        const lastNum = boards[boards.length - 1].querySelector('.pageNum').textContent;
+        window.location.href = `/admin/list/${listType}/${filterVal}/<%= data[data.length - 1]._id %>/${lastNum}?direction=next`
+
+    }
+    function goToPrev(){
+        const firstNum =  boards[0].querySelector('.pageNum').textContent;
+        window.location.href = `/admin/list/${listType}/${filterVal}/<%= data[0]._id %>/${firstNum - 1}?direction=prev`
+    }
+
+
 
 
 </script>
