@@ -8,9 +8,8 @@ async function ArtworkListData(req, res, next) {
         const db = client.db('artworklist');
         const boardId = req.params.Id || null; 
         const pageNum = parseInt(req.params.Page) || 0;
-        const boardLength = req.query.boardLength;  
         const direction = req.query.direction;
-        let pageFilter = parseInt(req.params.filter)|| 5;
+        let pageFilter = parseInt(req.params.filter)|| 10;
         let nextDirection = true;
         let prevDirection = true;
         let nextBtnStatus = false;
@@ -28,7 +27,7 @@ async function ArtworkListData(req, res, next) {
         //direction으로 이전과 다음페이지 분할
         if(pageNum && ObjectId.isValid(boardId)){
    
-            if(req.query.direction === 'prev'){
+            if( direction === 'prev'){
                 matchQuery={_id:{$lt : new ObjectId(boardId)}}
                 sortDirection = -1;
                  prevDirection = true;

@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 search_input.style.color = '#f03636'
             } else{
                 // 옵션에 따라 다른 라우터로 ,...
-                location.href = `/search/${searchOption}?val=${inputVal}`  
+                location.href = `/search/${searchOption}?val=${inputVal}&filter=${filterVal}`  
             }
 
 
@@ -129,7 +129,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
-    // location href에 val 말고 option 값도 넣어준다  기본 옵션값은 artwork
 
 
   

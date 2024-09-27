@@ -16,8 +16,13 @@ const { s3, deleteS3Image } = require('./module/s3.js')
 const ArtworkListData = require('./middleware/ListDataArtwork.js')
 const ArtistListData = require('./middleware/ListDataArtist.js')
 
+const ArtworkSearchData = require('./middleware/ListSearchDataArtwork.js')
+const ArtistSearchData = require('./middleware/ListSearchDataArtist.js')
+
 const artistData = require('./middleware/artistData.js')
 const artworkData = require('./middleware/artworkData.js')
+
+const excelListDown = require('./middleware/ListexcelDown.js')
 
 const validateArtwork = require('./middleware/artworkValidation.js')
 const multer = require('multer')
@@ -138,7 +143,7 @@ app.get('/login', ArtworkListData, async (req, res) => {
   const prevDirection = req.ArtworkListData.prevDirection || false;
   const nextBtnStatus = req.ArtworkListData.nextBtnStatus || false;
   const prevBtnStatus = req.ArtworkListData.prevBtnStatus || false;
-  const pageFilter = req.ArtworkListData.pageFilter || 5;
+  const pageFilter = req.ArtworkListData.pageFilter ;
 
   if (!req.user) {
     return res.render('login.ejs');
@@ -247,13 +252,13 @@ app.get('/admin/list/artwork/:filter', ArtworkListData, async(req,res)=>{
   const prevDirection = req.ArtworkListData.prevDirection || false;
   const nextBtnStatus = req.ArtworkListData.nextBtnStatus || false;
   const prevBtnStatus = req.ArtworkListData.prevBtnStatus || false;
-  const pageFilter = req.ArtworkListData.pageFilter || 5;
+  const pageFilter = req.ArtworkListData.pageFilter ;
 
   return res.render('admin/adminMain.ejs',
      { 
       result: result, data: data, listType: "artwork", search : false , 
-      pageNum: 0, nextDirection: nextDirection , nextBtnStatus : nextBtnStatus, prevDirection : prevDirection , prevBtnStatus: prevBtnStatus
-      , pageFilter:pageFilter
+      pageNum: 0, nextDirection: nextDirection , nextBtnStatus : nextBtnStatus,
+      prevDirection : prevDirection , prevBtnStatus: prevBtnStatus, pageFilter:pageFilter
      });
 
 })
@@ -267,7 +272,7 @@ app.get('/admin/list/artwork/:filter/:Id/:Page', ArtworkListData, async(req,res)
   const prevDirection = req.ArtworkListData.prevDirection || false;
   const nextBtnStatus = req.ArtworkListData.nextBtnStatus || false;
   const prevBtnStatus = req.ArtworkListData.prevBtnStatus || false;
-  const pageFilter = req.ArtworkListData.pageFilter || 5;
+  const pageFilter = req.ArtworkListData.pageFilter ;
 
   return res.render('admin/adminMain.ejs', 
     { 
@@ -281,104 +286,36 @@ app.get('/admin/list/artwork/:filter/:Id/:Page', ArtworkListData, async(req,res)
 
 
 
-app.get('/admin/list/artist/:filter', async(req,res)=>{
+app.get('/admin/list/artist/:filter', ArtistListData , async(req,res)=>{
 
   let result = req.user || null;
-  const pageNum = 0 ;
-  const nextDirection = false; 
-  const prevDirection = false;
-  const nextBtnStatus = true;
-  const prevBtnStatus = true;
-  const pageFilter = parseInt(req.params.filter);
-  // 클라이언트 url에서 pageNum을 받아와야함
-  // 클라이언트 url에서 boardId를 받아와야함
-  // 클라이언트 url에서 버튼의 direction 값을 가져와야함
-
-  console.log(pageFilter)
-
-
-  // pageNum이 있으며, boardId가 유효한 아이디 일때 matchQuery 설정을 해줘야함
-  // matchQuery 설정
-  // 이전 버튼을 눌렀을때는 리스트를 찾을때 boardId(게시글의 첫번째값) lt를 활용하여 이전의 값을 가져와야함 ,sort의 방향을 반대로 -1 , direction 의 불린 값을 설정
-  // 다음 버튼을 눌렀을때는 리스트를 찾을때 boardId (게시글의 마지막값) gt를 활용하여 다음의 값을 가져와야함  , direction 의 불린 값을 설정
-
-  // aggregate를 활용하여 상단의 값들을 필터링하여 가져온다.
-  let data = await db.collection('artist').aggregate([
-    {$limit : pageFilter}
-
-  ]).toArray()
-  // limit값은 pageFilter를 통해 클라이언트측에서 url로 받아온 필터옵션값을 가져온다
-
-  // 버튼의 활성화 유무 체크
-  // 첫번째 페이지는 무조건 이전버튼을 비활성화 해준다.
-  // 이전버튼을 눌렀을때 게시글 - 필터 = 0 dlaus disabled 이전에 값이 없다는 뜻이다 
-
-  // 다음 버튼을 눌렀을때 
-  // 게시글의 마지막 id값을 가져와서 그 다음의 값이 있는지 확인해줘야한다. 있으면 true 없으면 false(button disabled)
-
+  const data = req.ArtistListData.data; // 미들웨어에서 추가된 데이터 사용
+  const nextDirection = req.ArtistListData.nextDirection || false; 
+  const prevDirection = req.ArtistListData.prevDirection || false;
+  const nextBtnStatus = req.ArtistListData.nextBtnStatus || false;
+  const prevBtnStatus = req.ArtistListData.prevBtnStatus || false;
+  const pageFilter = req.ArtistListData.pageFilter;
 
   res.render('admin/adminMain.ejs',{
     data:data, result : result , listType : "artist", search : false,
-    pageNum:pageNum, nextDirection : nextDirection, prevDirection : prevDirection, 
+    pageNum:0, nextDirection : nextDirection, prevDirection : prevDirection, 
     nextBtnStatus : nextBtnStatus, prevBtnStatus:prevBtnStatus , pageFilter:pageFilter
   })
+
 
 })
 
 
-app.get('/admin/list/artist/:filter/:Id/:Page', async(req,res)=>{
+app.get('/admin/list/artist/:filter/:Id/:Page', ArtistListData , async(req,res)=>{
 
   let result = req.user || null;
-   // 클라이언트 url에서 pageNum을 받아와야함
+  const data = req.ArtistListData.data; // 미들웨어에서 추가된 데이터 사용
   const pageNum = parseInt(req.params.Page) ;
-  let nextDirection = true;
-  let prevDirection = true;
-  const nextBtnStatus = true;
-  const prevBtnStatus = false;
-  const pageFilter = parseInt(req.params.filter);
-  // 클라이언트 url에서 boardId를 받아와야함
-  const boardId = req.params.Id;
-  // 클라이언트 url에서 버튼의 direction 값을 가져와야함
-  const direction = req.query.direction;
-  let sortDirection = 1;
-  console.log(pageNum)
-
-
-  // pageNum이 있으며, boardId가 유효한 아이디 일때 matchQuery 설정을 해줘야함
-  let matchQuery = {};
-  if(pageNum && ObjectId.isValid(boardId)){
-  // 이전 버튼을 눌렀을때는 리스트를 찾을때 boardId(게시글의 첫번째값) lt를 활용하여 이전의 값을 가져와야함 ,sort의 방향을 반대로 -1 , direction 의 불린 값을 설정
-  if(direction === 'prev'){
-    matchQuery = {_id : {$lt : new ObjectId(boardId)}}
-    sortDirection = -1;
-    prevDirection = true;
-    nextDirection = false;
-  }else{
-    matchQuery = {_id : {$gt : new ObjectId(boardId)}}
-    prevDirection = false;
-    nextDirection = true;
-  }
-  
-  // 다음 버튼을 눌렀을때는 리스트를 찾을때 boardId (게시글의 마지막값) gt를 활용하여 다음의 값을 가져와야함  , direction 의 불린 값을 설정
-  
-  }
-  // matchQuery 설정
- 
-  // aggregate를 활용하여 상단의 값들을 필터링하여 가져온다.
-  let data = await db.collection('artist').aggregate([
-    {$match : matchQuery},
-    {$limit : pageFilter},
-    {$sort :{_id : sortDirection}}
-  ]).toArray()
-  // limit값은 pageFilter를 통해 클라이언트측에서 url로 받아온 필터옵션값을 가져온다
-
-  // 버튼의 활성화 유무 체크
-  // 첫번째 페이지는 무조건 이전버튼을 비활성화 해준다.
-  // 이전버튼을 눌렀을때 게시글 - 필터 = 0 dlaus disabled 이전에 값이 없다는 뜻이다 
-
-  // 다음 버튼을 눌렀을때 
-  // 게시글의 마지막 id값을 가져와서 그 다음의 값이 있는지 확인해줘야한다. 있으면 true 없으면 false(button disabled)
-
+  const nextDirection = req.ArtistListData.nextDirection || false; 
+  const prevDirection = req.ArtistListData.prevDirection || false;
+  const nextBtnStatus = req.ArtistListData.nextBtnStatus || false;
+  const prevBtnStatus = req.ArtistListData.prevBtnStatus || false;
+  const pageFilter = req.ArtistListData.pageFilter ;
 
   res.render('admin/adminMain.ejs',{
     data:data, result : result , listType : "artist", search : false,
@@ -386,53 +323,34 @@ app.get('/admin/list/artist/:filter/:Id/:Page', async(req,res)=>{
     nextBtnStatus : nextBtnStatus, prevBtnStatus:prevBtnStatus , pageFilter:pageFilter
   })
 
+  
 })
 
+///
 
 app.get('/admin/list/user/:filter', async(req,res)=>{
+  
   let result = req.user || null;
-
   const pageNum = parseInt(req.params.Page) ;
   const nextDirection = false; 
   const prevDirection = false;
   const nextBtnStatus = false;
   const prevBtnStatus = false;
   const pageFilter = parseInt(req.params.filter);
+
+
 console.log(pageFilter)
-  // 클라이언트 url에서 pageNum을 받아와야함
-  // 클라이언트 url에서 boardId를 받아와야함
-  // 클라이언트 url에서 버튼의 direction 값을 가져와야함
-
-  // pageNum이 있으며, boardId가 유효한 아이디 일때 matchQuery 설정을 해줘야함
-  // matchQuery 설정
-  // 이전 버튼을 눌렀을때는 리스트를 찾을때 boardId(게시글의 첫번째값) lt를 활용하여 이전의 값을 가져와야함 ,sort의 방향을 반대로 -1 , direction 의 불린 값을 설정
-  // 다음 버튼을 눌렀을때는 리스트를 찾을때 boardId (게시글의 마지막값) gt를 활용하여 다음의 값을 가져와야함  , direction 의 불린 값을 설정
-
-  // aggregate를 활용하여 상단의 값들을 필터링하여 가져온다.
+ 
   let data = await db.collection('user').aggregate([
     {$limit : pageFilter}
   ]).toArray()
-  // limit값은 pageFilter를 통해 클라이언트측에서 url로 받아온 필터옵션값을 가져온다
-
-  // 버튼의 활성화 유무 체크
-  // 첫번째 페이지는 무조건 이전버튼을 비활성화 해준다.
-  // 이전버튼을 눌렀을때 게시글 - 필터 = 0 dlaus disabled 이전에 값이 없다는 뜻이다 
-
-  // 다음 버튼을 눌렀을때 
-  // 게시글의 마지막 id값을 가져와서 그 다음의 값이 있는지 확인해줘야한다. 있으면 true 없으면 false(button disabled)
-
-
-  
-
-
-
 
 
 
   res.render('admin/adminMain.ejs',{
     data:data, result : result , listType : "user", search : false,
-       pageNum:pageNum, nextDirection : nextDirection, prevDirection : prevDirection, 
-      nextBtnStatus : nextBtnStatus, prevBtnStatus:prevBtnStatus , pageFilter:pageFilter
+    pageNum:pageNum, nextDirection : nextDirection, prevDirection : prevDirection, 
+    nextBtnStatus : nextBtnStatus, prevBtnStatus:prevBtnStatus , pageFilter:pageFilter
   })
 })
 
@@ -768,7 +686,10 @@ app.get('/admin/detail/artwork/:Id', async(req, res)=>{
     artistName = artistName.artistName[0]
 
   
-    res.render('artworkDetail.ejs', {result : result, artworkData : artworkData , artistName : artistName})
+    res.render('artworkDetail.ejs', {
+      result : result, artworkData : artworkData , artistName : artistName
+
+    })
 
   }catch(error){
 
@@ -777,86 +698,106 @@ app.get('/admin/detail/artwork/:Id', async(req, res)=>{
 
 })
 
+
+
+
 //  🌐 SEARCH Artist
-app.get('/search/artist', async(req,res)=>{
+app.get('/search/artist', ArtistSearchData, async(req,res)=>{
+
 
   const result = req.user || null;
-  const searchVal = req.query.val;
+  const searchVal = req.ArtistSearchData.searchVal;
+  const pageFilter = req.ArtistSearchData.pageFilter;
+  const data = req.ArtistSearchData.data;
+  const nextDirection = req.ArtistSearchData.nextDirection;
+  const prevDirection = req.ArtistSearchData.prevDirection;
+  const nextBtnStatus = req.ArtistSearchData.nextBtnStatus;
+  const prevBtnStatus = req.ArtistSearchData.prevBtnStatus;
 
   try{
-    let option = [
-      {
-        $search : {
-          index : 'artistName_index',
-          text : { query : searchVal , path : 'artistName' }
-        }
-      }
-    ]
   
-    let searchData = await db.collection('artist').aggregate(option).toArray();
-  
-    res.render('admin/adminMain.ejs', { listType: "artist" , search : searchVal , data: searchData , result: result})
+
+    res.render('admin/adminMain.ejs', { 
+      listType: "artist" ,       
+      search: searchVal, 
+      data: data, 
+      result: result,
+      pageFilter:pageFilter, 
+      pageNum : 0,
+      nextDirection : nextDirection,
+      prevDirection : prevDirection,
+      nextBtnStatus : nextBtnStatus,
+      prevBtnStatus : prevBtnStatus,
+
+    })
   }catch(error){
     console.error('검색에러:', error);
     res.status(500).json({ message: '검색에러', error });
   }
 
 
-
-
-
 })
+
+app.get('/search/artist/:Id/:Page', ArtistSearchData,  async (req,res) => {
+  const result = req.user || null;
+  const searchVal = req.ArtistSearchData.searchVal;
+  const pageFilter = req.ArtistSearchData.pageFilter;
+  const pageNum = parseInt(req.params.Page) 
+  const data = req.ArtistSearchData.data;
+  const nextDirection = req.ArtistSearchData.nextDirection;
+  const prevDirection = req.ArtistSearchData.prevDirection;
+  const nextBtnStatus = req.ArtistSearchData.nextBtnStatus;
+  const prevBtnStatus = req.ArtistSearchData.prevBtnStatus;
+
+  try{
+
+    res.render('admin/adminMain.ejs', { 
+      listType: "artist",
+      search: searchVal,
+      data: data,
+      result: result,
+      pageFilter: pageFilter,
+      pageNum: pageNum,
+      nextDirection: nextDirection,
+      prevDirection: prevDirection,
+      nextBtnStatus: nextBtnStatus,
+      prevBtnStatus: prevBtnStatus,
+
+    })
+
+  }catch(error){
+    console.error('검색에러', error);
+    res.status(500).json({message : '검색에러', error})
+  }
+})
+
 
 //  🌐 SEARCH Artwork
 
-app.get('/search/artwork', async (req, res) => {
+app.get('/search/artwork', ArtworkSearchData,  async (req, res) => {
   const result = req.user || null;
-  const searchVal = req.query.val;
+  const searchVal = req.ArtworkSearchData.searchVal;
+  const pageFilter = req.ArtworkSearchData.pageFilter;
+  const data = req.ArtworkSearchData.data;
+  const nextDirection = req.ArtworkSearchData.nextDirection;
+  const prevDirection = req.ArtworkSearchData.prevDirection;
+  const nextBtnStatus = req.ArtworkSearchData.nextBtnStatus;
+  const prevBtnStatus = req.ArtworkSearchData.prevBtnStatus;
 
   try {
-    // `artwork` 컬렉션에서 검색 쿼리와 artist 조인 수행
-    let searchData = await db.collection('artwork').aggregate([
-      {
-        $search: {
-          index: 'artwork_name',
-          text: { 
-            query: searchVal, 
-            path: ['name', 'artistName'] 
-          }
-        }
-      },
-      {
-        $lookup: {
-          from: 'artist', // artist 컬렉션과 조인
-          localField: 'artist',
-          foreignField: '_id',
-          as: 'artistData'
-        }
-      },
-      {
-        $project: {
-          imgUrl: 1,
-          location: 1,
-          name: 1,
-          size: 1,
-          price: 1,
-          copyRight: 1,
-          registerDate: 1,
-          medium: 1,
-          madeDate: 1,
-          sale: 1,
-          certification: 1,
-          'artistData.artistName': 1,
-          'artistData._id': 1
-        }
-      }
-    ]).toArray();
+   
 
     res.render('admin/adminMain.ejs', { 
       listType: "artwork", 
       search: searchVal, 
-      data: searchData, 
-      result: result 
+      data: data, 
+      result: result,
+      pageFilter:pageFilter, 
+      pageNum : 0,
+      nextDirection : nextDirection,
+      prevDirection : prevDirection,
+      nextBtnStatus : nextBtnStatus,
+      prevBtnStatus : prevBtnStatus,
     });
   } catch (error) {
     console.error('검색에러:', error);
@@ -864,6 +805,43 @@ app.get('/search/artwork', async (req, res) => {
   }
 });
 
+
+app.get('/search/artwork/:Id/:Page',  ArtworkSearchData, async(req,res)=>{
+
+  const result = req.user || null;
+  const searchVal = req.ArtworkSearchData.searchVal;
+  const pageFilter = req.ArtworkSearchData.pageFilter;
+  const data = req.ArtworkSearchData.data;
+  const nextDirection = req.ArtworkSearchData.nextDirection;
+  const prevDirection = req.ArtworkSearchData.prevDirection;
+  const nextBtnStatus = req.ArtworkSearchData.nextBtnStatus;
+  const prevBtnStatus = req.ArtworkSearchData.prevBtnStatus;
+  const pageNum = parseInt(req.params.Page) 
+
+
+  try{
+
+    res.render('admin/adminMain.ejs', { 
+      listType: "artwork", 
+      search: searchVal, 
+      data: data, 
+      result: result,
+      pageFilter:pageFilter, 
+      pageNum : 0,
+      nextDirection : nextDirection,
+      prevDirection : prevDirection,
+      nextBtnStatus : nextBtnStatus,
+      prevBtnStatus : prevBtnStatus,
+      pageNum : pageNum 
+    });
+
+  }catch(error){
+    console.error('검색에러:', error);
+    res.status(500).json({ message: '검색실패', error });
+  }
+
+
+})
 
 
 
@@ -904,15 +882,16 @@ app.get('/admin/list/download/:Id', async (req, res) => {
      //데이터 가져오기 
      let data = await db.collection(req.params.Id).find().toArray();
 
+
      //데이터 가공
 
 
-      console.log(data)
 
     const rowData = data.map(data=>{
 
-      const latestLocation = data.location
-      .sort((a, b) => new Date(b.date) - new Date(a.date))[0]; // 최신 날짜 객체 선택
+      const latestLocation = data.location && data.location.length > 0
+    ? data.location.sort((a, b) => new Date(b.date) - new Date(a.date))[0]
+    : null;  // location이 없을 때 대비
   
       return{
         title_kor:data.name[0],
@@ -923,8 +902,10 @@ app.get('/admin/list/download/:Id', async (req, res) => {
         size_w: data.size[1],
         size_d: data.size[2],
         price: data.price,
-        located_date : latestLocation.date,
-        current_location:  `${latestLocation.road} ${latestLocation.extra} ${latestLocation.detail} (${latestLocation.postCode}) `,
+        located_date: latestLocation && latestLocation.date ? latestLocation.date : 'N/A',  
+        current_location: latestLocation 
+          ? `${latestLocation.road || ''} ${latestLocation.extra || ''} ${latestLocation.detail || ''} (${latestLocation.postCode || ''})`
+          : 'No Location Info',  // 위치 정보가 없을 때 기본값 제공
         sale: data.sale,
         certification: data.certification,
       }
@@ -964,6 +945,5 @@ app.get('/admin/list/download/:Id', async (req, res) => {
 
 app.get('/search/:Id', async(req,res)=>{
   console.log(req.params.Id)
-
-
 })
+

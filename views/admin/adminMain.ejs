@@ -12,12 +12,11 @@
     <section class="admin-main admin">
    
         <div class="info">
-        
+     
             <div class="left-section">
                 <div class="filter-btn">
                     <select class="filter" onchange="filterValue(this)">
-                    
-                        <option value="5" <%= pageFilter == 5 ? 'selected' : '' %>>5</option>
+                     
                         <option value="10" <%= pageFilter == 10 ? 'selected' : '' %>>10</option>
                         <option value="50" <%= pageFilter == 50 ? 'selected' : '' %>>50</option>
                         <option value="100" <%= pageFilter == 100 ? 'selected' : '' %>>100</option>
@@ -34,7 +33,7 @@
                     <% } %>                
     
                     <% if(search){ %>
-                        <span class="search-result"> '<%= search %>' 검색결과 : <strong><%= data.length %> </strong>  건</span>
+                        <span class="search-result"> '<%= search %>' 검색결과 </span>
                     <% } %>
                         
                 </h2>
@@ -163,6 +162,7 @@
                                                     <img src="<%= imageSrc %>" alt="">
                                                 </div>
                                             </td>
+                                            
 
                                             <td class="manageBtn">
                                                 <button onclick="location.href='/admin/edit/artwork/<%=artwork._id %>'">수정 </button>
@@ -233,7 +233,9 @@
                                                     <img class="artist-img" src="<%= artist.imgUrl ? artist.imgUrl : '/img/user.svg' %>" alt="">
                                                 </div>
                                             </td>
-                                            <td><%= artist.artistName[0] %> <span>(<%= artist.artistName[1] %>)</span> </td>
+                                            <td><%= artist.artistName[0] %>
+                                                 <span>(<%= artist.artistName[1] %>)</span>
+                                            </td>
                                             <td class="addArtwork"><button onclick="location.href='/admin/write/artwork/<%= artist._id %>'">작품등록</button></td>
                                             <td><%= artist.artistBirth ? artist.artistBirth : '-' %></td>
                                             <td><%= artist.artistTel ? artist.artistTel : '-' %></td>
@@ -359,28 +361,55 @@
 
     let filterVal = "<%= pageFilter %>"
     let listType = "<%= listType %>"
+    let search = "<%= search ? search : '' %>"
 
-    // 필터 값 가져오기
+    //서치는 다른 url
+    // search = searchValue 
+    // /search/${listType}?val=${search}&filter=${filterVal}
     function filterValue(element){
         const selectVal = element.value;
-        console.log('값' + selectVal)
-        window.location.href = `/admin/list/${listType}/${selectVal}`
-
+        if(search){
+            window.location.href = `/search/${listType}?val=${search}&filter=${selectVal}`
+        }else{
+            window.location.href = `/admin/list/${listType}/${selectVal}`
+        }
+        
     }
-    
+
 
     // next 및 prev 게시글 url
     const boards = document.querySelectorAll('tbody tr');
 
     function goToNext (){
+        if(boards.length > 0){
+            const lastNum = boards[boards.length - 1].querySelector('.pageNum').textContent;
+            const lastId  ="<%= data.length > 0 ? data[data.length - 1]._id : '' %>"
+            const direction = 'next'
+            if(search){
+                window.location.href = `/search/${listType}/${lastId}/${lastNum}?val=${search}&filter=${filterVal}&direction=${direction}`
+            }else{
+                window.location.href = `/admin/list/${listType}/${filterVal}/${lastId}/${lastNum}?direction=${direction}`
+            }
 
-        const lastNum = boards[boards.length - 1].querySelector('.pageNum').textContent;
-        window.location.href = `/admin/list/${listType}/${filterVal}/<%= data[data.length - 1]._id %>/${lastNum}?direction=next`
+        }
 
     }
+
     function goToPrev(){
-        const firstNum =  boards[0].querySelector('.pageNum').textContent;
-        window.location.href = `/admin/list/${listType}/${filterVal}/<%= data[0]._id %>/${firstNum - 1}?direction=prev`
+
+        if(boards.length > 0){
+            const firstNum =  boards[0].querySelector('.pageNum').textContent;
+            const firstId = "<%= data.length > 0 ? data[0]._id : '' %>"
+            const direction = 'prev'
+            if(search){
+                // 라우터/리스트타입?서치벨류/아이디값(첫번째)/페이티필터값&디렉션
+                window.location.href = `/search/${listType}/${firstId}/${firstNum - 1}?val=${search}&filter=${filterVal}&direction=${direction}`
+            }else{
+                window.location.href = `/admin/list/${listType}/${filterVal}/${firstId}/${firstNum - 1}?direction=prev`
+            }
+            
+        }
+
     }
 
 
