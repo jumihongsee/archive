@@ -19,16 +19,16 @@ async function  ArtistSearchData(req,res,next) {
         let prevBtnStatus = true;
 
         let matchQuery = {};
-        let sortDirection = 1;
+        let sortDirection = -1;
 
         if(pageNum && ObjectId.isValid(boardId)){
             if(direction === 'prev'){
-                matchQuery = {_id : {$lt : new ObjectId(boardId)}}
-                sortDirection = -1;
+                matchQuery = {_id : {$gt : new ObjectId(boardId)}}
+                sortDirection = 1;
                 prevDirection = true;
                 nextDirection = false;
             }else{
-                matchQuery = {_id: {$gt : new ObjectId(boardId)}}
+                matchQuery = {_id: {$lt : new ObjectId(boardId)}}
                 prevDirection = false;
                 nextDirection = true;
             }
@@ -72,7 +72,7 @@ async function  ArtistSearchData(req,res,next) {
                     }
                 },
                 {
-                    $match: { _id: { $gt: new ObjectId(lastboardId) } },
+                    $match: { _id: { $lt: new ObjectId(lastboardId) } },
                 },
                 { $limit: 1 }
             ]).toArray();

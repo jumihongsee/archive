@@ -316,12 +316,15 @@ section{
             .left-section{
                 display: flex; align-items: flex-end;
                 .filter-btn{
-                    width: 50px; height: 25px;
+                    width: auto; height: 25px;
                     display: flex; align-items: center; justify-content: center;
-                    margin-right: 10px;
+                    > select{
+                        margin-right: 5px; height: 100%; background: #000; color: #fff;
+                        border-radius: 5px; border: none;        
+                        font-weight: 100; font-size: 12px;
+                    }
                     .filter{
-                        width: 100%; height: 100%; background: #000; color: #fff;
-                        border-radius: 5px; border: none; 
+                       
                         option{
                             color: #fff;
                         }
@@ -447,7 +450,7 @@ section{
                         display: flex; width: 100%; 
                         td{ height: 50px; border: 0.5px solid #eee; border-top: none; border-left: none;}
                         th,td{
-                            font-size: 12px; padding: 5px 10px;
+                            font-size: 12px; padding: 15px 10px;
                             width: 150px; text-align: center; 
                             display: flex; align-items: center; justify-content: center;
                             &:first-child{width: 30px;} 
@@ -489,8 +492,8 @@ section{
                                     img{
                                         height: 100%;
                                     }
-                                }
                             }
+                        }
 
 
                         &.artist{       
@@ -541,7 +544,28 @@ section{
                                     }
                                 }
                             }
-                          
+                        }
+                        &.user{
+                            td{
+                                position: relative;
+                                .modify-pop{
+                                    position: absolute;
+                                    background: #000; right: 0%; top: 0; 
+                                    width: 100%; height: 100%;
+                                    opacity: 0.9; color: #fff; 
+                                    padding: 5px; font-size: 12px;
+                                    button{
+                                        color: #fff; font-size: 12px;
+                                        &:first-child{
+                                            background: #278afc; color: #000;
+                                        }
+                                        &:last-child{
+                                            background: red; margin-top: 10px;
+                                        }
+                                    }
+                                }
+                            }
+
                         }
                        
                     }

@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
 const sassMiddleware = require('node-sass-middleware');
-const { check, validationResult, header } = require('express-validator');
+const { check, validationResult, header, Result } = require('express-validator');
 const app = express();
 const { ObjectId } = require('mongodb')
 const MongoStore = require('connect-mongo')
@@ -10,7 +10,9 @@ const bcrypt = require('bcrypt')
 const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-const ExcelJS = require('exceljs');
+
+const { formatDate } = require('./module/Formatting.js')
+
 const { s3, deleteS3Image } = require('./module/s3.js')
 
 const ArtworkListData = require('./middleware/ListDataArtwork.js')
@@ -124,11 +126,16 @@ app.set('view engine', 'ejs');
 app.get('/', (req, res) => {
 
  if(req.user){
-  return  res.render('index.ejs',{result : req.user})
+  if(req.user.class === 0){
+    return  res.render('index.ejs',{result : req.user, popText: false})
+  }else{
+    return  res.render('index.ejs',{result : req.user, popText: true})
+  }
+ 
  }
 
  if(!req.user){
-  return  res.render('index.ejs',{result : null})
+  return  res.render('index.ejs',{result : null, popText : true})
  }
 
 
@@ -146,13 +153,15 @@ app.get('/login', ArtworkListData, async (req, res) => {
   const pageFilter = req.ArtworkListData.pageFilter ;
 
   if (!req.user) {
-    return res.render('login.ejs');
+    
+    return res.render('login.ejs',{popText : true });
+    
   }
 
-  if (req.user.username === 'admin' || req.user.class === 0) {
+  if (req.user.class === 0) {
       return res.render('admin/adminMain.ejs',
          { result: result, data: data, listType: "artwork" ,
-           search : false, pageNum:0, 
+           search : false, pageNum:0, popText : false,
            nextDirection:nextDirection,  prevDirection :  prevDirection , 
            nextBtnStatus : nextBtnStatus , prevBtnStatus : prevBtnStatus ,pageFilter:pageFilter
          }
@@ -199,39 +208,47 @@ app.get('/register', (req, res) => {
 
 app.post('/register', async (req, res)=>{
 
-  let hashing = await bcrypt.hash(req.body.password, 10);
 
-  await db.collection('user').insertOne({
-    username : req.body.username,
-    password : hashing,
-    useremail : req.body.useremail,
-    realname : req.body.realname,
-    class : 1
+  try{
+    let hashing = await bcrypt.hash(req.body.password, 10);
+    await db.collection('user').insertOne({
+      username : req.body.username,
+      password : hashing,
+      useremail : req.body.useremail,
+      realname : req.body.realname,
+      class : 1,
+      registerDate : new Date()
+    })
+    res.redirect('/login', {popText : true})
 
-  })
-  res.redirect('/login')
+  }catch(error){
+    console.error(error);
+    res.status(500).json('서버 에러 발생');
+  }
+
 })
 
 app.post('/checkid', async(req,res)=>{
 
-
-  let result = await db.collection('user').findOne({ username : req.body.username })
-  console.log(result)
-  if(result){
-    res.json({ user : true }) // 존재함 : user에 ture 담기
-  }else{
-    res.json({ user : false }) // null : user에 false 담기
+  try{
+    let result = await db.collection('user').findOne({ username : req.body.username })
+    console.log(result)
+    if(result){
+      res.json({ user : true }) // 존재함 : user에 ture 담기
+    }else{
+      res.json({ user : false }) // null : user에 false 담기
+    }
+  }catch(error){
+    console.log(error);
+    res.status(500).json({error : '서버에러' })
   }
+
 
 
 })
 
 
-// const { title } = require('process');
-// const { register } = require('module');
-// const { localsName } = require('ejs');
 
-// app.use(checkLogin)
 
 app.get('/viewer', (req, res) => {
   if(req.user){
@@ -243,6 +260,8 @@ app.get('/viewer', (req, res) => {
 });
 
 
+// 전역 변수 페이지 필터
+let pageFilter = 10;
 
 app.get('/admin/list/artwork/:filter', ArtworkListData, async(req,res)=>{
 
@@ -326,7 +345,6 @@ app.get('/admin/list/artist/:filter/:Id/:Page', ArtistListData , async(req,res)=
   
 })
 
-///
 
 app.get('/admin/list/user/:filter', async(req,res)=>{
   
@@ -391,7 +409,7 @@ artistData , async(req,res)=>{
             await db.collection('artist').insertOne(result);
           }  
     
-         res.redirect('/admin/list/artist/5');
+         res.redirect(`/admin/list/artist/${pageFilter}`);
        }catch(error){
          console.log('데이터 에러', error);
          res.status(500).send('서버 에러')
@@ -451,6 +469,8 @@ app.get('/admin/write/artist/:Id', async (req, res)=>{
 
 })
 
+
+
 //////////// ✨👩‍🎨 [POST] 작가 삭제 페이지  -  fetch를 사용하여 작가 데이터 삭제하기
 app.post('/admin/delete/artist/:Id', async(req,res)=>{
 
@@ -487,7 +507,7 @@ app.post('/admin/delete/artist/:Id', async(req,res)=>{
 
 
     // 완료시 리다이렉트
-    res.redirect('/admin/list/artist')
+    res.redirect(`/admin/list/artist/${pageFilter}`)
 
 
   }catch(error){
@@ -597,7 +617,7 @@ app.post('/admin/edit/artwork/:Id',
     await db.collection('artwork').updateOne({_id : new ObjectId(req.params.Id)}, {$set : req.data});
 
   
-    res.redirect('/admin/list/artwork');
+    res.redirect(`/admin/list/artwork/${pageFilter}`);
   }catch(error){
     console.error('작품 수정 중 오류 발생:', error);
     res.status(500).json('작품 수정 중 서버 오류 발생: ' + error);
@@ -626,7 +646,7 @@ async(req,res)=>{
     console.log('location JSON :', JSON.stringify(req.data.location)); 
     await db.collection('artwork').insertOne(req.data);
 
-    res.redirect('/admin/list/artwork')
+    res.redirect(`/admin/list/artwork/${pageFilter}`)
 
 
   }catch(error){
@@ -644,7 +664,6 @@ app.post('/admin/delete/artwork/:Id', async(req,res)=>{
   const artworkId = req.params.Id;
   console.log(artworkId) 
 
-
   try{
 
     const artworkImg = await db.collection('artwork').findOne(
@@ -655,6 +674,10 @@ app.post('/admin/delete/artwork/:Id', async(req,res)=>{
     
       // 작품의 이미지 url를 배열로 가져옴
       const artworkImgArray = artworkImg.imgUrl;
+
+
+      console.log(artworkImgArray)
+
       // s3에서 이미지 삭제 
       await deleteS3Image(artworkImgArray);
     
@@ -662,7 +685,7 @@ app.post('/admin/delete/artwork/:Id', async(req,res)=>{
       await db.collection('artwork').deleteOne({_id : new ObjectId(artworkId)});
 
       console.log('이미지 및 데이터 삭제 모두 완료')
-      res.redirect('/admin/list/artwork')
+      res.redirect(`/admin/list/artwork/${pageFilter}`)
 
   }catch(error){
     res.status(500).json('작품 삭제실패' + error)
@@ -699,6 +722,41 @@ app.get('/admin/detail/artwork/:Id', async(req, res)=>{
 })
 
 
+////////////  [POST] 👩🏻‍🦱 유저 삭제  - fetch를 사용하여 작품 데이터 삭제하기
+
+app.post('/admin/delete/user/:Id', async(req,res)=>{
+
+  const userId = req.params.Id;
+  // 몽고 디비에서만 데이터를 지워주면된다.
+  try{
+    await db.collection('user').deleteOne({_id : new ObjectId(userId)})
+    res.redirect(`/admin/list/artwork/${pageFilter}`)
+  }catch(error){
+    console.error('유저 삭제중 에러 발생', error);
+    res.status(500).json('유저 삭제 실패 서버에러' + error)
+  } 
+
+
+})
+
+////////////  [POST] 👩🏻‍🦱 유저 삭제  - fetch를 사용하여 작품 데이터 삭제하기
+
+app.post('/admin/edit/class/:Id/:Class', async(req, res)=>{
+
+  const userId = req.params.Id;
+  const requestClass = parseInt(req.params.Class);
+  console.log(userId)
+  console.log(requestClass)
+
+  try{
+    await db.collection('user').updateOne({_id : new ObjectId(userId)},{$set : { class : requestClass }} )
+    res.status(200).json({modify : 'ok'})
+  }catch(error){
+    res.status(500).json('유저 등급 수정 실패 서버에러' + error)
+  }
+
+
+})
 
 
 //  🌐 SEARCH Artist
@@ -849,101 +907,16 @@ app.get('/search/artwork/:Id/:Page',  ArtworkSearchData, async(req,res)=>{
 
 
 // ✅ 엑셀로 다운로드 
-app.get('/admin/list/download/:Id', async (req, res) => {
 
-
-  try{
-    //아트워크 
-    const workbook = new ExcelJS.Workbook();
-      // 문서 첫 행 고정 
-      const sheet = workbook.addWorksheet( `${req.params.Id} - 리스트`, {
-        views:[
-          {state: 'frozen', xSplit: 1, ySplit: 1}
-        ],
-        
-      });
-
-      // 
-      sheet.columns = [
-        { header: 'Title', key: 'title_kor', width: 10 },
-        { header: 'Title', key: 'title_eng', width: 10 },
-        { header: 'Artist', key: 'artist', width: 10 },
-        { header: 'Register Date', key: 'register_date', width: 10 },
-        { header: 'Size(h)', key: 'size_h', width: 10 },
-        { header: 'Size(w)', key: 'size_w', width: 10 },
-        { header: 'Size(d)', key: 'size_d', width: 10 },
-        { header: 'Price', key: 'price', width: 10 },
-        { header: 'Current Location', key: 'current_location', width: 50 },
-        { header: 'Located Date', key: 'located_date', width: 20 },
-        { header: 'Sale', key: 'sale', width: 10 },
-        { header: 'Certification', key: 'certification', width: 10 },
-      ]
-
-     //데이터 가져오기 
-     let data = await db.collection(req.params.Id).find().toArray();
-
-
-     //데이터 가공
+// List Download
+app.get('/admin/list/download/:ListType', excelListDown);
 
 
 
-    const rowData = data.map(data=>{
-
-      const latestLocation = data.location && data.location.length > 0
-    ? data.location.sort((a, b) => new Date(b.date) - new Date(a.date))[0]
-    : null;  // location이 없을 때 대비
-  
-      return{
-        title_kor:data.name[0],
-        title_eng:data.name[1],
-        artist: data.artistName,
-        register_date: data.registerDate,
-        size_h: data.size[0],
-        size_w: data.size[1],
-        size_d: data.size[2],
-        price: data.price,
-        located_date: latestLocation && latestLocation.date ? latestLocation.date : 'N/A',  
-        current_location: latestLocation 
-          ? `${latestLocation.road || ''} ${latestLocation.extra || ''} ${latestLocation.detail || ''} (${latestLocation.postCode || ''})`
-          : 'No Location Info',  // 위치 정보가 없을 때 기본값 제공
-        sale: data.sale,
-        certification: data.certification,
-      }
-
-
-    })
-
-      // 데이터를 시트에 추가하기 
-      rowData.forEach(data => {
-        sheet.addRow(data);
-      });
-
-      res.setHeader(
-        'Content-Type',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-      );
-      res.setHeader(
-        'Content-Disposition',
-        `attachment; filename=${req.params.Id}_list.xlsx`
-      );
-
-
-      await workbook.xlsx.write(res);
-      res.end(); // 응답 완료
-      
-
-  
-
-  }catch(error){
-    console.error('엑셀 다운로드 에러', error)
-    res.status(500).json({message : '엑셀 다운로드 실패', error})
-
-  }
-});
-
-// 검색 결과 다운로드 
 
 app.get('/search/:Id', async(req,res)=>{
   console.log(req.params.Id)
 })
+
+
 

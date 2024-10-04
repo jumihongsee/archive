@@ -22,7 +22,9 @@ function deleteS3Image(imgUrl) {
     // 배열을 순회하면서 각 URL에 대해 S3 삭제 요청 수행
     const deletePromises = imgUrl.map(url => {
         if (url && typeof url === 'string') {
-            const key = url.replace(`https://${bucketName}.s3.ap-northeast-2.amazonaws.com/`, '');
+            let key = url.replace(`https://${bucketName}.s3.ap-northeast-2.amazonaws.com/`, '');
+               // Key에 대해 디코딩 적용
+               key = decodeURIComponent(key);
             return s3.send(new DeleteObjectCommand({
                 Bucket: bucketName,
                 Key: key

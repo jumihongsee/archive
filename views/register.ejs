@@ -16,15 +16,16 @@
 
                 <label for="">이름 <span class="alert">공백없이 입력하세요.</span></label>
                 <input type="text" name="realname" placeholder="이름을 입력하세요">
-                <label for="">연락처 <span class="alert">공백없이 입력하세요.</span></label>
+                <label for="">연락처(Email) <span class="alert">공백없이 입력하세요.</span></label>
                 <input type="email" name="useremail" placeholder="이메일을 입력하세요">
                 <label for="">ID 
                     <span class="alert">공백없이 입력하세요.</span>
                     <span class="alert id-check-alert-no"> 이미 존재하는 아이디 입니다.</span>
                     <span class="alert id-check-alert-ok positive"> 가입 가능한 아이디 입니다.</span>
+                    <span class="alert duplicateId"> 중복검사를 진행해주세요.</span>
                 </label>
                 <input class="id-input" type="text" name="username" placeholder="아이디를 입력하세요">
-                <button class="check-id" type="button" >ID 중복확인</button>
+                <button class="check-id" type="button" >ID 중복확인 </button>
 
                 <label for="">PASSWORD 
                     <span class="alert">공백없이 입력하세요.</span>
@@ -52,54 +53,62 @@
     const usernameInput = document.querySelector('.id-input');
     const alertSpanNo = document.querySelector('.id-check-alert-no');
     const alertSpanOK = document.querySelector('.id-check-alert-ok');
+    const duplicateId = document.querySelector('.duplicateId')
 
     let userIdConfirm = false; // ID 중복 확인 변수
 
-// input 유효성 검사
-function checkInputs() {
-    let hasEmptyFields = false;
+    // input 유효성 검사
+    function checkInputs() {
 
-    inputs.forEach(input => {
-        const alertSpan = input.previousElementSibling.querySelector('.alert');
-        if (input.value.trim() === '') {
+        let hasEmptyFields = false;
+
+        inputs.forEach(input => {
+            const alertSpan = input.previousElementSibling.querySelector('.alert');
+            if (input.value.trim() === '') {
+                hasEmptyFields = true;
+                if (alertSpan) {
+                    alertSpan.style.display = 'inline'; 
+                }
+            } else {
+                if (alertSpan) {
+                    alertSpan.style.display = 'none'; 
+                }
+            }
+        });
+
+
+
+        // 비밀번호와 비밀번호 확인값 일치 여부 검사
+        if (passwordInput.value !== passwordConfirmInput.value) {
+            passwordConfirmInput.previousElementSibling.querySelector('.alert').style.display = 'inline';
             hasEmptyFields = true;
-
-            if (alertSpan) {
-                alertSpan.style.display = 'inline'; 
-            }
         } else {
-            if (alertSpan) {
-                alertSpan.style.display = 'none'; 
-            }
+            passwordConfirmInput.previousElementSibling.querySelector('.alert').style.display = 'none';
         }
-    });
 
-    // 비밀번호와 비밀번호 확인값 일치 여부 검사
-    if (passwordInput.value !== passwordConfirmInput.value) {
-        passwordConfirmInput.previousElementSibling.querySelector('.alert').style.display = 'inline';
-        hasEmptyFields = true;
-    } else {
-        passwordConfirmInput.previousElementSibling.querySelector('.alert').style.display = 'none';
-    }
+        // 비밀번호 길이 검사
+        if (passwordInput.value.length < 6) {
+            passwordInput.previousElementSibling.querySelectorAll('.alert')[1].style.display = 'inline'; // 비밀번호 길이 경고 메시지 표시
+            hasEmptyFields = true;
+        } else {
+            passwordInput.previousElementSibling.querySelectorAll('.alert')[1].style.display = 'none'; // 비밀번호 길이 경고 메시지 숨기기
+        }
 
-    // 비밀번호 길이 검사
-    if (passwordInput.value.length < 6) {
-        passwordInput.previousElementSibling.querySelectorAll('.alert')[1].style.display = 'inline'; // 비밀번호 길이 경고 메시지 표시
-        hasEmptyFields = true;
-    } else {
-        passwordInput.previousElementSibling.querySelectorAll('.alert')[1].style.display = 'none'; // 비밀번호 길이 경고 메시지 숨기기
-    }
+        //빈 값이 있고 = true / userIdConfirm이 = true 면 disabled
+        submitButton.disabled = hasEmptyFields || !userIdConfirm;
 
-    // 모든 유효성 검사가 통과되었고, userIdConfirm이 true인 경우
-    submitButton.disabled = hasEmptyFields || !userIdConfirm;
-    
-    // 조건이 맞으면 active 클래스 추가
-    if (!submitButton.disabled) {
-        submitButton.classList.add('active');
-    } else {
-        submitButton.classList.remove('active');
+
+        console.log('인풋이 공란입니까?   :  '+hasEmptyFields) // true -> true
+        console.log('중복검사가 어떻게 되었나요? 가입 가능하면true 아니면 false  :  '+userIdConfirm)  // false  -> true
+        
+
+        // 조건이 맞으면 active 클래스 추가
+        if (!submitButton.disabled) { //disabled 상태가 아니면?
+            submitButton.classList.add('active');
+        } else {
+            submitButton.classList.remove('active');
+        }
     }
-}
 
     // 입력 필드에 대한 이벤트 리스너 추가
     inputs.forEach(input => {
@@ -129,6 +138,7 @@ function checkInputs() {
             } else {
                 alertSpanNo.style.display = 'none';
                 alertSpanOK.style.display = 'inline';
+                duplicateId.style.display='none'
                 userIdConfirm = true; // 사용 가능한 아이디일 경우
             }
             checkInputs(); // 중복 체크 후 유효성 검사 다시 실행
@@ -146,15 +156,21 @@ function checkInputs() {
         checkInputs(); // 유효성 검사 호출
     });
 
+ 
     // submit 버튼 클릭 시 userIdConfirm 확인
+
     submitButton.addEventListener('click', (e) => {
+
+        
         if (!userIdConfirm) {
-            e.preventDefault(); // 폼 제출 방지
+            e.preventDefault(); // 폼 제출을 막음
             usernameInput.focus(); // 아이디 입력 필드에 포커스
-      
+            duplicateId.style.display='inline'
+        }else{
+            duplicateId.style.display='none'
         }
     });
-    
+
     </script>
 
 </body>

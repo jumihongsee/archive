@@ -27,18 +27,18 @@ async function ArtistListData (req,res,next){
             
             // matchQuery 설정
             let matchQuery = {}
-            let sortDirection = 1;
+            let sortDirection = -1;
             // pageNum이 있으며, boardId가 유효한 아이디 일때 matchQuery 설정을 해줘야함
             if(pageNum && ObjectId.isValid(boardId)){
                 // 이전 버튼을 눌렀을때는 리스트를 찾을때 boardId(게시글의 첫번째값) lt를 활용하여 이전의 값을 가져와야함 ,sort의 방향을 반대로 -1 , direction 의 불린 값을 설정
                 // 다음 버튼을 눌렀을때는 리스트를 찾을때 boardId (게시글의 마지막값) gt를 활용하여 다음의 값을 가져와야함  , direction 의 불린 값을 설정
                 if(direction === 'prev'){
-                    matchQuery = {_id:{$lt: new ObjectId(boardId)}}
-                    sortDirection = -1;
+                    matchQuery = {_id:{$gt: new ObjectId(boardId)}}
+                    sortDirection = 1;
                     prevDirection = true;
                     nextDirection = false;
                 }else{
-                    matchQuery = {_id :{$gt : new ObjectId(boardId)}}
+                    matchQuery = {_id :{$lt : new ObjectId(boardId)}}
                     prevDirection = false;
                     nextDirection = true;
                 }
@@ -81,7 +81,7 @@ async function ArtistListData (req,res,next){
             console.log(lastboardId)
     
             if(lastboardId){
-                const nextboardCheck = await db.collection('artist').findOne({_id : { $gt :  new ObjectId(lastboardId)}})
+                const nextboardCheck = await db.collection('artist').findOne({_id : { $lt:  new ObjectId(lastboardId)}})
                 if(nextboardCheck){
                     nextBtnStatus = true;
                  

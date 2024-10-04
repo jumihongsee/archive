@@ -30,18 +30,18 @@ async function ArtworkSearchData(req,res,next){
 
         // 쿼리 세팅
         let matchQuery = {};
-        let sortDirection = 1;
+        let sortDirection = -1;
 
       
 
         if(pageNum && ObjectId.isValid(boardId)){
             if(direction === 'prev'){
-                matchQuery = {_id : {$lt : new ObjectId(boardId)}}
-                sortDirection = -1;
+                matchQuery = {_id : {$gt : new ObjectId(boardId)}}
+                sortDirection = 1;
                 prevDirection = true;
                 nextDirection = false;
             }else{
-                matchQuery = {_id: {$gt : new ObjectId(boardId)}}
+                matchQuery = {_id: {$lt : new ObjectId(boardId)}}
                 prevDirection = false;
                 nextDirection = true;
             }
@@ -123,7 +123,7 @@ async function ArtworkSearchData(req,res,next){
                 }
               },
               {
-                $match: { _id: { $gt: new ObjectId(lastboardId) } },  // lastboardId 이후의 데이터
+                $match: { _id: { $lt: new ObjectId(lastboardId) } },  // lastboardId 이후의 데이터
             },
             { $limit: 1 }
             ]).toArray();

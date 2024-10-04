@@ -15,12 +15,13 @@
      
             <div class="left-section">
                 <div class="filter-btn">
+   
                     <select class="filter" onchange="filterValue(this)">
-                     
                         <option value="10" <%= pageFilter == 10 ? 'selected' : '' %>>10</option>
                         <option value="50" <%= pageFilter == 50 ? 'selected' : '' %>>50</option>
                         <option value="100" <%= pageFilter == 100 ? 'selected' : '' %>>100</option>
                     </select>
+
                 </div>
                
                 <h2>
@@ -65,8 +66,11 @@
                     </button>
 
                 </div>
-
-                <button class="excelDown" onclick="location.href='/admin/list/download/<%=listType%>'"><img src="/img/download.png" alt=""></button>
+                <button class="excelDown" 
+                onclick="location.href='/admin/list/download/<%= listType %><%= search ? ('?search=' + search) : '' %>'"
+                >
+         
+                <img src="/img/download.png" alt=""></button>
                 <button onclick="location.href='/admin/write/artist'"><img src="/img/plus.png" alt=""> Add New Artist</button>
             </div>
 
@@ -84,7 +88,6 @@
                     <div class="close-button">
                         <button type="button" onclick="closePopup()"><img src="/img/x.png" alt=""></button>
                     </div>
-
                 </div>
                 <% if(data.length > 0){ %>
                     <table>
@@ -127,6 +130,7 @@
                                     <th>Name</th>
                                     <th>Class</th>
                                     <th>Register Date</th>                                       
+                                    <th>관리</th>                                       
                                 </tr>
                             <%}%>
         
@@ -163,11 +167,12 @@
                                                 </div>
                                             </td>
                                             
-
+                                        
                                             <td class="manageBtn">
                                                 <button onclick="location.href='/admin/edit/artwork/<%=artwork._id %>'">수정 </button>
                                                 <button onclick="openDeletePop('<%= artwork.name[0] %>', '<%= artwork._id %>', 'artwork')">삭제</button>
                                             </td> 
+                                        
                                             <td><%= artwork.name[0] %></td>
                                             <% artwork.artistData.forEach(item => { %>
         
@@ -255,9 +260,28 @@
                                             <td><%= i + 1 %></td>
                                             <td><%= user.username %></td>
                                             <td><%= user.realname %></td>
-                                            <td><%= user.class %></td>
-                                            <td>데이터3</td>
-                                            
+                                            <td>
+                                                <div class="modify-pop">
+                                                    <p></p>
+                                                    <div class="btn-wrapper">
+                                                        <button class="modify-confirm">수정</button>
+                                                        <button class="modify-cancel">취소</button>
+                                                    </div>
+                                                </div>
+
+                                                <select name="" id="" onchange="modifyUser(this, '<%= user.username %>', '<%= user._id %>', '<%= user.class %>')">                                        
+                                                    <option value="0" <%= user.class === 0 ? 'selected' : '' %>>관리자</option>
+                                                    <option value="1" <%= user.class === 1 ? 'selected' : '' %>>일반</option>
+                                                </select> 
+                                               
+                                            </td>
+                                            <td>
+                                                <%= user.realname %>
+                                            </td>
+                                            <td class="manageBtn">
+                                                <button>수정</button>
+                                                <button onclick="openDeletePop('<%= user.username %>', '<%= user._id %>', 'user')">삭제</button>
+                                            </td> 
                                         </tr>
                                     <% }) %>
                             <%}%>
@@ -303,6 +327,8 @@
                 deleteArtwork(url);
             }else if(type == 'artist'){
                 deleteArtist(url)
+            }else if(type == 'user'){
+                deleteUser(url)
             }
 
             closePopup();
@@ -334,7 +360,7 @@
                 console.log('삭제실패')
             }
         })
-        .catch(error => console.error('Error발생', error) )
+        .catch(error => console.error('artwork 삭제 Error발생', error) )
     }
 
 
@@ -355,7 +381,26 @@
             }
        
         })
-        .catch(error => console.error('error발생',error))
+        .catch(error => console.error('artist 삭제 error발생',error))
+    }
+
+    // 유저 삭제
+    function deleteUser(url){
+        fetch(`/admin/delete/user/${url}`,{
+            method : 'POST',
+            headers : {
+             'Content-Type': 'application/json'
+            }
+        })
+        .then(response =>{
+            if(response.ok){
+                location.reload(); 
+            }else{
+                console.log('삭제실패')
+            }
+        })
+        .catch(error => console.error('user 삭제 error 발생', error))
+
     }
 
 
@@ -366,15 +411,25 @@
     //서치는 다른 url
     // search = searchValue 
     // /search/${listType}?val=${search}&filter=${filterVal}
+
     function filterValue(element){
         const selectVal = element.value;
         if(search){
-            window.location.href = `/search/${listType}?val=${search}&filter=${selectVal}`
+            window.location.href = `/search/${listType}?val=${search}&filter=${selectVal}&order=asc`
         }else{
-            window.location.href = `/admin/list/${listType}/${selectVal}`
+            window.location.href = `/admin/list/${listType}/${selectVal}&order=asc`
         }
         
     }
+
+
+ 
+
+
+
+    // 동적으로 url에 order값을 넣는법 
+    
+  
 
 
     // next 및 prev 게시글 url
@@ -385,6 +440,7 @@
             const lastNum = boards[boards.length - 1].querySelector('.pageNum').textContent;
             const lastId  ="<%= data.length > 0 ? data[data.length - 1]._id : '' %>"
             const direction = 'next'
+            // url에 서 order의 값을 가져와야함 
             if(search){
                 window.location.href = `/search/${listType}/${lastId}/${lastNum}?val=${search}&filter=${filterVal}&direction=${direction}`
             }else{
@@ -394,6 +450,8 @@
         }
 
     }
+
+
 
     function goToPrev(){
 
@@ -405,7 +463,7 @@
                 // 라우터/리스트타입?서치벨류/아이디값(첫번째)/페이티필터값&디렉션
                 window.location.href = `/search/${listType}/${firstId}/${firstNum - 1}?val=${search}&filter=${filterVal}&direction=${direction}`
             }else{
-                window.location.href = `/admin/list/${listType}/${filterVal}/${firstId}/${firstNum - 1}?direction=prev`
+                window.location.href = `/admin/list/${listType}/${filterVal}/${firstId}/${firstNum - 1}?direction=${direction}`
             }
             
         }
@@ -413,6 +471,72 @@
     }
 
 
+
+    const modify_pop = document.querySelectorAll('.modify-pop');
+    modify_pop.forEach(item=>{
+        item.style.display = 'none'
+    })
+
+    function modifyUser (option, name, id, rank){
+        // console.log(option.value) // 현재 선택한 벨류
+        // console.log(name) // 선택된 아이디 
+        // console.log(id) // 선택된 _id값
+        // console.log(rank) // 현재의 랭크
+        const optionVal = parseInt(option.value);
+        const pop = option.parentElement.querySelector('.modify-pop');  // 해당 row의 팝업 찾기
+        const originalRank = rank;
+        const confirmBtn = pop.querySelector('.modify-confirm');
+        const cancelBtn = pop.querySelector('.modify-cancel');
+        const popText = pop.querySelector('p');
+        const optionValKor = optionVal === 0 ? '관리자' : '일반' ;
+        
+
+        popText.innerHTML = `${name}을 '${optionValKor}'로 <br> 수정 하시겠습니까?`
+        pop.style.display = 'block';  // 팝업을 보이게 처리 
+
+
+        // 취소 버튼을 눌렀을때 팝업을 닫고 option의 겂울 원래의 값으로 원복한다.
+        cancelBtn.addEventListener('click', function(){
+          
+            pop.style.display = 'none'
+            option.value = originalRank;
+            console.log(originalRank)
+
+        })
+
+
+        // 컨펌 버튼을 눌렀을때 => url을 서버로 옮겨줌 
+        confirmBtn.addEventListener('click', function(){
+     
+            fetch(`/admin/edit/class/${id}/${optionVal}`,{
+                method : 'POST',
+                headers : {
+                     'Content-Type': 'application/json'
+                },
+         
+            })
+           .then(response => {
+                if (response.ok) {
+                    return response.json();  // 응답을 JSON으로 파싱
+                } else {
+                    throw new Error('서버 응답 실패');
+                }
+            })
+            .then(data => {
+                console.log(data.modify);  // 서버에서 받은 메시지 출력
+                option.value = optionVal;  // 등급이 변동되었으므로 select 값 업데이트
+                pop.style.display = 'none';  // 팝업 닫기
+            })
+            .catch(error => console.error('user 등급 변경 error 발생'))
+        })
+
+
+
+        
+    }
+
+    
+ 
 
 
 </script>

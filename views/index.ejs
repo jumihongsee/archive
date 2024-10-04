@@ -9,6 +9,7 @@
 <body>
     <main>
         <section class="main">
+          
             <% if(result !== null) { %>
                 <button class="login-btn" onclick="location.href='/logout'">Logout</button>
                 <p class="welcome">환영합니다. <%= result.realname %> 님-!</p>
@@ -22,7 +23,7 @@
                 <div class="line">
                     <div class="circle"></div>
                 </div>
-                <button onclick="location.href='/login'">admin</button>
+                <button onclick="location.href='/login'" <%= popText ? 'disabled="disabled"' : '' %> >admin</button>
             </div>
             <button onclick="location.href='/Register'" class="Register">Sign Up</button>
             <p class="copyright">ⓒ ST ART Limited. All rights reserved.</p>
