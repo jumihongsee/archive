@@ -18,10 +18,8 @@
                     <div class="preview-img-wrapper">
                         <% if(data){ %>
                             <% data.forEach((item)=>{ %>
-                                 
                                 <img src="<%= item.imgUrl ? item.imgUrl : '/img/user.svg' %>"  id="previewImg" name="" alt="">    
                                 <input type="hidden" name="oldImg"  value="<%= item.imgUrl %>">
-
                             <% }) %>
                         <% }else{ %>
                             <img src="/img/user.svg"  id="previewImg" name="" alt="">    
@@ -33,6 +31,16 @@
                 </label>              
             </div>
             <div class="info-form info">
+                <% if (data && data.length > 0) { %>
+                    <% data.forEach((item) => { %>
+                        <input type="hidden" name="register_staff" value="<%= item.register_staff ? item.register_staff : result.realname %>">
+                        <input type="hidden" name="modify_staff" value="<%= item.register_staff ? result.realname : '' %>">
+                    <% }) %>
+                <% } else { %>
+                    <input type="hidden" name="register_staff" value="<%= result.realname %>">
+                    <input type="hidden" name="modify_staff" value="">
+                <% } %>
+
                 <h2>Artist Info <span>/ 작가 정보</span></h2>
                 <div class="wp">
                     <label for="artistnameKr">
@@ -102,8 +110,8 @@
                         <% }else{ %>
                             <input type="text" name="artistHome" id="artistHome">  
                         <% } %>
-                                 
                     </label>
+
                 </div>
                
             </div>
@@ -420,7 +428,17 @@
                     displayErrors(responseData.errors) // 에러 처리 함수 호출
                     
                 }else{
-                    window.location.href = '/admin/list/artist/5'
+                    const responseData = await response.json(); 
+                    if(responseData.pageFilter){
+                        window.location.href = `/admin/list/artist/${responseData.pageFilter}`
+                    }
+                    if(responseData.edit === 'edit'){
+                        const artistId = document.querySelector('input[name="artistId"]').value;
+                            
+                         window.location.href = `/admin/detail/artist/${artistId}`
+                    }
+                
+              
                 }
             }catch(error){
                 console.error('Error' , error)

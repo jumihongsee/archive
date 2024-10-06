@@ -21,9 +21,12 @@ async function artistData (req, res, next){
             awardTitle,
             EducationDate,
             EducationTitle,
-            registerDate
+            registerDate,
+            register_staff,
+            modify_staff
           } = req.body;
 
+      
           // IMG
           // 기존 이미지 URL
           const oldImg = req.body.oldImg;
@@ -33,8 +36,11 @@ async function artistData (req, res, next){
           //등록시간이 없으면 new Date로 등록시간
       
           const registerDateValue = registerDate ? registerDate : formatDate(new Date());
-
+          const modifyDate = modify_staff ? formatDate(new Date()) : null;
           
+          console.log(req.body)
+          console.log(modifyDate)
+
           // 새이미지
           // 등록 파일이 있다? 그럼 새 파일 저장소를 가져와
           // 등록 파일이 없다?  : 아니면 이전 이미지 값 다시 넣어줘
@@ -114,9 +120,10 @@ async function artistData (req, res, next){
             artistHome: inputDataNull(artistHome),
             artistNote: inputDataNull(artistNote),
             artistDescription: inputDataNull(artistDescription),
+            register_staff,
             registerDate : registerDateValue,
-            createtDate :new Date()
-         
+            modifyDate : modifyDate,
+            modify_staff,         
           };
 
           req.artistData = result;

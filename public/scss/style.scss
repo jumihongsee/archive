@@ -272,6 +272,9 @@ section{
                     padding: 5px ;
                     .alert{
                         color: #f00; display: none;
+                        &.duplicateId{
+                            display: inline;
+                        }
                         &.positive{
                             color: blue;
                         }
@@ -727,38 +730,56 @@ section{
                 }
                 .text-wrapper{
                     width: calc(100% - 150px);
-                    padding:  20px;
-                    .name{
-                        .name-wp{
-                            width: 100px;
-                            h2{font-size: 15px;}
-                            p{font-size: 12px;}
-                        }
-
-                        display: flex; flex-wrap: wrap;
-                        border-bottom: 1px solid #eee;
-                        padding-bottom: 10px; 
-                        button{
-                            background: #000000; color: #fff;
-                            font-size: 12px; border-radius: 5px; padding: 10px;
-                            &:last-child{
-                                margin-left: 5px; background: $main-color;
+                    padding:  20px 20px 0 20px;
+                    .top{
+                        .name{
+                            .name-wp{
+                                width: 100px;
+                                h2{font-size: 15px;}
+                                p{font-size: 12px;}
+                            }
+    
+                            display: flex; flex-wrap: wrap;
+                            border-bottom: 1px solid #eee;
+                            padding-bottom: 10px; 
+                            button{
+                                background: #000000; color: #fff;
+                                font-size: 12px; border-radius: 5px; padding: 10px;
+                                &:last-child{
+                                    margin-left: 5px; background: $main-color;
+                                }
                             }
                         }
                     }
-        
-                    .wp{
-                        display: flex; align-items: center;
-                        margin: 10px 0; 
-                        p.tag{
-                            width: 100px;
-                            font-size: 12px; 
-                        }
-                        a,p{
-                            color: #000; 
-                            font-size: 12px;
-                        }
+                   
+                    .bottom{
+                        display: flex;
+                        padding: 20px 0;
+                            .wp{
+                                display: flex; align-items: center;
+                                margin: 10px 0; 
+                                p.tag{
+                                    width: 100px;
+                                    font-size: 12px; 
+                                }
+                                a,p{
+                                    color: #000; 
+                                    font-size: 12px;
+                                }
+                            }
+                            .left{}
+                            .right{
+                                margin: 0px 0 0 30px;
+                                padding: 0 10px 10px 10px;
+                                border-left: 2px solid #e7e7e7;
+                                .wp{
+                                    border-bottom: 1px solid #e7e7e7;
+                                    padding: 0 10px 10px 10px;
+                                }
+                         
+                            }
                     }
+
                 }
             }
             .artist-cv{

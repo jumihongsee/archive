@@ -19,53 +19,96 @@
                         <img src="<%= item.imgUrl ? item.imgUrl : '/img/user.svg'  %>" alt="">
                     </div>
                     <div class="text-wrapper">
-                        <div class="name">
-                            <div class="name-wp">
-                                <h2><%= item.artistName[0] %></h2>
-                                <p><%= item.artistName[1] %></p>
+                        <div class="top">
+                            <div class="name">
+                                <div class="name-wp">
+                                    <h2><%= item.artistName[0] %></h2>
+                                    <p><%= item.artistName[1] %></p>
+                                </div>
+        
+                                <button onclick="location.href='/admin/write/artist/<%= item._id  %>'">작가 수정</button>
+                                <button onclick="location.href='/admin/write/artwork/<%= item._id  %>'">+ 작품 등록</button>
                             </div>
-    
-                            <button onclick="location.href='/admin/write/artist/<%= item._id  %>'">작가 수정</button>
-                            <button onclick="location.href='/admin/write/artwork/<%= item._id  %>'">+ 작품 등록</button>
                         </div>
-    
-                        <div class="wp">
-                            <p class="tag">Birth</p>
-                            <% if(item.artistBirth && item.artistBirth.length > 0){ %>
-                                <p><%= item.artistBirth %></p>
-                            <% }else{ %>
-                                <p class="no-data-label">Data none</p>
-                            <% } %>
-                           
-                        </div>
-                 
-                        <div class="wp">
-                            <p class="tag">Tel</p>
-                            <% if(item.artistTel && item.artistTel.length > 0){ %>
-                                <a href=""><%= item.artistTel %></a>
-                            <% }else{ %>
-                                <p class="no-data-label">Data none</p>
-                            <% } %>
+                        <div class="bottom">
+                            <div class="left">
+                                <div class="wp">
+                                    <p class="tag">Birth</p>
+                                    <% if(item.artistBirth && item.artistBirth.length > 0){ %>
+                                        <p><%= item.artistBirth %></p>
+                                    <% }else{ %>
+                                        <p class="no-data-label">Data none</p>
+                                    <% } %>
+                                   
+                                </div>
                          
+                                <div class="wp">
+                                    <p class="tag">Tel</p>
+                                    <% if(item.artistTel && item.artistTel.length > 0){ %>
+                                        <a href=""><%= item.artistTel %></a>
+                                    <% }else{ %>
+                                        <p class="no-data-label">Data none</p>
+                                    <% } %>
+                                 
+                                </div>
+                                <div class="wp">
+                                    <p class="tag">Email</p>
+                                    <% if(item.artistEmail && item.artistEmail.length > 0){ %>
+                                        <a href=""><%= item.artistEmail %></a>
+                                    <% }else{ %>
+                                        <p class="no-data-label">Data none</p>
+                                    <% } %>
+                          
+                                </div>
+                                <div class="wp">
+                                    <p class="tag">Home page</p>
+                                    <% if(item.artistHome && item.artistHome.length > 0){ %>
+                                        <a href=""><%= item.artistHome %></a>
+                                    <% }else{ %>
+                                        <p class="no-data-label">Data none</p>
+                                    <% } %>
+                                   
+                                </div>
+
+                            </div>
+                            <div class="right">
+                                <div class="wp">
+                                    <p class="tag">최초 등록일</p>
+                                    <% if(item.registerDate && item.registerDate.length > 0){ %>
+                                        <a href=""><%= item.registerDate %></a>
+                                    <% }else{ %>
+                                        <p class="no-data-label">Data none</p>
+                                    <% } %>
+                                </div>
+                                <div class="wp">
+                                    <p class="tag">등록직원</p>
+                                    <% if(item.register_staff && item.register_staff.length > 0){ %>
+                                        <a href=""><%= item.register_staff %></a>
+                                    <% }else{ %>
+                                        <p class="no-data-label">Data none</p>
+                                    <% } %>
+                                </div>
+                                <div class="wp">
+                                    <p class="tag">최근 수정일</p>
+                                    <% if(item.modifyDate && item.modifyDate.length > 0){ %>
+                                        <a href=""><%= item.modifyDate %></a>
+                                    <% }else{ %>
+                                        <p class="no-data-label">Data none</p>
+                                    <% } %>
+                                </div>
+                                <div class="wp">
+                                    <p class="tag">수정직원</p>
+                                    <% if(item.modify_staff && item.modify_staff.length > 0){ %>
+                                        <a href=""><%= item.modify_staff %></a>
+                                    <% }else{ %>
+                                        <p class="no-data-label">Data none</p>
+                                    <% } %>
+                                </div>
+                            </div>
                         </div>
-                        <div class="wp">
-                            <p class="tag">Email</p>
-                            <% if(item.artistEmail && item.artistEmail.length > 0){ %>
-                                <a href=""><%= item.artistEmail %></a>
-                            <% }else{ %>
-                                <p class="no-data-label">Data none</p>
-                            <% } %>
-                  
-                        </div>
-                        <div class="wp">
-                            <p class="tag">Home page</p>
-                            <% if(item.artistHome && item.artistHome.length > 0){ %>
-                                <a href=""><%= item.artistHome %></a>
-                            <% }else{ %>
-                                <p class="no-data-label">Data none</p>
-                            <% } %>
-                           
-                        </div>
+                       
+    
+                       
     
                     </div>
                 </div>

@@ -138,8 +138,12 @@ app.get('/', (req, res) => {
   return  res.render('index.ejs',{result : null, popText : true})
  }
 
-
 });
+
+
+// 전역 변수 페이지 필터
+let pageFilter = 10;
+
 
 
 app.get('/login', ArtworkListData, async (req, res) => {
@@ -209,7 +213,8 @@ app.get('/register', (req, res) => {
 app.post('/register', async (req, res)=>{
 
 
-  try{
+  try{ 
+    const result = req.user || null;
     let hashing = await bcrypt.hash(req.body.password, 10);
     await db.collection('user').insertOne({
       username : req.body.username,
@@ -219,7 +224,7 @@ app.post('/register', async (req, res)=>{
       class : 1,
       registerDate : new Date()
     })
-    res.redirect('/login', {popText : true})
+    res.redirect('/login')
 
   }catch(error){
     console.error(error);
@@ -260,8 +265,6 @@ app.get('/viewer', (req, res) => {
 });
 
 
-// 전역 변수 페이지 필터
-let pageFilter = 10;
 
 app.get('/admin/list/artwork/:filter', ArtworkListData, async(req,res)=>{
 
@@ -404,12 +407,13 @@ artistData , async(req,res)=>{
        try{   
           if(!errors.isEmpty()){
             console.log(errors)
-            return res.status(400).json({ errors: errors.array() });
+            return res.status(400).json({ errors: errors.array(), pageFilter : pageFilter });
           }else{
             await db.collection('artist').insertOne(result);
+            return res.status(200).json({ pageFilter : pageFilter });
           }  
     
-         res.redirect(`/admin/list/artist/${pageFilter}`);
+     
        }catch(error){
          console.log('데이터 에러', error);
          res.status(500).send('서버 에러')
@@ -432,7 +436,10 @@ app.post('/edit/artist', upload.single('artistimg'), artistData , async (req, re
 
   try{
     await db.collection('artist').updateOne({_id : new ObjectId(artistId)},{$set : editData });
-    res.redirect(`/admin/detail/artist/${artistId}`);
+    // return res.status(200).json({ pageFilter : pageFilter });
+    return res.status(200).json({ edit:'edit' })
+
+    
 
   }catch(error){
     
@@ -527,7 +534,7 @@ app.get('/admin/detail/artist/:Id', async (req,res)=>{
   const result = req.user || null;
   const artistId = req.params.Id;
 
-
+ 
   let artistData = await db.collection('artist').aggregate([
     {
       $match : {_id : new ObjectId(artistId)}
@@ -554,6 +561,10 @@ app.get('/admin/detail/artist/:Id', async (req,res)=>{
         artistHome: 1,
         artistNote: 1,
         artistDescription: 1,
+        register_staff : 1,
+        registerDate : 1,
+        modify_staff : 1,
+        modifyDate : 1,
         'artworkData._id': 1,
         'artworkData.name': 1,
         'artworkData.price': 1,
