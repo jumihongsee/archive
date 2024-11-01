@@ -25,7 +25,6 @@
                             <img src="/img/user.svg"  id="previewImg" name="" alt="">    
                         <% } %>
                     </div>
-          
                     <input name="artistimg" class="file" id="file" type="file" accept="image/*" onchange="previewImage(event)">
                     <img src="/img/plus.png" class="plus"  alt="">
                 </label>              
@@ -43,81 +42,374 @@
 
                 <h2>Artist Info <span>/ 작가 정보</span></h2>
                 <div class="wp">
-                    <label for="artistnameKr">
-                        <p>작가명  <span>* 필수 입력값</span></p>
-                        <% if(data){ %>
-                            <%  data.forEach((item) =>{ %>
-                                <input type="text" name="artistnameKr" id="artistnameKr" value="<%= item.artistName[0]  %>">
-                                <input type="hidden" name="registerDate" id="registerDate" value="<%= item.registerDate  %>">
-                                
-                            <% }) %>
-                        <% }else{ %>
-                            <input type="text" name="artistnameKr" id="artistnameKr" value="" placeholder="국문이름을 입력하세요">
-                        <% } %>
-                    </label>
-                    <label for="artistnameEng">
-                 
-                        <% if(data){ %>
-                            <%  data.forEach((item) =>{ %>
-                                <input type="text" name="artistnameEng" id="artistnameEng" value="<%= item.artistName[1]  %>">
-                            <% }) %>
-                        <% }else{ %>
-                            <input type="text" name="artistnameEng" id="artistnameEng" placeholder="영문름을 입력하세요" >
-                        <% } %>
-                    
-                    </label>
-                    <label for="artistBirth">
-                        <p>생년월일</p>   
-                        <% if(data){ %>
-                            <%  data.forEach((item) =>{ %>
-                                <input type="date" name="artistBirth" id="artistBirth" value="<%= item.artistBirth %>" >
-                            <% }) %>
-                        <% }else{ %>
-                            <input type="date" name="artistBirth" id="artistBirth" >
-                        <% } %>
-    
-    
+                    <div class="wp-l mb-30">
+                        <label for="artistnameKr">
+                            <div class="wp-s">
+                                <p>작가명 KR</p>   
+                            </div>
+                            <% if(data){ %>
+                                <%  data.forEach((item) =>{ %>
+                                    <input type="text" name="artistnameKr" id="artistnameKr" value="<%= item.artistName[0]  %>">
+                                    <input type="hidden" name="registerDate" id="registerDate" value="<%= item.registerDate  %>">
+                                    
+                                <% }) %>
+                            <% }else{ %>
+                                <input type="text" name="artistnameKr" id="artistnameKr" value="" placeholder="작가 실명을 국문으로 입력하세요">
+                            <% } %>
+                        </label>
+                        <label for="artistnameEng">
+                            <div class="wp-s">
+                                <p>작가명 ENG</p>   
+                            </div>
+                            <% if(data){ %>
+                                <%  data.forEach((item) =>{ %>
+                                    <input type="text" name="artistnameEng" id="artistnameEng" value="<%= item.artistName[1]  %>">
+                                <% }) %>
+                            <% }else{ %>
+                                <input type="text" name="artistnameEng" id="artistnameEng" placeholder="작가 실명을 영문으로 입력하세요" >
+                            <% } %>
                         
-                    </label>
-                    <label for="artistEmail">
-                        <p>연락처 (email)</p> 
-                        <% if(data){ %>
-                            <%  data.forEach((item) =>{ %>
-                                <input type="email" name="artistEmail" id="artistEmail" value="<%= item.artistEmail %>">
-                            <% }) %>
-                        <% }else{ %>
-                            <input type="email" name="artistEmail" id="artistEmail" >
-                        <% } %>                   
-                    </label>
+                        </label>
+                        <label for="artistNicknameKor">
+                            <div class="wp-s">
+                                <p>활동명 KR</p>   
+                            </div>
+                            <% if(data){ %>
+                                <%  data.forEach((item) =>{ %>
+                                    <input type="text" name="artistNicknameKor" id="artistNicknameKor" value="<%= item.artistNickName[0] %>">
+                                <% }) %>
+                            <% }else{ %>
+                                <input type="text" name="artistNicknameKor" id="artistNicknameKor" placeholder="작가의 활동명을 국문으로 입력하세요" >
+                            <% } %>
+                        
+                        </label>
+                        <label for="artistNicknameEng">
+                            <div class="wp-s">
+                                <p>활동명 ENG</p>   
+                            </div>
+                            <% if(data){ %>
+                                <%  data.forEach((item) =>{ %>
+                                    <input type="text" name="artistNicknameEng" id="artistNicknameEng" value="<%= item.artistNickName[1] %>">
+                                <% }) %>
+                            <% }else{ %>
+                                <input type="text" name="artistNicknameEng" id="artistNicknameEng" placeholder="작가의 활동명을 영문으로 입력하세요" >
+                            <% } %>
+                        
+                        </label>
+                    </div>
+
+
+                    <div class="wp-l mb-30">
+                        <label for="artistBirth" class="artistBirth">
+                            <div class="wp-s">
+                                <p>생년월일</p>   
+                                <div class="wp-s death">
+                                    <p class="death">사망여부</p>
+                                    <input type="radio" name="death" id="death">
+                                </div>
+                            </div>
+
+                            <% if(data){ %>
+                                <%  data.forEach((item) =>{ %>
+                                    <input type="date" name="artistBirth" id="artistBirth" value="<%= item.artistBirth %>" >
+                                <% }) %>
+                            <% }else{ %>
+                                <input type="date" name="artistBirth" id="artistBirth" >
+                            <% } %>    
+                        </label>
+                 
+                        <label for="artistDeath">
+                            <div class="wp-s">
+                                <p>부고년월일</p>   
+                            </div>
+                       
+                            <% if(data){ %>
+                                <%  data.forEach((item) =>{ %>
+                                <input type="date" name="artistDeath" id="artistDeath" value="<%= item.artistBirth %>" >
+                                <% }) %>
+                            <% }else{ %>
+                                <input type="date" name="artistDeath" id="artistDeath" >
+                            <% } %>    
+                        </label>
+                        <label for="nationality">                   
+                            <div class="wp-s">
+                                <p>국적</p>   
+                            </div>
+                            <% if(data){ %>
+                                <%  data.forEach((item) =>{ %>
+                                    <select name="nationality" id="nationality">
+                                        <option value="korea">대한민국</option>
+                                        <option value="erlang">Erlang</option>
+                                    </select>
+                                <% }) %>
+                            <% }else{ %>
+                                <select name="nationality" id="nationality">
+                                    <option value="korea">대한민국</option>
+                                    <option value="erlang">Erlang</option>
+                                  </select>
+                            <% } %>    
+                        </label>
+                    </div>
+                    <div class="wp-l mb-30">
+                        <label for="AdressHome">
+                            <div class="wp-s">
+                                <p>자택주소</p>   
+                            </div>
+                            <% if(data){ %>
+                                <%  data.forEach((item) =>{ %>
+                                    <input type="text" name="AdressHome" id="AdressHome" value="">
+                                <% }) %>
+                            <% }else{ %>
+                                <input type="text" name="AdressHome" id="AdressHome" placeholder="작가의 집 주소를 입력하세요" >
+                            <% } %>                   
+                        </label>
+                        <label for="AdressWorkPlace">
+                            <div class="wp-s">
+                                <p>작업실주소</p>   
+                            </div>
+                            <% if(data){ %>
+                                <%  data.forEach((item) =>{ %>
+                                    <input type="text" name="AdressWorkPlace" id="AdressWorkPlace" value="">
+                                <% }) %>
+                            <% }else{ %>
+                                <input type="text" name="AdressWorkPlace" id="AdressWorkPlace" placeholder="작가의 작업실 주소를 입력하세요" >
+                            <% } %>                   
+                        </label>
+                       
+                    </div>
+                    <div class="wp-l mb-30">
+                        <label for="ArtistSnsIG">
+                            <div class="wp-s">
+                                <p>인스타그램</p>   
+                            </div>
+                            <% if(data){ %>
+                                <%  data.forEach((item) =>{ %>
+                                    <% if (item.sns) { %>
+                                        <input type="text" name="ArtistSnsIG" id="ArtistSnsIG"  placeholder="작가의 인스타그램 아이디를 입력하세요"  value="<%= item.sns[0].insta %>">
+                                    <% } %>
+                                <% }) %>
+                            <% }else{ %>
+                                <input type="text" name="ArtistSnsIG" id="ArtistSnsIG" placeholder="작가의 인스타그램 아이디를 입력하세요" >
+                            <% } %>                
+                        </label>
+                        <label for="ArtistSnsFB">
+                            <div class="wp-s">
+                                <p>페이스북</p>   
+                            </div>
+                            <% if(data){ %>
+                                <%  data.forEach((item) =>{ %>
+                                    <% if(item.sns){ %>
+                                        <input type="text" name="ArtistSnsFB" id="ArtistSnsFB" placeholder="작가의 페이스북 아이디를 입력하세요"  value="<%= item.sns[0].facebook %>">
+                                    <% } %>
+                                <% }) %>
+                            <% }else{ %>
+                                <input type="text" name="ArtistSnsFB" id="ArtistSnsFB" placeholder="작가의 페이스북 아이디를 입력하세요" >
+                            <% } %>                
+                   
+                        </label>
+                        <label for="ArtistSnsYT">
+                            <div class="wp-s">
+                                <p>유튜브</p>   
+                            </div>
+                            <% if(data){ %>
+                                <%  data.forEach((item) =>{ %>
+                                    <% if(item.sns){ %>
+                                        <input type="text" name="ArtistSnsYT" id="ArtistSnsYT" placeholder="작가의 유튜브 아이디를 입력하세요" value="<%=  item.sns[0].youtube  %>">
+                                    <% } %>
+                                <% }) %>
+                            <% }else{ %>
+                                <input type="text" name="ArtistSnsYT" id="ArtistSnsYT" placeholder="작가의 유튜브 아이디를 입력하세요" >
+                            <% } %>                
+                          
+                        </label>
+                        <label for="ArtistBlog">
+                            <div class="wp-s">
+                                <p>블로그</p>   
+                            </div>
+                            <% if(data){ %>
+                                <%  data.forEach((item) =>{ %>
+                                    <% if(item.sns){ %>
+                                        <input type="text" name="ArtistBlog" id="ArtistBlog" placeholder="작가의 블로그 아이디를 입력하세요" value="<%=  item.sns[0].blog  %>" >
+                                    <% } %>
+                             
+                                <% }) %>
+                            <% }else{ %>
+                                <input type="text" name="ArtistBlog" id="ArtistBlog" placeholder="작가의 블로그 아이디를 입력하세요" >
+                            <% } %>                
+                  
+                        </label>
+                    </div>
+
+                    <div class="wp-l mb-30">
+                        <label for="artistEmail">
+                            <div class="wp-s">
+                                <p>이메일주소</p>   
+                            </div>
+                            <% if(data){ %>
+                                <%  data.forEach((item) =>{ %>
+                                    <input type="email" name="artistEmail" id="artistEmail" value="<%= item.artistEmail %>">
+                                <% }) %>
+                            <% }else{ %>
+                                <input type="email" name="artistEmail" id="artistEmail" placeholder="이메일 주소를 입력하세요" >
+                            <% } %>                   
+                        </label>
+        
+                        <label for="artistTel">
+                            <div class="wp-s">
+                                <p>전화번호</p>   
+                            </div>
+                            <% if(data){ %>
+                                <%  data.forEach((item) =>{ %>
+                                    <input type="number" name="artistTel" id="artistTel" value="<%= item.artistTel %>">
+                                <% }) %>
+                            <% }else{ %>
+                                <input type="number" name="artistTel" id="artistTel" placeholder="작가의 휴대전화 번호를 입력하세요"> 
+                            <% } %>
+                                        
+                        </label>
+                        <label for="artistHome">
+                            <div class="wp-s">
+                                <p>웹 사이트주소</p>   
+                            </div>
+                            <% if(data){ %>
+                                <%  data.forEach((item) =>{ %>
+                                    <input type="text" name="artistHome" id="artistHome" value="<%= item.artistHome %>">
+                                <% }) %>
+                            <% }else{ %>
+                                <input type="text" name="artistHome" id="artistHome" placeholder="작가의 웹사이트 주소를 입력하세요">  
+                            <% } %>
+                        </label>
+                        <label for="">
+                            <div class="wp-s">
+                                <p>Add Agency</p>   
+                            </div>
+                            <button class="addContact">+ 컨텍 포인트 추가</button>
+                        </label>
+                       
+                    </div>    
+
+                    <!-- 대리인 관리 폼 agent -->
+                    <div class="agency mb-30">
+                        <h1 class="mb-30 uppercase">Agency Info</h1>
+                        <div class="wp-l mb-30">
+                            <label for="agencyRelationship">
+                                <div class="wp-s">
+                                    <p>작가와의 관계</p>   
+                                </div>
+                                <% if(data){ %>
+                                    <%  data.forEach((item) =>{ %>
+                                        <input type="text"0 name="agencyRelationship" id="agencyRelationship" value="">
+                                    <% }) %>
+                                <% }else{ %>
+                                    <input type="text" name="agencyRelationship" id="agencyRelationship" placeholder="작가와의 관계" >
+                                <% } %>                   
+                            </label>
+            
+                            <label for="agencyTel">
+                                <div class="wp-s">
+                                    <p>대리인 휴대전화</p>   
+                                </div>
+                                <% if(data){ %>
+                                    <%  data.forEach((item) =>{ %>
+                                        <input type="number" name="agencyTel" id="agencyTel" value="">
+                                    <% }) %>
+                                <% }else{ %>
+                                    <input type="number" name="agencyTel" id="agencyTel" placeholder="대리인의 휴대전화 번호를 입력하세요"> 
+                                <% } %>
+                                            
+                            </label>
+                            <label for="agencyEmail">
+                                <div class="wp-s">
+                                    <p>대리인 이메일</p>   
+                                </div>
+                                <% if(data){ %>
+                                    <%  data.forEach((item) =>{ %>
+                                        <input type="text" name="agencyEmail" id="agencyEmail" value="">
+                                    <% }) %>
+                                <% }else{ %>
+                                    <input type="text" name="agencyEmail" id="agencyEmail" placeholder="대리인의 이메일 주소를 입력하세요">  
+                                <% } %>
+                            </label>                                 
     
-                    <label for="artistTel">
-                        <p>연락처 (tel)</p> 
-                        <% if(data){ %>
-                            <%  data.forEach((item) =>{ %>
-                                <input type="number" name="artistTel" id="artistTel" value="<%= item.artistTel %>">
-                            <% }) %>
-                        <% }else{ %>
-                            <input type="number" name="artistTel" id="artistTel"> 
-                        <% } %>
-                                      
-                    </label>
-                    <label for="artistHome">
-                        <p>홈페이지 (homepage)</p> 
-                        <% if(data){ %>
-                            <%  data.forEach((item) =>{ %>
-                                <input type="text" name="artistHome" id="artistHome" value="<%= item.artistHome %>">
-                            <% }) %>
-                        <% }else{ %>
-                            <input type="text" name="artistHome" id="artistHome">  
-                        <% } %>
-                    </label>
+                        </div>    
+    
+                        <div class="wp-1">
+                            <label for="agencyEtc" id="width-twice">
+                                <div class="wp-s">
+                                    <p>기타사항 기재</p>   
+                                </div>
+                                <% if(data){ %>
+                                    <%  data.forEach((item) =>{ %>
+                                        <textarea name="agencyEtc" id="agencyEtc"></textarea>
+                                    <% }) %>
+                                <% }else{ %>
+                                    <textarea name="agencyEtc" id="agencyEtc" placeholder="기타 특이사항을 입력하세요" ></textarea>
+                                <% } %>                   
+                            </label>
+                        </div>
+                    </div>
+                    <!-- 대리인 관리 폼 END -->
+
+                    <!-- 담당자 및 소속 구문 / 계약기간  START -->
+                     <div class="artistmanager">
+                        <div class="wp-l">
+                            <label for=""><p>담당직원</p> 
+                                <% if(data){ %>
+                                    <select name="manager" id="manager">
+                                        <option value="korea">홍주미</option>
+                                        <option value="erlang">어쩌구</option>
+                                    </select>
+                                <% }else{ %>
+                                    <select name="manager" id="manager">
+                                        <option value="korea">홍주미</option>
+                                        <option value="erlang">어쩌구</option>
+                                    </select>
+                                <% } %>
+                            </label>            
+                            <label for=""><p>소속구분</p> 
+                                <% if(data){ %>
+                                    <select name="association" id="association">
+                                        <option value="">Exclusive</option>
+                                        <option value="">Promotional</option>
+                                        <option value="">ART & WINE Promotional </option>
+                                    </select>
+                                <% }else{ %>
+                                    <select name="association" id="association">
+                                        <option value="">Exclusive</option>
+                                        <option value="">Promotional</option>
+                                        <option value="">ART & WINE Promotional </option>
+                                    </select>
+                                <% } %>
+                            </label>            
+                            <label for="periodStart"><p>계약기간(시작)</p> 
+                                <% if(data){ %>
+                                    <input type="date" name="periodStart" id="periodStart">
+                                <% }else{ %>
+                                    <input type="date" name="periodStart" id="periodStart">
+                                <% } %>
+                            </label>      
+                            <label for="periodEnd"><p>계약기간(종료)</p> 
+                                <% if(data){ %>
+                                    <input type="date" name="periodEnd" id="periodEnd">
+                                <% }else{ %>
+                                    <input type="date" name="periodEnd" id="periodEnd">
+                                <% } %>
+                          
+                            </label>      
+                        </div>
+                     </div>
+                    <!-- 담당자 및 소속 구문 / 계약기간 END-->
+
+   
+
+                    
 
                 </div>
                
             </div>
             <div class="info-form career">
                 <h2>Artist Career <span>/ 학력및 경력 추가</span></h2>   
-                <div class="education wrapper">
+                <div class="education wrapper" id="edu">
                     <% if(data){ %>
                         <% data.forEach((item)=>{ %>
                             <% if(item.education && item.education.length > 0){ %>
@@ -142,12 +434,11 @@
 
                     <% } %>
 
-
                     <button class="addInput"><img src="/img/plus.png" alt=""> 학력 추가</button>
                 </div>
 
 
-                <div class="solo-ex wrapper">
+                <div class="solo-ex wrapper" id="solo">
 
                     <% if(data){ %>
                         <% data.forEach((item)=>{ %>
@@ -183,7 +474,7 @@
                 </div>
 
 
-                <div class="group-ex wrapper">
+                <div class="group-ex wrapper" id="group">
                     
                     <% if(data){ %>
                         <% data.forEach((item)=>{ %>
@@ -212,7 +503,7 @@
                     <% } %>
                     <button class="addInput"><img src="/img/plus.png" alt="">그룹전 경력추가</button>
                 </div>
-                <div class="award wrapper">
+                <div class="award wrapper" id="award">
                     <% if (data) { %>
                         <% data.forEach((item) => { %>
                             <% if (item.award && item.award.length > 0) { %>
@@ -240,11 +531,11 @@
             </div>
             <div class="info-form description">
                 <h2>description</h2>   
-                <label for="artistNote">
+                <label for="artistNote" id="width-twice" class="mb-30">
                     아티스트 노트
                     <textarea name="artistNote" id="artistNote"></textarea>      
                 </label>
-                <label for="artistDescription">
+                <label for="artistDescription" id="width-twice">
                     메모
                     <textarea name="artistDescription" id="artistDescription"></textarea>      
                 </label>
@@ -289,7 +580,7 @@
                 const inputWrapperClass = inputWrapper.className;
                 let newInputGroup = document.createElement('div');
                 
-                
+                console.log(inputWrapper)
 
                 
                 newInputGroup.classList.add('createWrapper')
@@ -297,17 +588,46 @@
                 if(inputWrapperClass === "education wrapper"){
                     newInputGroup.innerHTML =
                     `
-                        <div class="edu-ex-input">
-                            <label for="soloExDate">
-                                학력(년도)
-                                <input type="date" name="EducationDate[]" id="soloExDate">
-                                
+                       <div class="edu-ex-input">
+                            <div class="mb-10">
+                                <div>
+                                    <label for="soloExTitle">학교명</label>
+                                </div>
+                                <div class="wp-l">
+                                    <input type="text" name="educationTitle" id="soloExTitle" placeholder="학교명 기재">
+                                    <select name="grade">
+                                        <option value="" selected disabled hidden>학사 / 석사 / 박사</option>
+                                        <option value="bachelors">학사</option>
+                                        <option value="master">석사</option>
+                                        <option value="doctor">박사</option>
+                                        <option value="dropOut">중퇴</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-10">
+                                <label for="eduStartYear">입학년도</label>
+                                <div class="wp-l">
+                                    <input type="number" name="educationDateStartYear" placeholder="YYYY" id="eduStartYear">
+                                    <input type="number" name="educationDateStartMonth" placeholder="MM" id="eduStartMonth">
+                                    <input type="number" name="educationDateStartDay" placeholder="DD" id="eduStartDay">
+                                </div>
+                            </div>
+
+                            <div class="mb-10">
+                                <label for="eduEndYear">졸업년도</label>
+                                <div class="wp-l">
+                                    <input type="number" name="educationDateEndYear" placeholder="YYYY" id="eduEndYear">
+                                    <input type="number" name="educationDateEndMonth" placeholder="MM" id="eduEndMonth">
+                                    <input type="number" name="educationDateEndDay" placeholder="DD" id="eduEndDay">
+                                </div>
+                            </div>
+
+                            <label for="eduMemo"  id="width-half">
+                                <textarea name="eduMemo" placeholder='기타 메모사항 기재'></textarea>    
                             </label>
-                            <label for="soloExTitle">
-                                학교이름
-                                <input type="text" name="EducationTitle[]" id="soloExTitle" placeholder="학교명 기재">
-                            </label>
-                            <button type="button" class="input-delete"><img src="/img/x.png" alt=""></button>
+
+                            <button type="button" class="input-delete"><img src="/img/x.png" alt="삭제"></button>
                         </div>
                     `
                 }
@@ -315,13 +635,31 @@
                     newInputGroup.innerHTML = 
                     `
                         <div class="solo-ex-input">
-                            <label for="soloExDate">
-                                개인전(년도)
-                                <input type="date" name="soloExDate[]" id="soloExDate">
-                            </label>
-                            <label for="soloExTitle">
-                                전시 타이틀
-                                <input type="text" name="soloExTitle[]" id="soloExTitle" placeholder="개인전 타이틀 기재">
+                            <div class="mb-10">  
+                                <p>개인전시 타이틀</p>
+                                <div class="wp-l">
+                                    <input type="text" name="soloExTitle" id="soloExTitle" placeholder="개인전 타이틀 기재">
+                                    <input type="text" name="soloExKeyword" id="soloExTitleKeyword" placeholder="갤러리명 혹은 위치 키워드">
+                                </div>
+                            </div>  
+                            <div class="mb-10">
+                                <p>개인전(시작)</p>
+                                <div class="wp-l">
+                                    <input type="number" name="soloExStartYear" placeholder="YYYY" id="soloExStartYear">
+                                    <input type="number" name="soloExStartMonth" placeholder="MM" id="soloExStartMonth">
+                                    <input type="number" name="soloExStartDay" placeholder="DD" id="soloExStartDay">
+                                </div>
+                            </div>
+                            <div class="mb-10">
+                                <p>개인전(종료)</p>
+                                <div class="wp-l">
+                                    <input type="number" name="soloExEndYear" placeholder="YYYY" id="soloExEndYear">
+                                    <input type="number" name="soloExEndMonth" placeholder="MM" id="soloExEndMonth">
+                                    <input type="number" name="soloExEndDay" placeholder="DD" id="soloExEndDay">
+                                </div>
+                            </div>
+                            <label for="soloMemo"  id="width-half">
+                                <textarea name="soloExMemo" placeholder='기타 메모사항 기재'></textarea>    
                             </label>
                             <button type="button" class="input-delete"><img src="/img/x.png" alt=""></button>
                         </div>
@@ -331,17 +669,36 @@
                 }
                 else if(inputWrapperClass === "group-ex wrapper"){
                     newInputGroup.innerHTML = 
-                    `
-                        <div class="group-ex-input">
-                            <label for="groupExDate">
-                                단체전(년도)
-                                <input type="date" name="groupExDate[]" id="groupExDate">
+                    `                
+                         <div class="group-ex-input">
+                            <div class="mb-10">
+                                <p>그룹전시타이틀</p>
+                                <div class="wp-l">
+                                    <input type="text" name="groupExTitle" id="groupExTitle" placeholder="그룹전 타이틀 기재">
+                                    <input type="text" name="groupExKeyword" id="groupExTitle" placeholder="갤러리명 혹은 위치 키워드">
+                                </div>
+                                
+                            </div>  
+                            <div class="mb-10">
+                                <p>단체전(시작)</p>
+                                <div class="wp-l">
+                                    <input type="number" name="groupExStartYear" placeholder="YYYY" id="groupExDateStart">
+                                    <input type="number" name="groupExStartMonth" placeholder="MM" id="groupExDateStart">
+                                    <input type="number" name="groupExStartDay" placeholder="DD" id="groupExDateStart">
+                                </div>
+                            </div>
+                            <div class="mb-10">
+                                <p>단체전(종료)</p>
+                                <div class="wp-l">
+                                    <input type="number" name="groupExEndYear" placeholder="YYYY" id="groupExEndYear">
+                                    <input type="number" name="groupExEndMonth" placeholder="MM" id="groupExEndMonth">
+                                    <input type="number" name="groupExEndDay" placeholder="DD" id="groupExEndDay">
+                                </div>
+                            </div>
+                            <label for="eduMemo"  id="width-half">
+                                <textarea name="groupExMemo" placeholder='기타 메모사항 기재'></textarea>    
                             </label>
-                            <label for="groupExTitle">
-                                전시 타이틀
-                                <input type="text" name="groupExTitle[]" id="groupExTitle" placeholder="그룹전 타이틀 기재">
-                            </label>
-                             <button type="button" class="input-delete"><img src="/img/x.png" alt=""></button>
+                            <button type="button" class="input-delete"><img src="/img/x.png" alt=""></button>
                         </div>
                     `
                 }
@@ -349,15 +706,25 @@
                     newInputGroup.innerHTML = 
                     `
                         <div class="award-input">
-                            <label for="awardExDate">
-                                수상(년도)
-                                <input type="date" name="awardExDate[]" id="awardExDate">
+                            <div class="mb-10">                                       
+                                <p>수상 타이틀</p>
+                                <div class="wp-l">
+                                    <input type="text" name="awardTitle" id="awardTitle" placeholder="수상명 기재">
+                                </div>
+                            </div>  
+                            <div class="mb-10">
+                                <p>수상(년도)</p>
+                                <div class="wp-l">
+                                    <input type="number" name="awardDateYear" placeholder="YYYY" id="awardStartYear">
+                                    <input type="number" name="awardDateMonth" placeholder="MM" id="awardStartMonth">
+                                    <input type="number" name="awardDateDay" placeholder="DD" id="awardStartDay">
+                                </div>
+                            </div>
+                            
+                            <label for="eduMemo"  id="width-half">
+                                <textarea name="awardMemo" placeholder='기타 메모사항 기재'></textarea>    
                             </label>
-                            <label for="awardTitle">
-                                수상 타이틀
-                                <input type="text" name="awardTitle[]" id="awardTitle" placeholder="수상명 기재">
-                            </label>
-                             <button type="button" class="input-delete"><img src="/img/x.png" alt=""></button>
+                            <button type="button" class="input-delete"><img src="/img/x.png" alt=""></button>
                         </div>
                     `
                 }
@@ -387,7 +754,7 @@
         const textarea = document.querySelectorAll('textarea');
         textarea.forEach(item=>{
             item.addEventListener('input', function(){
-                item.style.height = 'auto'
+                item.style.height = '50px'
                 item.style.height = this.scrollHeight+'px'
             })
         })

@@ -120,6 +120,7 @@ passport.deserializeUser(async (id, done) => {
 });
 
 
+
 app.set('view engine', 'ejs');
 
 // 라우트 설정
@@ -403,12 +404,12 @@ artistData , async(req,res)=>{
     const errors = validationResult(req);
 
 
-
        try{   
           if(!errors.isEmpty()){
             console.log(errors)
             return res.status(400).json({ errors: errors.array(), pageFilter : pageFilter });
           }else{
+            console.log('result :', result);
             await db.collection('artist').insertOne(result);
             return res.status(200).json({ pageFilter : pageFilter });
           }  
@@ -437,7 +438,7 @@ app.post('/edit/artist', upload.single('artistimg'), artistData , async (req, re
   try{
     await db.collection('artist').updateOne({_id : new ObjectId(artistId)},{$set : editData });
     // return res.status(200).json({ pageFilter : pageFilter });
-    return res.status(200).json({ edit:'edit' })
+    return res.status(200).json({ edit:'edit' });
 
     
 
@@ -607,7 +608,7 @@ app.get('/admin/edit/artwork/:Id', async(req,res)=>{
   const artistData = await db.collection('artist').find({_id : new ObjectId(artworkData[0].artist)}).toArray(); 
 
 
-  res.render('admin/writeArtwork.ejs', {result : result, artworkData : artworkData , artistData : artistData})
+  res.render('admin/writeArtwork.ejs', {result : result, artworkData : artworkData , artistData : artistData, pageFilter : pageFilter})
 
 })
 
@@ -625,10 +626,13 @@ app.post('/admin/edit/artwork/:Id',
    ArtworkListData , artworkData ,async (req, res)=>{
   
   try{
+    const artworkId = req.params.Id;
     await db.collection('artwork').updateOne({_id : new ObjectId(req.params.Id)}, {$set : req.data});
 
   
-    res.redirect(`/admin/list/artwork/${pageFilter}`);
+    return res.status(200).json({ edit:'edit' })
+
+
   }catch(error){
     console.error('작품 수정 중 오류 발생:', error);
     res.status(500).json('작품 수정 중 서버 오류 발생: ' + error);
@@ -654,10 +658,11 @@ ArtworkListData,
 artworkData,
 async(req,res)=>{
   try{    
+    const artworkId = req.params.Id;
     console.log('location JSON :', JSON.stringify(req.data.location)); 
     await db.collection('artwork').insertOne(req.data);
 
-    res.redirect(`/admin/list/artwork/${pageFilter}`)
+    return res.status(200).json({ pageFilter : pageFilter });
 
 
   }catch(error){

@@ -7,25 +7,41 @@ async function artistData (req, res, next){
         const {
             artistnameKr,
             artistnameEng,
+            artistNicknameKor, //추가  추가된 것 들 value 값 추가하기
+            artistNicknameEng, //추가
+            nationality, //추가
+            AdressHome, // 추가
+            AdressWorkPlace, //추가
+            ArtistSNS, //추가
+            artistDeath, //추가
             artistBirth,
+            agencyRelationship, //추가
+            agencyTel, //추가
+            agencyEmail, //추가
+            agencyEtc, //추가
+            manager, //추가
+            association,
+            periodStart, 
+            periodEnd, 
+            ArtistSnsIG,
+            ArtistSnsFB,
+            ArtistSnsYT,
+            ArtistBlog,
             artistEmail,
             artistTel,
             artistHome,
             artistNote,
             artistDescription,
-            soloExDate,
-            soloExTitle,
-            groupExDate,
-            groupExTitle,
-            awardExDate,
-            awardTitle,
-            EducationDate,
-            EducationTitle,
+    
+            soloExTitle, soloExKeyword, soloExStartYear, soloExStartMonth, soloExStartDay, soloExEndYear, soloExEndMonth, soloExEndDay, soloExMemo,
+            groupExTitle, groupExKeyword ,groupExStartYear, groupExStartMonth, groupExStartDay, groupExEndYear, groupExEndMonth, groupExEndDay, groupExMemo,
+            awardTitle, awardDateYear, awardDateMonth, awardDateDay, awardMemo,
+            educationTitle, educationDateStartYear, educationDateStartMonth, educationDateStartDay, educationDateEndYear, educationDateEndMonth, educationDateEndDay, eduMemo, grade,
             registerDate,
             register_staff,
             modify_staff
           } = req.body;
-
+   
       
           // IMG
           // 기존 이미지 URL
@@ -33,13 +49,11 @@ async function artistData (req, res, next){
 
           // 등록 시간 
           // 등록시간이 이미 있으면 그 시간으로 등록
-          //등록시간이 없으면 new Date로 등록시간
+          // 등록시간이 없으면 new Date로 등록시간
       
           const registerDateValue = registerDate ? registerDate : formatDate(new Date());
           const modifyDate = modify_staff ? formatDate(new Date()) : null;
           
-          console.log(req.body)
-          console.log(modifyDate)
 
           // 새이미지
           // 등록 파일이 있다? 그럼 새 파일 저장소를 가져와
@@ -63,71 +77,183 @@ async function artistData (req, res, next){
         
           // 작가 이름 배열 정리 
           const artistName = [inputDataNull(artistnameKr), inputDataNull(artistnameEng)];
-          let education = [];
-          let soloEx = [];
-          let groupEx = [];
-          let award = [];
+
+          // (추가) 작가 닉네임 배열 정리
+          const artistNickName = [inputDataNull(artistNicknameKor),inputDataNull(artistNicknameEng)]
+
+          // (추가) 작가 주소
+          const adress = [inputDataNull(AdressHome),inputDataNull(AdressWorkPlace)]
+
+          // (추가) 대리인 폼
+          const agency = [inputDataNull(agencyRelationship), inputDataNull(agencyTel), inputDataNull(agencyEmail)]
+          
+          // (추가) 대리인 특이사항
+          const agencyMemo = [{ time : formatDate(new Date()) , memo: agencyEtc }]
+
+          // (추가) 계약기간
+          const contractPeriod = [ inputDataNull(periodStart), inputDataNull(periodEnd)  ]
+
+          // (추가) SNS
+
+          const sns = [{
+            insta :  inputDataNull(ArtistSnsIG),
+            facebook : inputDataNull(ArtistSnsFB),
+            youtube : inputDataNull(ArtistSnsYT),
+            blog : inputDataNull(ArtistBlog)
+          }]
+ 
+          
+
+          
+       
+          // let soloEx = [];
+          // let groupEx = [];
+          // let award = [];
         
           // 연락처 포맷 
           const formatArtistTel = formatPhoneNumber(artistTel);
           
-    
-          // 개인전 배열 처리
-          if (Array.isArray(soloExDate) && Array.isArray(soloExTitle)) {
-            soloEx = soloExDate.map((date, i) => ({
-              date: inputDataNull(date),
-              exTitle: inputDataNull(soloExTitle[i])
-            }));
-          } 
-        
-          // 그룹전 배열 처리
-          if (Array.isArray(groupExDate) && Array.isArray(groupExTitle)) {
-            groupEx = groupExDate.map((date, i) => ({
-              date: inputDataNull(date),
-              exTitle: inputDataNull(groupExTitle[i])
-            }));
-          } 
+
+
+          // 항목이 많을경우 배열의 형태로 저장된다.
+          // 공백일 수 없는 항목 >> 전시 타이틀 및 학교이름
+          // 텍스트를 기입하지 않으면 공백으로 저장되어 처리된다. 
+          // 배열의 형태의 값으로 왔을때와 그렇지 않았을때의 포맷을
+
+   
           
+
         
-          // 수상 배열 처리
-          if (Array.isArray(awardExDate) && Array.isArray(awardTitle)) {
-            award = awardExDate.map((date, i) => ({
-              date: inputDataNull(date),
-              exTitle: inputDataNull(awardTitle[i])
-            }));
-          }
-    
-          // 학력 배열 처리
-          if(Array.isArray(EducationDate) && Array.isArray(EducationTitle)){
-            education = EducationDate.map((date, i)=>({
-              date : inputDataNull(date),
-              school : inputDataNull(EducationTitle[i])
-            }))
-          }
         
-      
+
+          // keyword, grade sYear , sMonth, sDay, 없을 수 있음 
+
+          function ArrayMapping(title, keyword , grade , sYear, sMonth, sDay, eYear, eMonth, eDay, memo){ 
+            console.log('배열임')
+            if(Array.isArray(title)){ // title이 배열이면
+
+              return title.map((data,i)=>{ // 배열일 경우 map을 돌려서 각 순서에 맞는 객체 배열을 만들어준다.
+                
+                return{
+                  title : [
+                    {
+                      title : title[i],
+                      ...(keyword ? { keyword : keyword[i] } : null),
+                      ...(grade ? {  grade : grade[i] } : null)
+                    }
+                  ],
+                  date : [
+                    {
+                      ...(sYear && sMonth && sDay ? {
+                        start : {
+                          year : sYear[i],
+                          month : sMonth[i] ,
+                          day : sDay[i],
+                        },
+                      } : null),
+   
+                    },
+                    {
+                      end : {
+                        year : eYear[i] ,
+                        month : eMonth[i] ,
+                        day : eDay[i],
+                      }    
+                     
+                    }
+                  ],
+                  memo : [
+                    {
+                      date : formatDate(new Date()) ,
+                      memo : memo[i]
+                    }
+                  ]
+                }
+
+                
+              }) 
+            }else{ //단일 객체
+              return{
+                title : [
+                  {
+                    title : title,
+                    ...(keyword ? { keyword : keyword } : null),
+                    ...(grade ? {  grade : grade } : null)
+                  }
+                ],
+                date : [
+                  {
+                    ...(sYear && sMonth && sDay ? {
+                      start : {
+                        year : sYear,
+                        month : sMonth ,
+                        day : sDay,
+                      },
+                    } : null),
+ 
+                  },
+                  {
+                    end : {
+                      year : eYear ,
+                      month : eMonth ,
+                      day : eDay,
+                    }    
+                   
+                  }
+                ],
+                memo : [
+                  {
+                    date : formatDate(new Date()) ,
+                    memo : memo
+                  }
+                ]
+              }
+            }
+           
+          }
+                 
+          // function makeArray(title, sYear, sMonth, sDay, eYear, eMonth, eDay, memo){ 
+
+          let education = ArrayMapping(educationTitle, '', grade ,educationDateStartYear, educationDateStartMonth, educationDateStartDay, educationDateEndYear, educationDateEndMonth, educationDateEndDay, eduMemo);
+          let soloEx = ArrayMapping(soloExTitle, soloExKeyword, '', soloExStartYear,soloExStartMonth, soloExStartDay, soloExEndYear, soloExEndMonth, soloExEndDay, soloExMemo);
+          let groupEx = ArrayMapping( groupExTitle, groupExKeyword , '', groupExStartYear, groupExStartMonth, groupExStartDay, groupExEndYear, groupExEndMonth, groupExEndDay, groupExMemo);
+          let award = ArrayMapping(awardTitle, '' , '' , ''  , '' , '', awardDateYear, awardDateMonth, awardDateDay, awardMemo )
+  
+         
+
         
           let result = {
-            imgUrl: inputDataNull(insertImg),
-            artistName: artistName,
-            soloEx: soloEx,
-            groupEx: groupEx,
-            award: award,
-            education : education,
-            artistBirth: inputDataNull(artistBirth),
-            artistEmail: artistEmail ? inputDataNull(artistEmail) : null,
-            artistTel:  artistTel ? inputDataNull(formatArtistTel) : null ,
-            artistHome: inputDataNull(artistHome),
-            artistNote: inputDataNull(artistNote),
-            artistDescription: inputDataNull(artistDescription),
-            register_staff,
-            registerDate : registerDateValue,
-            modifyDate : modifyDate,
-            modify_staff,         
+            imgUrl: inputDataNull(insertImg), // 등록
+            artistName: artistName, // 등록
+            artistNickName : artistNickName , // 등록
+            nationality : inputDataNull(nationality), // 등록
+            agency : agency,
+            soloEx: soloEx, 
+            groupEx: groupEx, 
+            award: award, 
+            sns : sns, 
+            contractPeriod : contractPeriod,
+            adress : adress, // 등록
+            education : education,// 등록
+            agencyMemo  : agencyMemo, // 등록
+            association : inputDataNull(association),
+            manager :  inputDataNull(manager),
+            artistBirth: inputDataNull(artistBirth), // 등록
+            artistDeath : inputDataNull(artistDeath), 
+            artistEmail: artistEmail ? inputDataNull(artistEmail) : null, //등록
+            artistTel:  artistTel ? inputDataNull(formatArtistTel) : null , //등록
+            artistHome: inputDataNull(artistHome), //등록
+            ArtistSNS : inputDataNull(ArtistSNS), 
+            artistNote: inputDataNull(artistNote), //등록
+            artistDescription: inputDataNull(artistDescription), // 등록
+            register_staff, // 등록
+            registerDate : registerDateValue, //등록
+            modifyDate : modifyDate, // 등록
+            modify_staff, //등록
           };
 
           req.artistData = result;
-
+       
           next();
 
     }catch(error){

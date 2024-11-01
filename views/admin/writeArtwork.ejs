@@ -206,6 +206,11 @@
                     </div>
 
                 </div>
+                <% if(artworkData){ %>
+                    <% artworkData.forEach((item)=>{ %>
+                        <input type="hidden"  name="artworkId" value="<%=  item._id %>">
+                    <% }) %>
+                <% } %>
             <button class="addArtwork" type="submit"> 
                 <%= artworkData ? '작품수정 마치기' : '작품등록 마치기'  %>
                 <span> ! 입력값을 제대로 입력해 주세요.</span>
@@ -223,14 +228,16 @@
 
     // 이미지 미리보기 및 삭제 버튼 처리
     document.querySelectorAll('input[type="file"]').forEach((item, index) => {
+
         item.addEventListener('change', function (e) {
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function (e) {
+         
                     const imgLabel = document.querySelector(`label[for="${item.id}"] img`);
                     imgLabel.src = e.target.result;
-
+                    console.log(e.target)
                     const imgWrapper = imgLabel.closest('div.img-wrapper');
                     
                     // 기존의 삭제 버튼이 있으면 삭제
@@ -433,12 +440,25 @@
             if (!response.ok) {
                 const responseData = await response.json();
                 displayErrors(responseData.errors); // 에러 메시지 처리 함수 호출
+                
             } else {
                 // 성공 시, 원하는 동작 수행 (예: 페이지 리다이렉트)
-                window.location.href = '/admin/list/artwork'; // 원하는 경로로 변경
+                const responseData = await response.json(); 
+           
+                console.log(responseData)
+                // 등록일때 
+                if(responseData.pageFilter){
+                    window.location.href = `/admin/list/artwork/${responseData.pageFilter}`;
+                    console.log('등록임')
+                }else if(responseData.edit === 'edit'){
+                    // 수정일때
+                    const artworkId = document.querySelector('input[name="artworkId"]').value;    
+                    window.location.href = `/admin/detail/artwork/${artworkId}`
+                    console.log('수정임')
+                }
             }
         } catch (error) {
-            console.error('Error:', error);
+            console.error('작품 등록 및 수정 오류:', error);
         }
     });
 
