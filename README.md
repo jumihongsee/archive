@@ -14,59 +14,59 @@
    Excel Export: ExcelJS<br/>
 <br/>
 <h2>1. 환경설정</h2> <br/>
- 1.1 Node.js + Express 설정<br/>
+ <h3>1.1 Node.js + Express 설정</h3><br/>
      express 설치 및 기본 서버 구성<br/>
      dotenv 패키지를 사용하여 환경 변수 설정 (.env 파일 사용)<br/>
      database.js를 통해 MongoDB 연결 설정<br/>
      <br/>
- 1.2 SCSS 연동<br/>
+  <h3>1.2 SCSS 연동</h3><br/>
  node-sass를 사용하여 SCSS를 컴파일하고 스타일 적용<br/>
 <br/>
- 1.3 MongoDB 설정<br/>
+  <h3>1.3 MongoDB 설정</h3><br/>
  mongoose를 이용한 스키마 및 모델 설계<br/>
  database.js 파일에서 MongoDB 연결 관리<br/>
 <br/>
- 1.4 보안 설정<br/>
+  <h3>1.4 보안 설정</h3><br/>
  dotenv를 이용한 환경변수 관리 (DB 연결 정보, 비밀번호 해싱 키 등)<br/>
  bcrypt를 사용한 비밀번호 해싱 처리<br/>
  connect-mongo를 사용한 세션 저장 및 관리<br/>
  express-session 및 passport를 이용한 사용자 인증 구현<br/>
 <br/>
 <h2>2. 기능구현</h2> <br/>
- 2.1 회원가입 및 로그인 기능<br/>
+  <h3>2.1 회원가입 및 로그인 기능</h3><br/>
  passport 및 express-session을 활용한 사용자 인증<br/>
  bcrypt를 사용한 비밀번호 암호화 및 검증<br/>
  connect-mongo를 이용한 세션 저장<br/>
  JavaScript를 활용한 회원가입 및 로그인 유효성 검사<br/>
 <br/>
- 2.2 관리자 기능<br/>
+  <h3>2.2 관리자 기능</h3><br/>
  사용자, 아티스트, 아트워크 게시판 리스트 데이터 출력<br/>
  MongoDB $lookup 파이프라인을 사용하여 artist 및 artwork 컬렉션 조인<br/>
 <br/>
- 2.3 아티스트 및 아트워크 관리<br/>
+  <h3>2.3 아티스트 및 아트워크 관리</h3><br/>
  multer 및 AWS S3를 이용한 이미지 업로드 및 저장<br/>
  express-validator를 이용한 유효성 검사<br/>
  JavaScript를 활용한 동적 입력 필드 추가 기능 구현<br/>
  검색 기능 구현 (아티스트명, 작품명 인덱싱)<br/>
  exceljs를 이용한 아티스트 및 아트워크 데이터 엑셀 다운로드<br/>
 <br/>
- 2.4 이미지 및 파일 처리<br/>
+  <h3>2.4 이미지 및 파일 처리</h3><br/>
  다중 이미지 업로드 및 수정 로직 구현<br/>
  S3 저장소에서 기존 이미지 삭제 후 새로운 이미지 등록<br/>
  이미지 URL 통일화 (MongoDB 저장 URL과 AWS S3 저장 URL 간 인코딩 차이 해결)<br/>
 <br/>
- 2.5 게시판 및 데이터 관리<br/>
+ <h3> 2.5 게시판 및 데이터 관리</h3><br/>
  CRUD 기능 구현 (게시글 등록, 수정, 삭제)<br/>
  필터 및 정렬 기능 구현<br/>
  MongoDB 인덱싱을 활용한 검색 최적화<br/>
  mongoose 미들웨어를 활용한 데이터 처리 모듈화<br/>
 <br/>
- 2.6 UI 및 퍼블리싱<br/>
+  <h3>2.6 UI 및 퍼블리싱</h3><br/>
  메인 페이지, 로그인, 회원가입, 네비게이션 UI 퍼블리싱<br/>
  관리자 페이지 및 목록 페이지 디자인 개선<br/>
  리스트 및 상세 페이지 디자인 적용<br/>
 <br/>
- 2.7 오류 수정 및 최적화<br/>
+  <h3>2.7 오류 수정 및 최적화</h3><br/>
  동적 UI 삭제 및 값 채우기 시 이벤트 위임 (event delegation)<br/>
  JavaScript에서 입력값 길이에 따라 height 자동 조정<br/>
  페이지네이션 개선 (커서 기반 페이지네이션 적용)<br/>
