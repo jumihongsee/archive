@@ -1,11 +1,11 @@
 # 프로젝트 개요
 <br/>
-## 프로젝트명 : 아카이브
+<h2>프로젝트명 : 아카이브</h2> 
 <br/>
 이 프로젝트는 Node.js와 Express를 기반으로 한 웹 애플리케이션으로 예술계에서 활동하는 작가들의 라이선스를 받아 작가의 개인정보 및 작품 정보를 손쉽게 통합 관리할 수 있는 웹 아카이브입니다. <br/>
 데이터베이스는 MongoDB를 사용하였으며. 사용자 인증 및 권한 관리, 게시판 기능, 아티스트 및 아트워크 등록/관리, 데이터 엑셀 다운로드 등의 기능을 포함합니다.<br/>
 <br/><br/>
-# 0. 기술스택<br/>
+<h2>0. 기술스택</h2> <br/>
    Backend: Node.js, Express, MongoDB, Mongoose  <br/>
    Frontend: JavaScript, SCSS<br/>
    Auth: Passport.js, Bcrypt, Express-session<br/>
@@ -13,7 +13,7 @@
    Validation: Express-validator<br/>
    Excel Export: ExcelJS<br/>
 <br/>
-# 1. 환경설정<br/>
+<h2>1. 환경설정</h2> <br/>
  1.1 Node.js + Express 설정<br/>
      express 설치 및 기본 서버 구성<br/>
      dotenv 패키지를 사용하여 환경 변수 설정 (.env 파일 사용)<br/>
@@ -32,7 +32,7 @@
  connect-mongo를 사용한 세션 저장 및 관리<br/>
  express-session 및 passport를 이용한 사용자 인증 구현<br/>
 <br/>
-# 2. 기능구현<br/>
+<h2>2. 기능구현</h2> <br/>
  2.1 회원가입 및 로그인 기능<br/>
  passport 및 express-session을 활용한 사용자 인증<br/>
  bcrypt를 사용한 비밀번호 암호화 및 검증<br/>
